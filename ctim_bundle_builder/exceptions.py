@@ -1,0 +1,2 @@
+class SchemaError(TypeError):
+    pass
