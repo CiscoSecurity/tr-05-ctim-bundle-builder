@@ -9,3 +9,8 @@ class JudgementSchema(Schema):
 
 class Judgement(Entity):
     schema = JudgementSchema
+
+    @property
+    def summary(self):
+        # TODO: replace with real implementation
+        return ''

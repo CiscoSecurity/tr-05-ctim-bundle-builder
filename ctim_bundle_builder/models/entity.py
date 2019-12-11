@@ -39,6 +39,10 @@ class Entity(metaclass=EntityMeta):
 
         self.json['type'] = self.type
 
+        self.json.setdefault('id', self.id)
+
+        self.json.setdefault('external_ids', []).append(self.external_id)
+
     @property
     def id(self):
         return 'transient:' + self.external_id

@@ -9,3 +9,8 @@ class BundleSchema(Schema):
 
 class Bundle(Entity):
     schema = BundleSchema
+
+    @property
+    def summary(self):
+        # TODO: replace with real implementation
+        return ''

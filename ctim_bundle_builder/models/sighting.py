@@ -9,3 +9,8 @@ class SightingSchema(Schema):
 
 class Sighting(Entity):
     schema = SightingSchema
+
+    @property
+    def summary(self):
+        # TODO: replace with real implementation
+        return ''

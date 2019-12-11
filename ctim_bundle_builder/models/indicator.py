@@ -9,3 +9,8 @@ class IndicatorSchema(Schema):
 
 class Indicator(Entity):
     schema = IndicatorSchema
+
+    @property
+    def summary(self):
+        # TODO: replace with real implementation
+        return ''
