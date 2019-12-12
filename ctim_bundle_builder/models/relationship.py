@@ -88,7 +88,6 @@ class RelationshipSchema(Schema):
 class Relationship(Entity):
     schema = RelationshipSchema
 
-    @property
-    def summary(self):
+    def generate_external_id_seed(self):
         # TODO: replace with real implementation
         return ''

@@ -10,7 +10,6 @@ class SightingSchema(Schema):
 class Sighting(Entity):
     schema = SightingSchema
 
-    @property
-    def summary(self):
+    def generate_external_id_seed(self):
         # TODO: replace with real implementation
         return ''
