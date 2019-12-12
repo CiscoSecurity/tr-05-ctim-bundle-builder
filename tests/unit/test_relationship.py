@@ -9,7 +9,12 @@ from ctim_bundle_builder.constants import (
     TLP_CHOICES,
     SCHEMA_VERSION,
 )
-from ctim_bundle_builder.models import Relationship
+from ctim_bundle_builder.models import (
+    Relationship,
+    Judgement,
+    Indicator,
+)
+from .utils import mock_id, mock_external_id
 
 
 def test_relationship_validation_fails():
@@ -22,7 +27,7 @@ def test_relationship_validation_fails():
         'external_references': [{
             'description': '',
             'external_id': None,
-            'hashes': ['alpha', 'beta', 'gamma']
+            'hashes': ['alpha', 'beta', 'gamma'],
         }],
         'language': 'Python',
         'revision': -273,
@@ -82,4 +87,30 @@ def test_relationship_validation_fails():
         'description': '\U0001f4a9' * DESCRIPTION_MAX_LENGTH,
         'language': 'Python',
         'title': 'OMG! The Best CTIM Bundle Builder Ever!',
+    }
+
+
+def test_relationship_validation_succeeds():
+    # TODO: extend with more fields after implementing these models
+    judgement = Judgement()
+    indicator = Indicator()
+
+    relationship = Relationship(
+        relationship_type='based-on',
+        source_ref=judgement,
+        target_ref=indicator,
+        revision=1,
+        tlp='green',
+    )
+
+    assert relationship.json == {
+        'type': 'relationship',
+        'id': mock_id('relationship'),
+        'relationship_type': 'based-on',
+        'schema_version': SCHEMA_VERSION,
+        'source_ref': judgement.id,
+        'target_ref': indicator.id,
+        'external_ids': [mock_external_id('relationship')],
+        'revision': 1,
+        'tlp': 'green',
     }
