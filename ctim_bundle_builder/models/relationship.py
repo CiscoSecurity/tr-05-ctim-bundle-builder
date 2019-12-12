@@ -56,8 +56,8 @@ class RelationshipSchema(Schema):
             validate=validate_string,
         )
     )
-    external_references = fields.Nested(
-        ExternalReferenceSchema(many=True)
+    external_references = fields.List(
+        fields.Nested(ExternalReferenceSchema)
     )
     language = fields.String(
         validate=partial(validate_string, max_length=LANGUAGE_MAX_LENGTH),

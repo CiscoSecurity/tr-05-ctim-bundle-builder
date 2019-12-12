@@ -28,8 +28,8 @@ def mock_external_id(type):
             EXTERNAL_ID_PREFIX, type
         )
     )
-    external_id_mock.__eq__ = (
-        lambda self, other: bool(external_id_re.match(other))
+    external_id_mock.__eq__ = lambda self, other: (
+        bool(external_id_re.match(other))
     )
 
     return external_id_mock

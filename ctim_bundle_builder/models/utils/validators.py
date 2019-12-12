@@ -28,7 +28,7 @@ def validate_string(value, *, max_length=None, choices=None):
     if max_length is not None:
         if len(value) > max_length:
             raise ValidationError(
-                'Must be of at most {} characters.'.format(max_length)
+                'Must be at most {} characters long.'.format(max_length)
             )
 
     if choices is not None:
