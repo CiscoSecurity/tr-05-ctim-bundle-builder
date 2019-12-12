@@ -33,13 +33,16 @@ def test_empty_schema_validation_succeeds():
     class Good(Entity):
         schema = GoodSchema
 
-        @property
-        def summary(self):
+        def generate_external_id_seed(self):
             return 'mock'
 
     good = Good()
 
     assert good.json == {
+        'type': good.type,
+        'id': good.id,
+        'external_ids': good.external_ids,
+    } == {
         'type': 'good',
         'id': mock_id('good'),
         'external_ids': [mock_external_id('good')],

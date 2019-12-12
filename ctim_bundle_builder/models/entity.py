@@ -45,6 +45,9 @@ class Entity(metaclass=EntityMeta):
             self.generate_external_id()
         )
 
+    def __getattr__(self, field):
+        return self.json.get(field)
+
     def generate_id(self):
         return 'transient:' + self.generate_external_id()
 

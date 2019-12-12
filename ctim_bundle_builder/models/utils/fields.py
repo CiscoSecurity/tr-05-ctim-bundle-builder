@@ -10,5 +10,5 @@ class EntityRefField(fields.String):
 
     def _deserialize(self, value, attr, data, **kwargs):
         if isinstance(value, Entity):
-            value = value.json['id']
+            value = value.id
         return super()._deserialize(value, attr, data, **kwargs)
