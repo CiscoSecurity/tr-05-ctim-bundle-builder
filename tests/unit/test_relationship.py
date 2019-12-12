@@ -19,6 +19,7 @@ from .utils import mock_id, mock_external_id
 
 def test_relationship_validation_fails():
     data = {
+        'greeting': '¡Hola!',
         'id': None,
         'relationship_type': 'loved-by',
         'target_ref': 3.141592653589793,
@@ -44,6 +45,7 @@ def test_relationship_validation_fails():
     error = exc_info.value
 
     assert error.messages == {
+        'greeting': ['Unknown field.'],
         'id': ['Field may not be null.'],
         'relationship_type': [
             'Must be one of: {}.'.format(
