@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from marshmallow import ValidationError
 from pytest import raises as assert_raises
 
@@ -92,26 +94,30 @@ def test_relationship_validation_fails():
 
 
 def test_relationship_validation_succeeds():
-    # TODO: extend with more fields after implementing these models
     judgement = Judgement()
+
     indicator = Indicator()
+
+    timestamp = datetime.utcnow().isoformat(timespec='milliseconds') + 'Z'
 
     relationship = Relationship(
         relationship_type='based-on',
         source_ref=judgement,
         target_ref=indicator,
         revision=1,
+        timestamp=timestamp,
         tlp='green',
     )
 
     assert relationship.json == {
         'type': 'relationship',
+        'schema_version': SCHEMA_VERSION,
         'id': mock_id('relationship'),
         'relationship_type': 'based-on',
-        'schema_version': SCHEMA_VERSION,
         'source_ref': judgement.id,
         'target_ref': indicator.id,
         'external_ids': [mock_external_id('relationship')],
         'revision': 1,
+        'timestamp': timestamp,
         'tlp': 'green',
     }
