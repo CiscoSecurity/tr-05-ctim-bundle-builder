@@ -3,7 +3,7 @@ from marshmallow import ValidationError, fields
 
 def validate_datetime(value):
     # Validate as a proper ISO-formatted string,
-    # but do not convert to a DateTime object.
+    # but don't convert to a DateTime object.
     fields.DateTime().deserialize(value)
 
 

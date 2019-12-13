@@ -98,7 +98,9 @@ def test_relationship_validation_succeeds():
 
     indicator = Indicator()
 
-    timestamp = datetime.utcnow().isoformat(timespec='milliseconds') + 'Z'
+    # Python datetime objects don't have time zone info by default,
+    # and without it, Python actually violates the ISO 8601 specification.
+    timestamp = datetime.utcnow().isoformat() + 'Z'
 
     relationship = Relationship(
         relationship_type='based-on',
