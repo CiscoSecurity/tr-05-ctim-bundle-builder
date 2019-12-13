@@ -1,5 +1,7 @@
 EXTERNAL_ID_PREFIX = 'ctim-bundle-builder'
 
+SCHEMA_VERSION = '1.0.14'
+
 # Restrictions on fields of CTIM entities.
 
 DESCRIPTION_MAX_LENGTH = 5000
@@ -25,8 +27,6 @@ RELATIONSHIP_TYPE_CHOICES = (
 )
 
 REVISION_MIN_VALUE = 0
-
-SCHEMA_VERSION = '1.0.12'
 
 SHORT_DESCRIPTION_LENGTH = 2048
 

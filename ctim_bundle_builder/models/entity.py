@@ -3,7 +3,7 @@ import hashlib
 
 from marshmallow.schema import Schema
 
-from ..constants import EXTERNAL_ID_PREFIX
+from ..constants import SCHEMA_VERSION, EXTERNAL_ID_PREFIX
 from ..exceptions import SchemaError
 
 
@@ -38,6 +38,8 @@ class Entity(metaclass=EntityMeta):
         self.json = self.schema().load(data)
 
         self.json['type'] = self.type
+
+        self.json['schema_version'] = SCHEMA_VERSION
 
         self.json.setdefault('id', self.generate_id())
 

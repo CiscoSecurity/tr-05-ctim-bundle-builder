@@ -1,6 +1,7 @@
 from marshmallow import Schema
 from pytest import raises as assert_raises
 
+from ctim_bundle_builder.constants import SCHEMA_VERSION
 from ctim_bundle_builder.exceptions import SchemaError
 from ctim_bundle_builder.models import Entity
 from .utils import mock_id, mock_external_id
@@ -40,10 +41,12 @@ def test_empty_schema_validation_succeeds():
 
     assert good.json == {
         'type': good.type,
+        'schema_version': good.schema_version,
         'id': good.id,
         'external_ids': good.external_ids,
     } == {
         'type': 'good',
+        'schema_version': SCHEMA_VERSION,
         'id': mock_id('good'),
         'external_ids': [mock_external_id('good')],
     }

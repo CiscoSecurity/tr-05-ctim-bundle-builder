@@ -81,7 +81,6 @@ def test_relationship_validation_fails():
     }
 
     assert error.valid_data == {
-        'schema_version': SCHEMA_VERSION,
         'external_ids': ['foo', 'bar'],
         'external_references': [{
             'hashes': ['alpha', 'beta', 'gamma'],

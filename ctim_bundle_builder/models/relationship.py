@@ -16,7 +16,6 @@ from .utils.validators import (
 )
 from ..constants import (
     RELATIONSHIP_TYPE_CHOICES,
-    SCHEMA_VERSION,
     DESCRIPTION_MAX_LENGTH,
     LANGUAGE_MAX_LENGTH,
     REVISION_MIN_VALUE,
@@ -35,10 +34,6 @@ class RelationshipSchema(Schema):
         required=True,
         validate=partial(validate_string, choices=RELATIONSHIP_TYPE_CHOICES),
     )
-    schema_version = fields.String(
-        missing=SCHEMA_VERSION,
-        validate=validate_string,
-    )
     source_ref = EntityRefField(
         required=True,
         validate=validate_string,
@@ -47,7 +42,6 @@ class RelationshipSchema(Schema):
         required=True,
         validate=validate_string,
     )
-
     description = fields.String(
         validate=partial(validate_string, max_length=DESCRIPTION_MAX_LENGTH),
     )
