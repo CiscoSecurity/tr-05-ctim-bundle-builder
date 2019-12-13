@@ -9,3 +9,7 @@ class IndicatorSchema(Schema):
 
 class Indicator(Entity):
     schema = IndicatorSchema
+
+    def generate_external_id_seed(self):
+        # TODO: replace with real implementation
+        return ''

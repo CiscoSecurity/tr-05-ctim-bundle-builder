@@ -9,3 +9,7 @@ class JudgementSchema(Schema):
 
 class Judgement(Entity):
     schema = JudgementSchema
+
+    def generate_external_id_seed(self):
+        # TODO: replace with real implementation
+        return ''

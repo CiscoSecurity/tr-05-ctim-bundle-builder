@@ -3,7 +3,7 @@ import hashlib
 
 from marshmallow.schema import Schema
 
-from ..constants import EXTERNAL_ID_PREFIX
+from ..constants import SCHEMA_VERSION, EXTERNAL_ID_PREFIX
 from ..exceptions import SchemaError
 
 
@@ -39,21 +39,29 @@ class Entity(metaclass=EntityMeta):
 
         self.json['type'] = self.type
 
-    @property
-    def id(self):
-        return 'transient:' + self.external_id
+        self.json['schema_version'] = SCHEMA_VERSION
 
-    @property
-    def external_id(self):
+        self.json.setdefault('id', self.generate_id())
+
+        self.json.setdefault('external_ids', []).append(
+            self.generate_external_id()
+        )
+
+    def __getattr__(self, field):
+        return self.json.get(field)
+
+    def generate_id(self):
+        return 'transient:' + self.generate_external_id()
+
+    def generate_external_id(self):
         return '{prefix}-{entity_type}-{sha256_hash}'.format(
             prefix=EXTERNAL_ID_PREFIX,
             entity_type=self.type,
             sha256_hash=hashlib.sha256(
-                bytes(self.summary, 'utf-8')
+                bytes(self.generate_external_id_seed(), 'utf-8')
             ).hexdigest(),
         )
 
-    @property
     @abc.abstractmethod
-    def summary(self):
-        """A deterministic string based on the input data."""
+    def generate_external_id_seed(self):
+        """Return a deterministic string based on some fields of the entity."""
