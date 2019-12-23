@@ -2,7 +2,7 @@ import re
 
 from mock import MagicMock
 
-from ctim_bundle_builder.constants import EXTERNAL_ID_PREFIX
+from bundlebuilder.constants import EXTERNAL_ID_PREFIX
 
 
 def mock_id(type):

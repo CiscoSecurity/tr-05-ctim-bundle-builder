@@ -3,7 +3,7 @@ from datetime import datetime
 from marshmallow import ValidationError
 from pytest import raises as assert_raises
 
-from ctim_bundle_builder.constants import (
+from bundlebuilder.constants import (
     DESCRIPTION_MAX_LENGTH,
     RELATIONSHIP_TYPE_CHOICES,
     REVISION_MIN_VALUE,
@@ -11,7 +11,7 @@ from ctim_bundle_builder.constants import (
     TLP_CHOICES,
     SCHEMA_VERSION,
 )
-from ctim_bundle_builder.models import (
+from bundlebuilder.models import (
     Relationship,
     Judgement,
     Indicator,

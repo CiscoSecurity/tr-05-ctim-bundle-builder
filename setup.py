@@ -3,7 +3,7 @@ import setuptools
 
 
 def read_version():
-    with open('ctim_bundle_builder/version.py', 'r') as fin:
+    with open('bundlebuilder/version.py', 'r') as fin:
         return re.search(
             r"^__version__ = '(?P<version>.+)'$",
             fin.read().strip(),
@@ -21,7 +21,7 @@ def read_requirements():
         return requirements
 
 
-NAME = 'ctim-bundle-builder'
+NAME = 'bundlebuilder'
 
 DESCRIPTION = 'Python CTIM Bundle Builder'
 
