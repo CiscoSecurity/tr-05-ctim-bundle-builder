@@ -27,20 +27,23 @@ from ..constants import (
 
 
 class RelationshipSchema(Schema):
+    """
+    https://github.com/threatgrid/ctim/blob/master/doc/structures/relationship.md
+    """
     id = fields.String(
         validate=validate_string,
     )
     relationship_type = fields.String(
-        required=True,
         validate=partial(validate_string, choices=RELATIONSHIP_TYPE_CHOICES),
+        required=True,
     )
     source_ref = EntityRefField(
-        required=True,
         validate=validate_string,
+        required=True,
     )
     target_ref = EntityRefField(
-        required=True,
         validate=validate_string,
+        required=True,
     )
     description = fields.String(
         validate=partial(validate_string, max_length=DESCRIPTION_MAX_LENGTH),
