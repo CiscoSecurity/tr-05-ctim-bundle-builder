@@ -113,7 +113,10 @@ class ObservedRelationSchema(Schema):
     origin_uri = fields.String(
         validate=validate_string,
     )
-    # relation_info
+    relation_info = fields.Mapping(
+        keys=fields.String,
+        values=fields.Raw,
+    )
 
 
 class SensorCoordinatesSchema(Schema):
