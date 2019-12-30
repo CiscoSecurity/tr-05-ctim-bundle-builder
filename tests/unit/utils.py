@@ -1,4 +1,5 @@
 import re
+from datetime import datetime
 
 from mock import MagicMock
 
@@ -33,3 +34,9 @@ def mock_external_id(type):
     )
 
     return external_id_mock
+
+
+def utc_now_iso():
+    # Python datetime objects don't have time zone info by default,
+    # and without it, Python actually violates the ISO 8601 specification.
+    return datetime.utcnow().isoformat() + 'Z'

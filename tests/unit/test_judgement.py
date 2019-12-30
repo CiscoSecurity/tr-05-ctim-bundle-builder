@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from marshmallow import ValidationError
 from pytest import raises as assert_raises
 
@@ -15,7 +13,7 @@ from bundlebuilder.constants import (
     SCHEMA_VERSION,
 )
 from bundlebuilder.models import Judgement
-from .utils import mock_id, mock_external_id
+from .utils import mock_id, mock_external_id, utc_now_iso
 
 
 def test_judgement_validation_fails():
@@ -128,10 +126,6 @@ def test_judgement_validation_fails():
 
 
 def test_judgement_validation_succeeds():
-    # Python datetime objects don't have time zone info by default,
-    # and without it, Python actually violates the ISO 8601 specification.
-    timestamp = datetime.utcnow().isoformat() + 'Z'
-
     judgment_data = {
         'confidence': 'Medium',
         'disposition': 3,
@@ -139,13 +133,13 @@ def test_judgement_validation_succeeds():
         'observable': {'type': 'sha256', 'value': '01' * 32},
         'priority': 50,
         'severity': 'Medium',
-        'source': 'Python CTIM Bundle Builder',
-        'valid_time': {'end_time': timestamp},
-        'revision': 3,
+        'source': 'Python CTIM Bundle Builder : Judgement',
+        'valid_time': {'end_time': utc_now_iso()},
+        'revision': 0,
         'source_uri': (
             'https://github.com/CiscoSecurity/tr-05-ctim-bundle-builder'
         ),
-        'timestamp': timestamp,
+        'timestamp': utc_now_iso(),
         'tlp': 'amber',
     }
 
