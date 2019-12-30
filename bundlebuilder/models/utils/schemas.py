@@ -149,3 +149,12 @@ class IdentitySpecificationSchema(Schema):
     os = fields.String(
         validate=validate_string,
     )
+
+
+class ValidTimeSchema(Schema):
+    start_time = fields.String(
+        validate=validate_datetime,
+    )
+    end_time = fields.String(
+        validate=validate_datetime,
+    )
