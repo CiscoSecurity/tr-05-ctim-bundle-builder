@@ -54,10 +54,10 @@ class Entity(metaclass=EntityMeta):
         return 'transient:' + self.generate_external_id()
 
     def generate_external_id(self):
-        return '{prefix}-{entity_type}-{sha256_hash}'.format(
+        return '{prefix}-{type}-{sha256}'.format(
             prefix=EXTERNAL_ID_PREFIX,
-            entity_type=self.type,
-            sha256_hash=hashlib.sha256(
+            type=self.type,
+            sha256=hashlib.sha256(
                 bytes(self.generate_external_id_seed(), 'utf-8')
             ).hexdigest(),
         )

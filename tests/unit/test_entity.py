@@ -1,9 +1,9 @@
 from marshmallow import Schema
 from pytest import raises as assert_raises
 
-from ctim_bundle_builder.constants import SCHEMA_VERSION
-from ctim_bundle_builder.exceptions import SchemaError
-from ctim_bundle_builder.models import Entity
+from bundlebuilder.constants import SCHEMA_VERSION
+from bundlebuilder.exceptions import SchemaError
+from bundlebuilder.models import Entity
 from .utils import mock_id, mock_external_id
 
 

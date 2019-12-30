@@ -9,5 +9,5 @@ install:
 - pip install -U .
 - pip install -U -r test-requirements.txt
 script:
-- flake8 ctim_bundle_builder/
+- flake8 bundlebuilder/
 - pytest tests/
