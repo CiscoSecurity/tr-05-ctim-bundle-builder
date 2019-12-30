@@ -1,4 +1,4 @@
-from marshmallow import ValidationError, fields
+from marshmallow import fields, ValidationError
 
 
 def validate_datetime(value):

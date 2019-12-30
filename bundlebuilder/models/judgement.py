@@ -1,6 +1,6 @@
 from functools import partial
 
-from marshmallow import Schema, fields
+from marshmallow import Schema, fields, validates_schema, ValidationError
 
 from .entity import Entity
 from .utils.schemas import (
@@ -99,6 +99,17 @@ class JudgementSchema(Schema):
     tlp = fields.String(
         validate=partial(validate_string, choices=TLP_CHOICES),
     )
+
+    @validates_schema
+    def validate_disposition_consistency(self, data, **kwargs):
+        if DISPOSITION_MAP[data['disposition']] != data['disposition_name']:
+            message = (
+                'Not a consistent disposition name for the specified '
+                'disposition number. Must be {!r}.'.format(
+                    DISPOSITION_MAP[data['disposition']]
+                )
+            )
+            raise ValidationError(message)
 
 
 class Judgement(Entity):
