@@ -1,4 +1,4 @@
-from marshmallow import Schema
+from marshmallow.schema import Schema
 
 from .entity import Entity
 

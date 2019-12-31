@@ -1,6 +1,4 @@
-from datetime import datetime
-
-from marshmallow import ValidationError
+from marshmallow.exceptions import ValidationError
 from pytest import raises as assert_raises
 
 from bundlebuilder.constants import (
@@ -16,7 +14,11 @@ from bundlebuilder.models import (
     Judgement,
     Indicator,
 )
-from .utils import mock_id, mock_external_id
+from .utils import (
+    mock_id,
+    mock_external_id,
+    utc_now_iso,
+)
 
 
 def test_relationship_validation_fails():
@@ -94,24 +96,40 @@ def test_relationship_validation_fails():
 
 
 def test_relationship_validation_succeeds():
-    judgement = Judgement()
+    judgement = Judgement(
+        confidence='Low',
+        disposition=4,
+        disposition_name='Common',
+        observable={'type': 'domain', 'value': 'cisco.com'},
+        priority=25,
+        severity='Low',
+        source='Python CTIM Bundle Builder : Judgement',
+        valid_time={
+            'start_time': utc_now_iso(),
+            'end_time': utc_now_iso(),
+        },
+        revision=1,
+        source_uri=(
+            'https://github.com/CiscoSecurity/tr-05-ctim-bundle-builder'
+        ),
+        timestamp=utc_now_iso(),
+        tlp='white',
+    )
 
-    indicator = Indicator()
-
-    # Python datetime objects don't have time zone info by default,
-    # and without it, Python actually violates the ISO 8601 specification.
-    timestamp = datetime.utcnow().isoformat() + 'Z'
+    indicator = Indicator(
+        # revision=2,
+    )
 
     relationship_data = {
         'relationship_type': 'based-on',
         'source_ref': judgement,
         'target_ref': indicator,
-        'revision': 1,
-        'source': 'Python CTIM Bundle Builder',
+        'revision': 3,
+        'source': 'Python CTIM Bundle Builder : Relationship',
         'source_uri': (
             'https://github.com/CiscoSecurity/tr-05-ctim-bundle-builder'
         ),
-        'timestamp': timestamp,
+        'timestamp': utc_now_iso(),
         'tlp': 'green',
     }
 

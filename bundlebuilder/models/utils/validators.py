@@ -1,13 +1,7 @@
-from marshmallow import ValidationError, fields
+from marshmallow.exceptions import ValidationError
 
 
-def validate_datetime(value):
-    # Validate as a proper ISO-formatted string,
-    # but don't convert to a DateTime object.
-    fields.DateTime().deserialize(value)
-
-
-def validate_integer(value, *, min_value=None, max_value=None):
+def validate_integer(value, *, min_value=None, max_value=None, choices=None):
     if min_value is not None:
         if value < min_value:
             raise ValidationError(
@@ -18,6 +12,14 @@ def validate_integer(value, *, min_value=None, max_value=None):
         if value > max_value:
             raise ValidationError(
                 'Must be less than or equal to {}.'.format(max_value)
+            )
+
+    if choices is not None:
+        if value not in choices:
+            raise ValidationError(
+                'Must be one of: {}.'.format(
+                    ', '.join(map(repr, choices))
+                )
             )
 
 

@@ -3,7 +3,10 @@ import hashlib
 
 from marshmallow.schema import Schema
 
-from ..constants import SCHEMA_VERSION, EXTERNAL_ID_PREFIX
+from ..constants import (
+    SCHEMA_VERSION,
+    EXTERNAL_ID_PREFIX,
+)
 from ..exceptions import SchemaError
 
 

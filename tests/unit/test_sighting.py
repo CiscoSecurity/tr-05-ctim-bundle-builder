@@ -1,6 +1,4 @@
-from datetime import datetime
-
-from marshmallow import ValidationError
+from marshmallow.exceptions import ValidationError
 from pytest import raises as assert_raises
 
 from bundlebuilder.constants import (
@@ -19,7 +17,11 @@ from bundlebuilder.constants import (
     SCHEMA_VERSION,
 )
 from bundlebuilder.models import Sighting
-from .utils import mock_id, mock_external_id
+from .utils import (
+    mock_id,
+    mock_external_id,
+    utc_now_iso,
+)
 
 
 def test_sighting_validation_fails():
@@ -222,14 +224,10 @@ def test_sighting_validation_fails():
 
 
 def test_sighting_validation_succeeds():
-    # Python datetime objects don't have time zone info by default,
-    # and without it, Python actually violates the ISO 8601 specification.
-    timestamp = datetime.utcnow().isoformat() + 'Z'
-
     sighting_data = {
         'confidence': 'Medium',
         'count': 2,
-        'observed_time': {'start_time': timestamp},
+        'observed_time': {'start_time': utc_now_iso()},
         'data': {
             'columns': [
                 {'name': 'full_name', 'type': 'string', 'required': True},
@@ -256,17 +254,17 @@ def test_sighting_validation_succeeds():
             'type': 'endpoint.laptop',
             'os': 'Linux',
         }],
-        'source': 'Python CTIM Bundle Builder',
+        'source': 'Python CTIM Bundle Builder : Sighting',
         'source_uri': (
             'https://github.com/CiscoSecurity/tr-05-ctim-bundle-builder'
         ),
         'targets': [{
             'observables': [{'type': 'sha256', 'value': '01' * 32}],
-            'observed_time': {'start_time': timestamp},
+            'observed_time': {'start_time': utc_now_iso()},
             'type': 'process.anti-virus-scanner',
             'os': 'Windows',
         }],
-        'timestamp': timestamp,
+        'timestamp': utc_now_iso(),
         'tlp': 'amber',
     }
 

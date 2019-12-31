@@ -1,8 +1,10 @@
 from functools import partial
 
-from marshmallow import Schema, fields
+from marshmallow import fields
+from marshmallow.schema import Schema
 
 from .entity import Entity
+from .utils.fields import DateTimeField
 from .utils.schemas import (
     ObservedTimeSchema,
     SightingDataTableSchema,
@@ -15,7 +17,6 @@ from .utils.schemas import (
 from .utils.validators import (
     validate_string,
     validate_integer,
-    validate_datetime,
 )
 from ..constants import (
     CONFIDENCE_CHOICES,
@@ -101,9 +102,7 @@ class SightingSchema(Schema):
     targets = fields.List(
         fields.Nested(IdentitySpecificationSchema)
     )
-    timestamp = fields.String(
-        validate=validate_datetime,
-    )
+    timestamp = DateTimeField()
     title = fields.String(
         validate=partial(validate_string, max_length=TITLE_MAX_LENGTH),
     )

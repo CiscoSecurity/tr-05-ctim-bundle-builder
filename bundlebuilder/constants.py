@@ -26,6 +26,14 @@ COUNT_MIN_VALUE = 0
 
 DESCRIPTION_MAX_LENGTH = 5000
 
+DISPOSITION_MAP = {
+    1: 'Clean',
+    2: 'Malicious',
+    3: 'Suspicious',
+    4: 'Common',
+    5: 'Unknown',
+}
+
 LANGUAGE_MAX_LENGTH = 1024
 
 OBSERVABLE_TYPE_CHOICES = (
@@ -197,6 +205,11 @@ OBSERVABLE_RELATION_CHOICES = (
     'Written_To_By',
     'Wrote_To',
 )
+
+PRIORITY_MIN_VALUE = 0
+PRIORITY_MAX_VALUE = 100
+
+REASON_MAX_LENGTH = 1024
 
 RELATIONSHIP_TYPE_CHOICES = (
     'attributed-to',

@@ -1,10 +1,13 @@
 from functools import partial
 
-from marshmallow import Schema, fields
+from marshmallow import fields
+from marshmallow.decorators import validates_schema
+from marshmallow.exceptions import ValidationError
+from marshmallow.schema import Schema
 
+from .fields import DateTimeField
 from .validators import (
     validate_string,
-    validate_datetime,
     validate_integer,
 )
 from ...constants import (
@@ -41,13 +44,17 @@ class ExternalReferenceSchema(Schema):
 
 
 class ObservedTimeSchema(Schema):
-    start_time = fields.String(
-        validate=validate_datetime,
-        required=True,
-    )
-    end_time = fields.String(
-        validate=validate_datetime,
-    )
+    start_time = DateTimeField(required=True)
+    end_time = DateTimeField()
+
+    @validates_schema
+    def validate_time_period(self, data, **kwargs):
+        if not ('start_time' in data and 'end_time' in data):
+            return
+
+        if data['start_time'] > data['end_time']:
+            message = 'Not a valid period of time: start must be before end.'
+            raise ValidationError(message)
 
 
 class ColumnDefinitionSchema(Schema):
@@ -149,3 +156,17 @@ class IdentitySpecificationSchema(Schema):
     os = fields.String(
         validate=validate_string,
     )
+
+
+class ValidTimeSchema(Schema):
+    start_time = DateTimeField()
+    end_time = DateTimeField()
+
+    @validates_schema
+    def validate_time_period(self, data, **kwargs):
+        if not ('start_time' in data and 'end_time' in data):
+            return
+
+        if data['start_time'] > data['end_time']:
+            message = 'Not a valid period of time: start must be before end.'
+            raise ValidationError(message)
