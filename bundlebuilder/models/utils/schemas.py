@@ -48,7 +48,7 @@ class ObservedTimeSchema(Schema):
     end_time = DateTimeField()
 
     @validates_schema
-    def validate_time_consistency(self, data, **kwargs):
+    def validate_time_period(self, data, **kwargs):
         if not ('start_time' in data and 'end_time' in data):
             return
 
@@ -163,7 +163,7 @@ class ValidTimeSchema(Schema):
     end_time = DateTimeField()
 
     @validates_schema
-    def validate_time_consistency(self, data, **kwargs):
+    def validate_time_period(self, data, **kwargs):
         if not ('start_time' in data and 'end_time' in data):
             return
 
