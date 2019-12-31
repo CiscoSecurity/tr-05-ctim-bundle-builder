@@ -1,4 +1,4 @@
-from marshmallow import ValidationError
+from marshmallow.exceptions import ValidationError
 from pytest import raises as assert_raises
 
 from bundlebuilder.constants import (
@@ -14,7 +14,11 @@ from bundlebuilder.models import (
     Judgement,
     Indicator,
 )
-from .utils import mock_id, mock_external_id, utc_now_iso
+from .utils import (
+    mock_id,
+    mock_external_id,
+    utc_now_iso,
+)
 
 
 def test_relationship_validation_fails():

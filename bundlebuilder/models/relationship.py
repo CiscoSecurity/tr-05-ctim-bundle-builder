@@ -1,10 +1,12 @@
 from functools import partial
 
-from marshmallow import Schema, fields
+from marshmallow import fields
+from marshmallow.schema import Schema
 
 from .entity import Entity
 from .utils.fields import (
     EntityRefField,
+    DateTimeField,
 )
 from .utils.schemas import (
     ExternalReferenceSchema,
@@ -12,7 +14,6 @@ from .utils.schemas import (
 from .utils.validators import (
     validate_string,
     validate_integer,
-    validate_datetime,
 )
 from ..constants import (
     RELATIONSHIP_TYPE_CHOICES,
@@ -71,9 +72,7 @@ class RelationshipSchema(Schema):
     source_uri = fields.String(
         validate=validate_string,
     )
-    timestamp = fields.String(
-        validate=validate_datetime,
-    )
+    timestamp = DateTimeField()
     title = fields.String(
         validate=partial(validate_string, max_length=TITLE_MAX_LENGTH),
     )

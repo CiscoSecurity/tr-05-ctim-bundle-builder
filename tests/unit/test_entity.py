@@ -1,10 +1,13 @@
-from marshmallow import Schema
+from marshmallow.schema import Schema
 from pytest import raises as assert_raises
 
 from bundlebuilder.constants import SCHEMA_VERSION
 from bundlebuilder.exceptions import SchemaError
 from bundlebuilder.models import Entity
-from .utils import mock_id, mock_external_id
+from .utils import (
+    mock_id,
+    mock_external_id,
+)
 
 
 def test_subclassing_without_marshmallow_schema_fails():

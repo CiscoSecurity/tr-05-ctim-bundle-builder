@@ -1,8 +1,12 @@
 from functools import partial
 
-from marshmallow import Schema, fields, validates_schema, ValidationError
+from marshmallow import fields
+from marshmallow.decorators import validates_schema
+from marshmallow.exceptions import ValidationError
+from marshmallow.schema import Schema
 
 from .entity import Entity
+from .utils.fields import DateTimeField
 from .utils.schemas import (
     ObservableSchema,
     ValidTimeSchema,
@@ -11,7 +15,6 @@ from .utils.schemas import (
 from .utils.validators import (
     validate_string,
     validate_integer,
-    validate_datetime,
 )
 from ..constants import (
     CONFIDENCE_CHOICES,
@@ -93,15 +96,16 @@ class JudgementSchema(Schema):
     source_uri = fields.String(
         validate=validate_string,
     )
-    timestamp = fields.String(
-        validate=validate_datetime,
-    )
+    timestamp = DateTimeField()
     tlp = fields.String(
         validate=partial(validate_string, choices=TLP_CHOICES),
     )
 
     @validates_schema
     def validate_disposition_consistency(self, data, **kwargs):
+        if not ('disposition' in data and 'disposition_name' in data):
+            return
+
         if DISPOSITION_MAP[data['disposition']] != data['disposition_name']:
             message = (
                 'Not a consistent disposition name for the specified '

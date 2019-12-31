@@ -1,10 +1,4 @@
-from marshmallow import fields, ValidationError
-
-
-def validate_datetime(value):
-    # Validate as a proper ISO-formatted string,
-    # but don't convert to a DateTime object.
-    fields.DateTime().deserialize(value)
+from marshmallow.exceptions import ValidationError
 
 
 def validate_integer(value, *, min_value=None, max_value=None, choices=None):
