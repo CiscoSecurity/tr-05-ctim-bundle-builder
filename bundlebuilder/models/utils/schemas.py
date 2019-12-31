@@ -53,10 +53,7 @@ class ObservedTimeSchema(Schema):
             return
 
         if data['start_time'] > data['end_time']:
-            message = (
-                'Not a valid period of time: '
-                "'start_time' must come before 'end_time'."
-            )
+            message = 'Not a valid period of time: start must be before end.'
             raise ValidationError(message)
 
 
@@ -171,8 +168,5 @@ class ValidTimeSchema(Schema):
             return
 
         if data['start_time'] > data['end_time']:
-            message = (
-                'Not a valid period of time: '
-                "'start_time' must come before 'end_time'."
-            )
+            message = 'Not a valid period of time: start must be before end.'
             raise ValidationError(message)
