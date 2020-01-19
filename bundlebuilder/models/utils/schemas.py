@@ -1,7 +1,10 @@
 from functools import partial
 
 from marshmallow import fields
-from marshmallow.decorators import validates_schema
+from marshmallow.decorators import (
+    validates_schema,
+    post_load,
+)
 from marshmallow.exceptions import ValidationError
 from marshmallow.schema import Schema
 
@@ -199,3 +202,13 @@ class KillChainPhaseSchema(Schema):
         ),
         required=True,
     )
+
+    @post_load
+    def normalize_kill_chain_name(self, data, **kwargs):
+        if 'kill_chain_name' in data:
+            value = data['kill_chain_name']
+            value = value.lower().strip().split()
+            value = ' '.join(value)
+            value = value.replace(' ', '_').replace('_', '-')
+            data['kill_chain_name'] = value
+        return data

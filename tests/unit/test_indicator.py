@@ -149,7 +149,7 @@ def test_indicator_validation_succeeds():
         'valid_time': {'start_time': utc_now_iso()},
         'indicator_type': ['File Hash Watchlist'],
         'kill_chain_phases': [{
-            'kill_chain_name': 'kill-chain-name',
+            'kill_chain_name': 'kill chain name',
             'phase_name': 'command-and-control',
         }],
         'negate': True,
@@ -165,6 +165,10 @@ def test_indicator_validation_succeeds():
     }
 
     indicator = Indicator(**indicator_data)
+
+    indicator_data['kill_chain_phases'][0].update(
+        {'kill_chain_name': 'kill-chain-name'}
+    )
 
     assert indicator.json == {
         'type': 'indicator',
