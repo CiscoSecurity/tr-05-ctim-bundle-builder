@@ -4,6 +4,12 @@ SCHEMA_VERSION = '1.0.14'
 
 # Restrictions on fields of CTIM entities.
 
+BOOLEAN_OPERATOR_CHOICES = (
+    'and',
+    'not',
+    'or',
+)
+
 COLUMN_TYPE_CHOICES = (
     'integer',
     'markdown',
@@ -34,7 +40,36 @@ DISPOSITION_MAP = {
     5: 'Unknown',
 }
 
+INDICATOR_TYPE_CHOICES = (
+    'Anonymization',
+    'C2',
+    'Compromised PKI Certificate',
+    'Domain Watchlist',
+    'Exfiltration',
+    'File Hash Watchlist',
+    'Host Characteristics',
+    'IMEI Watchlist',
+    'IMSI Watchlist',
+    'IP Watchlist',
+    'Login Name',
+    'Malicious E-mail',
+    'Malware Artifacts',
+    'URL Watchlist',
+)
+
+KILL_CHAIN_PHASE_NAME_CHOICES = (
+    'actions-on-objective',
+    'command-and-control',
+    'delivery',
+    'exploitation',
+    'installation',
+    'reconnaissance',
+    'weaponization',
+)
+
 LANGUAGE_MAX_LENGTH = 1024
+
+LIKELY_IMPACT_MAX_LENGTH = 5000
 
 OBSERVABLE_TYPE_CHOICES = (
     'amp_computer_guid',
@@ -206,6 +241,8 @@ OBSERVABLE_RELATION_CHOICES = (
     'Wrote_To',
 )
 
+PRODUCER_MAX_LENGTH = 1024
+
 PRIORITY_MIN_VALUE = 0
 PRIORITY_MAX_VALUE = 100
 
@@ -300,6 +337,10 @@ SHORT_DESCRIPTION_LENGTH = 2048
 SOURCE_MAX_LENGTH = 2048
 
 SOURCE_NAME_MAX_LENGTH = 2048
+
+TAG_MAX_LENGTH = 1024
+
+TEST_MECHANISM_MAX_LENGTH = 2048
 
 TITLE_MAX_LENGTH = 1024
 

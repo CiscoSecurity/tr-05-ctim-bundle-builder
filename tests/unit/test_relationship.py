@@ -117,7 +117,18 @@ def test_relationship_validation_succeeds():
     )
 
     indicator = Indicator(
-        # revision=2,
+        producer='SoftServe',
+        valid_time={
+            'start_time': utc_now_iso(),
+            'end_time': utc_now_iso(),
+        },
+        revision=2,
+        source='Python CTIM Bundle Builder : Indicator',
+        source_uri=(
+            'https://github.com/CiscoSecurity/tr-05-ctim-bundle-builder'
+        ),
+        timestamp=utc_now_iso(),
+        tlp='green',
     )
 
     relationship_data = {
@@ -130,7 +141,7 @@ def test_relationship_validation_succeeds():
             'https://github.com/CiscoSecurity/tr-05-ctim-bundle-builder'
         ),
         'timestamp': utc_now_iso(),
-        'tlp': 'green',
+        'tlp': 'amber',
     }
 
     relationship = Relationship(**relationship_data)

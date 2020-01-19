@@ -19,6 +19,8 @@ from ...constants import (
     OBSERVABLE_TYPE_CHOICES,
     OBSERVABLE_RELATION_CHOICES,
     SENSOR_CHOICES,
+    BOOLEAN_OPERATOR_CHOICES,
+    KILL_CHAIN_PHASE_NAME_CHOICES,
 )
 
 
@@ -170,3 +172,30 @@ class ValidTimeSchema(Schema):
         if data['start_time'] > data['end_time']:
             message = 'Not a valid period of time: start must be before end.'
             raise ValidationError(message)
+
+
+class CompositeIndicatorExpressionSchema(Schema):
+    indicator_ids = fields.List(
+        fields.String(
+            validate=validate_string,
+        ),
+        required=True,
+    )
+    operator = fields.String(
+        validate=partial(validate_string, choices=BOOLEAN_OPERATOR_CHOICES),
+        required=True,
+    )
+
+
+class KillChainPhaseSchema(Schema):
+    kill_chain_name = fields.String(
+        validate=validate_string,
+        required=True,
+    )
+    phase_name = fields.String(
+        validate=partial(
+            validate_string,
+            choices=KILL_CHAIN_PHASE_NAME_CHOICES,
+        ),
+        required=True,
+    )
