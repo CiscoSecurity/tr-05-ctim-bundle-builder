@@ -1,4 +1,3 @@
-from marshmallow.exceptions import ValidationError
 from pytest import raises as assert_raises
 
 from bundlebuilder.constants import (
@@ -9,6 +8,7 @@ from bundlebuilder.constants import (
     TLP_CHOICES,
     SCHEMA_VERSION,
 )
+from bundlebuilder.exceptions import ValidationError
 from bundlebuilder.models import (
     Relationship,
     Judgement,
@@ -48,7 +48,7 @@ def test_relationship_validation_fails():
 
     error = exception_info.value
 
-    assert error.messages == {
+    assert error.data == {
         'greeting': ['Unknown field.'],
         'id': ['Field may not be null.'],
         'relationship_type': [
@@ -82,16 +82,6 @@ def test_relationship_validation_fails():
                 ', '.join(map(repr, TLP_CHOICES))
             )
         ],
-    }
-
-    assert error.valid_data == {
-        'description': '\U0001f4a9' * DESCRIPTION_MAX_LENGTH,
-        'external_ids': ['foo', 'bar'],
-        'external_references': [{
-            'hashes': ['alpha', 'beta', 'gamma'],
-        }],
-        'language': 'Python',
-        'title': 'OMG! The Best CTIM Bundle Builder Ever!',
     }
 
 

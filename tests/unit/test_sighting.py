@@ -1,4 +1,3 @@
-from marshmallow.exceptions import ValidationError
 from pytest import raises as assert_raises
 
 from bundlebuilder.constants import (
@@ -16,6 +15,7 @@ from bundlebuilder.constants import (
     TLP_CHOICES,
     SCHEMA_VERSION,
 )
+from bundlebuilder.exceptions import ValidationError
 from bundlebuilder.models import Sighting
 from .utils import (
     mock_id,
@@ -83,7 +83,7 @@ def test_sighting_validation_fails():
 
     error = exception_info.value
 
-    assert error.messages == {
+    assert error.data == {
         'greeting': ['Unknown field.'],
         'confidence': [
             'Must be one of: {}.'.format(
@@ -197,29 +197,6 @@ def test_sighting_validation_fails():
                 ', '.join(map(repr, TLP_CHOICES))
             )
         ],
-    }
-
-    assert error.valid_data == {
-        'observed_time': {'end_time': '1970-01-01T00:00:00Z'},
-        'data': {'columns': [{}]},
-        'description': '\U0001f4a9' * DESCRIPTION_MAX_LENGTH,
-        'external_ids': ['foo', 'bar'],
-        'external_references': [{
-            'hashes': ['alpha', 'beta', 'gamma'],
-        }],
-        'language': 'Python',
-        'observables': [{}],
-        'relations': [{
-            'related': {'type': 'device', 'value': 'iphone'},
-            'source': {'type': 'user', 'value': 'admin'},
-        }],
-        'sensor_coordinates': [{
-            'observables': [{'type': 'ip', 'value': '127.0.0.1'}],
-        }],
-        'targets': [{
-            'observed_time': {'start_time': '1970-01-01T00:00:00Z'},
-        }],
-        'title': 'OMG! The Best CTIM Bundle Builder Ever!',
     }
 
 

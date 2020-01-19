@@ -1,13 +1,19 @@
 import abc
 import hashlib
 
+from marshmallow.exceptions import (
+    ValidationError as MarshmallowValidationError
+)
 from marshmallow.schema import Schema
 
 from ..constants import (
     SCHEMA_VERSION,
     EXTERNAL_ID_PREFIX,
 )
-from ..exceptions import SchemaError
+from ..exceptions import (
+    SchemaError,
+    ValidationError as BundleBuilderValidationError,
+)
 
 
 class EntityMeta(abc.ABCMeta):
@@ -38,7 +44,10 @@ class Entity(metaclass=EntityMeta):
     schema = EntitySchema
 
     def __init__(self, **data):
-        self.json = self.schema().load(data)
+        try:
+            self.json = self.schema().load(data)
+        except MarshmallowValidationError as error:
+            raise BundleBuilderValidationError(data=error.messages) from error
 
         self.json['type'] = self.type
 

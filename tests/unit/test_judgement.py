@@ -1,4 +1,3 @@
-from marshmallow.exceptions import ValidationError
 from pytest import raises as assert_raises
 
 from bundlebuilder.constants import (
@@ -12,6 +11,7 @@ from bundlebuilder.constants import (
     TLP_CHOICES,
     SCHEMA_VERSION,
 )
+from bundlebuilder.exceptions import ValidationError
 from bundlebuilder.models import Judgement
 from .utils import (
     mock_id,
@@ -55,7 +55,7 @@ def test_judgement_validation_fails():
 
     error = exception_info.value
 
-    assert error.messages == {
+    assert error.data == {
         'greeting': ['Unknown field.'],
         'confidence': [
             'Must be one of: {}.'.format(
@@ -117,15 +117,6 @@ def test_judgement_validation_fails():
                 ', '.join(map(repr, TLP_CHOICES))
             )
         ],
-    }
-
-    assert error.valid_data == {
-        'valid_time': {'end_time': '1970-01-01T00:00:00Z'},
-        'external_ids': ['foo', 'bar'],
-        'external_references': [{
-            'hashes': ['alpha', 'beta', 'gamma'],
-        }],
-        'language': 'Python',
     }
 
 
