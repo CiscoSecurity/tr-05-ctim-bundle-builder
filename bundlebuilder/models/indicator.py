@@ -10,6 +10,7 @@ from .utils.schemas import (
     CompositeIndicatorExpressionSchema,
     ExternalReferenceSchema,
     KillChainPhaseSchema,
+    SpecificationSchema,
 )
 from .utils.validators import (
     validate_string,
@@ -95,7 +96,7 @@ class IndicatorSchema(Schema):
     source_uri = fields.String(
         validate=validate_string,
     )
-    # specification
+    specification = fields.Nested(SpecificationSchema)
     tags = fields.List(
         fields.String(
             validate=partial(validate_string, max_length=TAG_MAX_LENGTH),

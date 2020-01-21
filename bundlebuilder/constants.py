@@ -338,6 +338,14 @@ SOURCE_MAX_LENGTH = 2048
 
 SOURCE_NAME_MAX_LENGTH = 2048
 
+SPECIFICATION_TYPE_CHOICES = (
+    'Judgement',
+    'ThreatBrain',
+    'Snort',
+    'SIOC',
+    'OpenIOC',
+)
+
 TAG_MAX_LENGTH = 1024
 
 TEST_MECHANISM_MAX_LENGTH = 2048

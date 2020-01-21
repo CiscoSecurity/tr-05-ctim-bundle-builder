@@ -7,6 +7,7 @@ from marshmallow.decorators import (
 )
 from marshmallow.exceptions import ValidationError
 from marshmallow.schema import Schema
+from marshmallow.utils import INCLUDE
 
 from .fields import DateTimeField
 from .validators import (
@@ -24,6 +25,8 @@ from ...constants import (
     SENSOR_CHOICES,
     BOOLEAN_OPERATOR_CHOICES,
     KILL_CHAIN_PHASE_NAME_CHOICES,
+    CONFIDENCE_CHOICES,
+    SPECIFICATION_TYPE_CHOICES,
 )
 
 
@@ -212,3 +215,93 @@ class KillChainPhaseSchema(Schema):
             value = value.replace(' ', '_').replace('_', '-')
             data['kill_chain_name'] = value
         return data
+
+
+class BaseSpecificationSchema(Schema):
+    pass
+
+
+class RelatedJudgementSchema(Schema):
+    judgement_id = fields.String(
+        validate=validate_string,
+        required=True,
+    )
+    confidence = fields.String(
+        validate=partial(validate_string, choices=CONFIDENCE_CHOICES),
+    )
+    relationship = fields.String(
+        validate=validate_string,
+    )
+    source = fields.String(
+        validate=validate_string,
+    )
+
+
+class JudgementSpecificationSchema(BaseSpecificationSchema):
+    judgements = fields.List(
+        fields.String(
+            validate=validate_string,
+        ),
+        required=True,
+    )
+    required_judgements = fields.List(
+        fields.Nested(RelatedJudgementSchema),
+        required=True,
+    )
+
+
+class ThreatBrainSpecificationSchema(BaseSpecificationSchema):
+    variables = fields.List(
+        fields.String(
+            validate=validate_string,
+        ),
+        required=True,
+    )
+    query = fields.String(
+        validate=validate_string,
+    )
+
+
+class SnortSpecificationSchema(BaseSpecificationSchema):
+    snort_sig = fields.String(
+        validate=validate_string,
+        required=True,
+    )
+
+
+class SIOCSpecificationSchema(BaseSpecificationSchema):
+    SIOC = fields.String(
+        validate=validate_string,
+        required=True,
+    )
+
+
+class OpenIOCSpecificationSchema(BaseSpecificationSchema):
+    open_IOC = fields.String(
+        validate=validate_string,
+        required=True,
+    )
+
+
+SPECIFICATION_SCHEMA_MAP = dict(
+    zip(SPECIFICATION_TYPE_CHOICES, BaseSpecificationSchema.__subclasses__())
+)
+
+
+class SpecificationSchema(Schema):
+    type = fields.String(
+        validate=partial(validate_string, choices=SPECIFICATION_TYPE_CHOICES),
+        required=True,
+    )
+
+    def load(self, data, **kwargs):
+        kwargs['unknown'] = INCLUDE
+
+        data = super().load(data, **kwargs)
+
+        schema = SPECIFICATION_SCHEMA_MAP[data['type']]
+
+        return {
+            'type': data.pop('type'),
+            **schema().load(data)
+        }

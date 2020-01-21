@@ -52,6 +52,10 @@ def test_indicator_validation_fails():
         'severity': 'Insignificant',
         'short_description': '\U0001f4a9' * DESCRIPTION_MAX_LENGTH,
         'source': '',
+        'specification': {
+            'type': 'ThreatBrain',
+            'query': None,
+        },
         'test_mechanisms': ['\U0001f4a9' * (TEST_MECHANISM_MAX_LENGTH + 1)],
         'timestamp': '4:20',
         'title': 'OMG! The Best CTIM Bundle Builder Ever!',
@@ -126,6 +130,10 @@ def test_indicator_validation_fails():
             )
         ],
         'source': ['Field may not be blank.'],
+        'specification': {
+            'variables': ['Missing data for required field.'],
+            'query': ['Field may not be null.'],
+        },
         'test_mechanisms': {
             0: [
                 'Must be at most {} characters long.'.format(
@@ -143,6 +151,11 @@ def test_indicator_validation_fails():
 
 
 def test_indicator_validation_succeeds():
+    judgement_id = f'transient:prefix-judgement-sha256'
+    judgement_uri = (
+        f'https://private.intel.amp.cisco.com/ctia/judgement/{judgement_id}'
+    )
+
     indicator_data = {
         'producer': 'SoftServe',
         'confidence': 'High',
@@ -159,6 +172,11 @@ def test_indicator_validation_succeeds():
         'source_uri': (
             'https://github.com/CiscoSecurity/tr-05-ctim-bundle-builder'
         ),
+        'specification': {
+            'type': 'Judgement',
+            'judgements': [judgement_uri],
+            'required_judgements': [{'judgement_id': judgement_id}],
+        },
         'tags': ['cisco', 'security', 'python', 'ctim', 'bundle', 'builder'],
         'timestamp': utc_now_iso(),
         'tlp': 'red',
