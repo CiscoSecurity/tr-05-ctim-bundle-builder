@@ -151,9 +151,9 @@ def test_indicator_validation_fails():
 
 
 def test_indicator_validation_succeeds():
-    judgement_id = f'transient:prefix-judgement-sha256'
+    judgement_id = 'transient:prefix-judgement-sha256'
     judgement_uri = (
-        f'https://private.intel.amp.cisco.com/ctia/judgement/{judgement_id}'
+        'https://private.intel.amp.cisco.com/ctia/judgement/%s' % judgement_id
     )
 
     indicator_data = {
