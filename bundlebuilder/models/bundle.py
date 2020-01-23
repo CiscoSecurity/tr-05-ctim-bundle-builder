@@ -1,3 +1,5 @@
+from typing import List
+
 from marshmallow.schema import Schema
 
 from .entity import Entity
@@ -10,6 +12,7 @@ class BundleSchema(Schema):
 class Bundle(Entity):
     schema = BundleSchema
 
-    def generate_external_id_seed(self):
+    @property
+    def external_id_core_values(self) -> List[str]:
         # TODO: replace with real implementation
-        return ''
+        return []

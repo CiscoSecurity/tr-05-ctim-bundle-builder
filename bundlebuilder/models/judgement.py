@@ -1,4 +1,5 @@
 from functools import partial
+from typing import List
 
 from marshmallow import fields
 from marshmallow.decorators import validates_schema
@@ -103,6 +104,7 @@ class JudgementSchema(Schema):
 class Judgement(Entity):
     schema = JudgementSchema
 
-    def generate_external_id_seed(self):
+    @property
+    def external_id_core_values(self) -> List[str]:
         # TODO: replace with real implementation
-        return ''
+        return []

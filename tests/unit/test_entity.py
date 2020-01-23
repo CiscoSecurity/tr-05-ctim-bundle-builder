@@ -47,8 +47,9 @@ def test_empty_schema_validation_succeeds():
     class Good(Entity):
         schema = GoodSchema
 
-        def generate_external_id_seed(self):
-            return '|'.join(self.external_id_extra_values)
+        @property
+        def external_id_core_values(self):
+            return []
 
     expected_type = 'good'
 

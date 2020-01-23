@@ -1,4 +1,5 @@
 from functools import partial
+from typing import List
 
 from marshmallow import fields
 from marshmallow.schema import Schema
@@ -69,6 +70,7 @@ class RelationshipSchema(Schema):
 class Relationship(Entity):
     schema = RelationshipSchema
 
-    def generate_external_id_seed(self):
+    @property
+    def external_id_core_values(self) -> List[str]:
         # TODO: replace with real implementation
-        return ''
+        return []

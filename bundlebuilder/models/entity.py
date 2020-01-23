@@ -1,5 +1,7 @@
 import abc
 import hashlib
+from itertools import chain
+from typing import List
 
 from marshmallow.exceptions import (
     ValidationError as MarshmallowValidationError
@@ -58,7 +60,7 @@ class Entity(metaclass=EntityMeta):
         self.external_id_prefix = session.external_id_prefix
 
         # This isn't really a part of the CTIM JSON payload, so extract it out.
-        self.external_id_extra_values = sorted(
+        self.external_id_extra_values: List[str] = sorted(
             self.json.pop('external_id_extra_values', [])
         )
 
@@ -73,18 +75,25 @@ class Entity(metaclass=EntityMeta):
     def __getattr__(self, field):
         return self.json.get(field)
 
-    def generate_id(self):
+    def generate_id(self) -> str:
         return 'transient:' + self.generate_external_id()
 
-    def generate_external_id(self):
+    def generate_external_id(self) -> str:
         return '{prefix}-{type}-{sha256}'.format(
             prefix=self.external_id_prefix,
             type=self.type,
             sha256=hashlib.sha256(
-                bytes(self.generate_external_id_seed(), 'utf-8')
+                bytes(self.external_id_deterministic_value, 'utf-8')
             ).hexdigest(),
         )
 
+    @property
+    def external_id_deterministic_value(self) -> str:
+        return '|'.join(
+            chain(self.external_id_core_values, self.external_id_extra_values)
+        )
+
+    @property
     @abc.abstractmethod
-    def generate_external_id_seed(self):
-        """Return a deterministic string based on some fields of the entity."""
+    def external_id_core_values(self) -> List[str]:
+        pass
