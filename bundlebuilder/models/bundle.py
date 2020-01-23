@@ -14,5 +14,7 @@ class Bundle(Entity):
 
     @property
     def external_id_seed_values(self) -> List[str]:
-        # TODO: replace with real implementation
-        return []
+        return [
+            self.external_id_prefix,
+            self.type,
+        ]

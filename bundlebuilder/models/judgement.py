@@ -86,6 +86,12 @@ class JudgementSchema(Schema):
         validate=partial(validate_string, choices=TLP_CHOICES),
     )
 
+    external_id_extra_values = fields.List(
+        fields.String(
+            validate=validate_string,
+        )
+    )
+
     @validates_schema
     def validate_disposition_consistency(self, data, **kwargs):
         if not ('disposition' in data and 'disposition_name' in data):
@@ -105,5 +111,7 @@ class Judgement(Entity):
 
     @property
     def external_id_seed_values(self) -> List[str]:
-        # TODO: replace with real implementation
-        return []
+        return [
+            self.external_id_prefix,
+            self.type,
+        ]

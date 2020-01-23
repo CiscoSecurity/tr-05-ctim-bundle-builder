@@ -66,11 +66,19 @@ class RelationshipSchema(Schema):
         validate=partial(validate_string, choices=TLP_CHOICES),
     )
 
+    external_id_extra_values = fields.List(
+        fields.String(
+            validate=validate_string,
+        )
+    )
+
 
 class Relationship(Entity):
     schema = RelationshipSchema
 
     @property
     def external_id_seed_values(self) -> List[str]:
-        # TODO: replace with real implementation
-        return []
+        return [
+            self.external_id_prefix,
+            self.type,
+        ]

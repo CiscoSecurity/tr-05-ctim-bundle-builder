@@ -1,7 +1,10 @@
 import abc
 import hashlib
 from itertools import chain
-from typing import List
+from typing import (
+    List,
+    Iterator,
+)
 
 from marshmallow.exceptions import (
     ValidationError as MarshmallowValidationError
@@ -85,9 +88,14 @@ class Entity(metaclass=EntityMeta):
 
     @property
     def external_id_deterministic_value(self) -> str:
-        return '|'.join(
-            chain(self.external_id_seed_values, self.external_id_extra_values)
-        )
+        # Chain together all the values available.
+        values: Iterator[str] = chain(self.external_id_seed_values,
+                                      self.external_id_extra_values)
+        # Filter out any empty values.
+        values: Iterator[str] = filter(lambda value: value is not None,
+                                       values)
+        # Join up all the values left.
+        return '|'.join(map(str, values))
 
     @property
     @abc.abstractmethod
