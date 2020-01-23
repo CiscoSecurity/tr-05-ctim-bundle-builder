@@ -7,6 +7,9 @@ from bundlebuilder.constants import (
     SHORT_DESCRIPTION_LENGTH,
     TLP_CHOICES,
     SCHEMA_VERSION,
+    DEFAULT_SESSION_SOURCE,
+    DEFAULT_SESSION_SOURCE_URI,
+    DEFAULT_SESSION_EXTERNAL_ID_PREFIX,
 )
 from bundlebuilder.exceptions import ValidationError
 from bundlebuilder.models import (
@@ -24,11 +27,9 @@ from .utils import (
 def test_relationship_validation_fails():
     relationship_data = {
         'greeting': '¡Hola!',
-        'id': None,
         'relationship_type': 'loved-by',
         'target_ref': 3.141592653589793,
         'description': '\U0001f4a9' * DESCRIPTION_MAX_LENGTH,
-        'external_ids': ['foo', 'bar'],
         'external_references': [{
             'description': '',
             'external_id': None,
@@ -37,20 +38,18 @@ def test_relationship_validation_fails():
         'language': 'Python',
         'revision': -273,
         'short_description': '\U0001f4a9' * DESCRIPTION_MAX_LENGTH,
-        'source': '',
         'timestamp': '4:20',
         'title': 'OMG! The Best CTIM Bundle Builder Ever!',
         'tlp': 'razzmatazz',
     }
 
-    with assert_raises(ValidationError) as exception_info:
+    with assert_raises(ValidationError) as exc_info:
         Relationship(**relationship_data)
 
-    error = exception_info.value
+    error = exc_info.value
 
     assert error.data == {
         'greeting': ['Unknown field.'],
-        'id': ['Field may not be null.'],
         'relationship_type': [
             'Must be one of: {}.'.format(
                 ', '.join(map(repr, RELATIONSHIP_TYPE_CHOICES))
@@ -75,7 +74,6 @@ def test_relationship_validation_fails():
                 SHORT_DESCRIPTION_LENGTH
             )
         ],
-        'source': ['Field may not be blank.'],
         'timestamp': ['Not a valid datetime.'],
         'tlp': [
             'Must be one of: {}.'.format(
@@ -93,15 +91,11 @@ def test_relationship_validation_succeeds():
         observable={'type': 'domain', 'value': 'cisco.com'},
         priority=25,
         severity='Low',
-        source='Python CTIM Bundle Builder : Judgement',
         valid_time={
             'start_time': utc_now_iso(),
             'end_time': utc_now_iso(),
         },
         revision=1,
-        source_uri=(
-            'https://github.com/CiscoSecurity/tr-05-ctim-bundle-builder'
-        ),
         timestamp=utc_now_iso(),
         tlp='white',
     )
@@ -113,10 +107,6 @@ def test_relationship_validation_succeeds():
             'end_time': utc_now_iso(),
         },
         revision=2,
-        source='Python CTIM Bundle Builder : Indicator',
-        source_uri=(
-            'https://github.com/CiscoSecurity/tr-05-ctim-bundle-builder'
-        ),
         timestamp=utc_now_iso(),
         tlp='green',
     )
@@ -126,10 +116,6 @@ def test_relationship_validation_succeeds():
         'source_ref': judgement,
         'target_ref': indicator,
         'revision': 3,
-        'source': 'Python CTIM Bundle Builder : Relationship',
-        'source_uri': (
-            'https://github.com/CiscoSecurity/tr-05-ctim-bundle-builder'
-        ),
         'timestamp': utc_now_iso(),
         'tlp': 'amber',
     }
@@ -141,10 +127,16 @@ def test_relationship_validation_succeeds():
         'target_ref': indicator.id,
     })
 
+    expected_type = 'relationship'
+
     assert relationship.json == {
-        'type': 'relationship',
+        'type': expected_type,
         'schema_version': SCHEMA_VERSION,
-        'id': mock_id('relationship'),
-        'external_ids': [mock_external_id('relationship')],
+        'source': DEFAULT_SESSION_SOURCE,
+        'source_uri': DEFAULT_SESSION_SOURCE_URI,
+        'id': mock_id(DEFAULT_SESSION_EXTERNAL_ID_PREFIX, expected_type),
+        'external_ids': [
+            mock_external_id(DEFAULT_SESSION_EXTERNAL_ID_PREFIX, expected_type)
+        ],
         **relationship_data
     }

@@ -6,10 +6,7 @@ from marshmallow.exceptions import (
 )
 from marshmallow.schema import Schema
 
-from ..constants import (
-    SCHEMA_VERSION,
-    EXTERNAL_ID_PREFIX,
-)
+from ..constants import SCHEMA_VERSION
 from ..exceptions import (
     SchemaError,
     ValidationError as BundleBuilderValidationError,
@@ -53,11 +50,25 @@ class Entity(metaclass=EntityMeta):
 
         self.json['schema_version'] = SCHEMA_VERSION
 
-        self.json.setdefault('id', self.generate_id())
+        # Use a dynamic import to break the circular dependency.
+        from ..session import get_session
 
-        self.json.setdefault('external_ids', []).append(
-            self.generate_external_id()
+        session = get_session()
+
+        self.external_id_prefix = session.external_id_prefix
+
+        # This isn't really a part of the CTIM JSON payload, so extract it out.
+        self.external_id_extra_values = sorted(
+            self.json.pop('external_id_extra_values', [])
         )
+
+        self.json['source'] = session.source
+        self.json['source_uri'] = session.source_uri
+
+        # Generate and set a transient ID and an XID only after
+        # all the other attributes are already set properly.
+        self.json['id'] = self.generate_id()
+        self.json['external_ids'] = [self.generate_external_id()]
 
     def __getattr__(self, field):
         return self.json.get(field)
@@ -67,7 +78,7 @@ class Entity(metaclass=EntityMeta):
 
     def generate_external_id(self):
         return '{prefix}-{type}-{sha256}'.format(
-            prefix=EXTERNAL_ID_PREFIX,
+            prefix=self.external_id_prefix,
             type=self.type,
             sha256=hashlib.sha256(
                 bytes(self.generate_external_id_seed(), 'utf-8')

@@ -10,6 +10,9 @@ from bundlebuilder.constants import (
     REVISION_MIN_VALUE,
     TLP_CHOICES,
     SCHEMA_VERSION,
+    DEFAULT_SESSION_SOURCE,
+    DEFAULT_SESSION_SOURCE_URI,
+    DEFAULT_SESSION_EXTERNAL_ID_PREFIX,
 )
 from bundlebuilder.exceptions import ValidationError
 from bundlebuilder.models import Judgement
@@ -26,7 +29,6 @@ def test_judgement_validation_fails():
         'confidence': 'Unbelievable',
         'disposition': 0,
         'disposition_name': 'Pristine',
-        'id': None,
         'observable': {
             'dangerous': False,
             'type': 'dummy',
@@ -37,7 +39,6 @@ def test_judgement_validation_fails():
             'middle_time': 'This value will be ignored anyway, right?',
             'end_time': '1970-01-01T00:00:00Z',
         },
-        'external_ids': ['foo', 'bar'],
         'external_references': [{
             'description': '',
             'external_id': None,
@@ -50,10 +51,10 @@ def test_judgement_validation_fails():
         'tlp': 'razzmatazz',
     }
 
-    with assert_raises(ValidationError) as exception_info:
+    with assert_raises(ValidationError) as exc_info:
         Judgement(**judgement_data)
 
-    error = exception_info.value
+    error = exc_info.value
 
     assert error.data == {
         'greeting': ['Unknown field.'],
@@ -72,7 +73,6 @@ def test_judgement_validation_fails():
                 ', '.join(map(repr, DISPOSITION_MAP.values()))
             )
         ],
-        'id': ['Field may not be null.'],
         'observable': {
             'dangerous': ['Unknown field.'],
             'type': [
@@ -93,7 +93,6 @@ def test_judgement_validation_fails():
         'valid_time': {
             'middle_time': ['Unknown field.'],
         },
-        'source': ['Missing data for required field.'],
         'external_references': {
             0: {
                 'source_name': ['Missing data for required field.'],
@@ -128,22 +127,24 @@ def test_judgement_validation_succeeds():
         'observable': {'type': 'sha256', 'value': '01' * 32},
         'priority': 50,
         'severity': 'Medium',
-        'source': 'Python CTIM Bundle Builder : Judgement',
         'valid_time': {'end_time': utc_now_iso()},
         'revision': 0,
-        'source_uri': (
-            'https://github.com/CiscoSecurity/tr-05-ctim-bundle-builder'
-        ),
         'timestamp': utc_now_iso(),
         'tlp': 'amber',
     }
 
     judgement = Judgement(**judgment_data)
 
+    expected_type = 'judgement'
+
     assert judgement.json == {
-        'type': 'judgement',
+        'type': expected_type,
         'schema_version': SCHEMA_VERSION,
-        'id': mock_id('judgement'),
-        'external_ids': [mock_external_id('judgement')],
+        'source': DEFAULT_SESSION_SOURCE,
+        'source_uri': DEFAULT_SESSION_SOURCE_URI,
+        'id': mock_id(DEFAULT_SESSION_EXTERNAL_ID_PREFIX, expected_type),
+        'external_ids': [
+            mock_external_id(DEFAULT_SESSION_EXTERNAL_ID_PREFIX, expected_type)
+        ],
         **judgment_data
     }

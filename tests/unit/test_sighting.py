@@ -14,6 +14,9 @@ from bundlebuilder.constants import (
     SHORT_DESCRIPTION_LENGTH,
     TLP_CHOICES,
     SCHEMA_VERSION,
+    DEFAULT_SESSION_SOURCE,
+    DEFAULT_SESSION_SOURCE_URI,
+    DEFAULT_SESSION_EXTERNAL_ID_PREFIX,
 )
 from bundlebuilder.exceptions import ValidationError
 from bundlebuilder.models import Sighting
@@ -28,7 +31,6 @@ def test_sighting_validation_fails():
     sighting_data = {
         'greeting': '¡Hola!',
         'confidence': 'Unbelievable',
-        'id': None,
         'observed_time': {
             'middle_time': 'This value will be ignored anyway, right?',
             'end_time': '1970-01-01T00:00:00Z',
@@ -36,11 +38,10 @@ def test_sighting_validation_fails():
         'data': {
             'column_count': +1,
             'columns': [{'type': 'anything'}],
-            'rows': [''],
+            'rows': [object()],
             'row_count': -1,
         },
         'description': '\U0001f4a9' * DESCRIPTION_MAX_LENGTH,
-        'external_ids': ['foo', 'bar'],
         'external_references': [{
             'description': '',
             'external_id': None,
@@ -68,7 +69,6 @@ def test_sighting_validation_fails():
         }],
         'severity': 'Insignificant',
         'short_description': '\U0001f4a9' * DESCRIPTION_MAX_LENGTH,
-        'source': '',
         'targets': [{
             'observed_time': {'start_time': '1970-01-01T00:00:00Z'},
             'type': 'actuator',
@@ -78,10 +78,10 @@ def test_sighting_validation_fails():
         'tlp': 'razzmatazz',
     }
 
-    with assert_raises(ValidationError) as exception_info:
+    with assert_raises(ValidationError) as exc_info:
         Sighting(**sighting_data)
 
-    error = exception_info.value
+    error = exc_info.value
 
     assert error.data == {
         'greeting': ['Unknown field.'],
@@ -91,7 +91,6 @@ def test_sighting_validation_fails():
             )
         ],
         'count': ['Missing data for required field.'],
-        'id': ['Field may not be null.'],
         'observed_time': {
             'start_time': ['Missing data for required field.'],
             'middle_time': ['Unknown field.'],
@@ -180,7 +179,6 @@ def test_sighting_validation_fails():
                 SHORT_DESCRIPTION_LENGTH
             )
         ],
-        'source': ['Field may not be blank.'],
         'targets': {
             0: {
                 'observables': ['Missing data for required field.'],
@@ -231,10 +229,6 @@ def test_sighting_validation_succeeds():
             'type': 'endpoint.laptop',
             'os': 'Linux',
         }],
-        'source': 'Python CTIM Bundle Builder : Sighting',
-        'source_uri': (
-            'https://github.com/CiscoSecurity/tr-05-ctim-bundle-builder'
-        ),
         'targets': [{
             'observables': [{'type': 'sha256', 'value': '01' * 32}],
             'observed_time': {'start_time': utc_now_iso()},
@@ -247,10 +241,16 @@ def test_sighting_validation_succeeds():
 
     sighting = Sighting(**sighting_data)
 
+    expected_type = 'sighting'
+
     assert sighting.json == {
-        'type': 'sighting',
+        'type': expected_type,
         'schema_version': SCHEMA_VERSION,
-        'id': mock_id('sighting'),
-        'external_ids': [mock_external_id('sighting')],
+        'source': DEFAULT_SESSION_SOURCE,
+        'source_uri': DEFAULT_SESSION_SOURCE_URI,
+        'id': mock_id(DEFAULT_SESSION_EXTERNAL_ID_PREFIX, expected_type),
+        'external_ids': [
+            mock_external_id(DEFAULT_SESSION_EXTERNAL_ID_PREFIX, expected_type)
+        ],
         **sighting_data
     }

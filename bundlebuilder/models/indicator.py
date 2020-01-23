@@ -26,7 +26,6 @@ from ..constants import (
     REVISION_MIN_VALUE,
     SEVERITY_CHOICES,
     SHORT_DESCRIPTION_LENGTH,
-    SOURCE_MAX_LENGTH,
     TAG_MAX_LENGTH,
     TEST_MECHANISM_MAX_LENGTH,
     TITLE_MAX_LENGTH,
@@ -38,9 +37,6 @@ class IndicatorSchema(Schema):
     """
     https://github.com/threatgrid/ctim/blob/master/doc/structures/indicator.md
     """
-    id = fields.String(
-        validate=validate_string,
-    )
     producer = fields.String(
         validate=partial(validate_string, max_length=PRODUCER_MAX_LENGTH),
         required=True,
@@ -57,11 +53,6 @@ class IndicatorSchema(Schema):
     )
     description = fields.String(
         validate=partial(validate_string, max_length=DESCRIPTION_MAX_LENGTH),
-    )
-    external_ids = fields.List(
-        fields.String(
-            validate=validate_string,
-        )
     )
     external_references = fields.List(
         fields.Nested(ExternalReferenceSchema)
@@ -89,12 +80,6 @@ class IndicatorSchema(Schema):
     )
     short_description = fields.String(
         validate=partial(validate_string, max_length=SHORT_DESCRIPTION_LENGTH),
-    )
-    source = fields.String(
-        validate=partial(validate_string, max_length=SOURCE_MAX_LENGTH),
-    )
-    source_uri = fields.String(
-        validate=validate_string,
     )
     specification = fields.Nested(SpecificationSchema)
     tags = fields.List(

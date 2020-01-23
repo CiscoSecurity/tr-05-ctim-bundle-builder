@@ -13,6 +13,9 @@ from bundlebuilder.constants import (
     SHORT_DESCRIPTION_LENGTH,
     TLP_CHOICES,
     SCHEMA_VERSION,
+    DEFAULT_SESSION_SOURCE,
+    DEFAULT_SESSION_SOURCE_URI,
+    DEFAULT_SESSION_EXTERNAL_ID_PREFIX,
 )
 from bundlebuilder.exceptions import ValidationError
 from bundlebuilder.models import Indicator
@@ -26,7 +29,6 @@ from .utils import (
 def test_indicator_validation_fails():
     indicator_data = {
         'greeting': '¡Hola!',
-        'id': None,
         'valid_time': {
             'start_time': '1970-01-01T00:00:00Z',
             'middle_time': 'This value will be ignored anyway, right?',
@@ -37,7 +39,6 @@ def test_indicator_validation_fails():
         },
         'confidence': 'Unbelievable',
         'description': '\U0001f4a9' * DESCRIPTION_MAX_LENGTH,
-        'external_ids': ['foo', 'bar'],
         'external_references': [{
             'description': '',
             'external_id': None,
@@ -51,25 +52,20 @@ def test_indicator_validation_fails():
         'revision': -273,
         'severity': 'Insignificant',
         'short_description': '\U0001f4a9' * DESCRIPTION_MAX_LENGTH,
-        'source': '',
-        'specification': {
-            'type': 'ThreatBrain',
-            'query': None,
-        },
+        'specification': {'type': 'ThreatBrain'},
         'test_mechanisms': ['\U0001f4a9' * (TEST_MECHANISM_MAX_LENGTH + 1)],
         'timestamp': '4:20',
         'title': 'OMG! The Best CTIM Bundle Builder Ever!',
         'tlp': 'razzmatazz',
     }
 
-    with assert_raises(ValidationError) as exception_info:
+    with assert_raises(ValidationError) as exc_info:
         Indicator(**indicator_data)
 
-    error = exception_info.value
+    error = exc_info.value
 
     assert error.data == {
         'greeting': ['Unknown field.'],
-        'id': ['Field may not be null.'],
         'producer': ['Missing data for required field.'],
         'valid_time': {
             'middle_time': ['Unknown field.'],
@@ -129,10 +125,8 @@ def test_indicator_validation_fails():
                 SHORT_DESCRIPTION_LENGTH
             )
         ],
-        'source': ['Field may not be blank.'],
         'specification': {
             'variables': ['Missing data for required field.'],
-            'query': ['Field may not be null.'],
         },
         'test_mechanisms': {
             0: [
@@ -168,10 +162,6 @@ def test_indicator_validation_succeeds():
         'negate': True,
         'revision': 0,
         'severity': 'High',
-        'source': 'Python CTIM Bundle Builder : Indicator',
-        'source_uri': (
-            'https://github.com/CiscoSecurity/tr-05-ctim-bundle-builder'
-        ),
         'specification': {
             'type': 'Judgement',
             'judgements': [judgement_uri],
@@ -188,10 +178,16 @@ def test_indicator_validation_succeeds():
         {'kill_chain_name': 'kill-chain-name'}
     )
 
+    expected_type = 'indicator'
+
     assert indicator.json == {
-        'type': 'indicator',
+        'type': expected_type,
         'schema_version': SCHEMA_VERSION,
-        'id': mock_id('indicator'),
-        'external_ids': [mock_external_id('indicator')],
+        'source': DEFAULT_SESSION_SOURCE,
+        'source_uri': DEFAULT_SESSION_SOURCE_URI,
+        'id': mock_id(DEFAULT_SESSION_EXTERNAL_ID_PREFIX, expected_type),
+        'external_ids': [
+            mock_external_id(DEFAULT_SESSION_EXTERNAL_ID_PREFIX, expected_type)
+        ],
         **indicator_data
     }

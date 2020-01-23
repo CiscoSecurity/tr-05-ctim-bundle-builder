@@ -3,15 +3,13 @@ import re
 
 from mock import MagicMock
 
-from bundlebuilder.constants import EXTERNAL_ID_PREFIX
 
-
-def mock_id(type):
+def mock_id(external_id_prefix, type):
     id_mock = MagicMock()
 
     id_re = re.compile(
         '^transient:{}-{}-[0-9a-z]{{64}}$'.format(
-            EXTERNAL_ID_PREFIX, type
+            external_id_prefix, type
         )
     )
     id_mock.__eq__ = lambda self, other: (
@@ -21,12 +19,12 @@ def mock_id(type):
     return id_mock
 
 
-def mock_external_id(type):
+def mock_external_id(external_id_prefix, type):
     external_id_mock = MagicMock()
 
     external_id_re = re.compile(
         '^{}-{}-[0-9a-z]{{64}}$'.format(
-            EXTERNAL_ID_PREFIX, type
+            external_id_prefix, type
         )
     )
     external_id_mock.__eq__ = lambda self, other: (

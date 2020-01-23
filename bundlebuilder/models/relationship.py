@@ -21,7 +21,6 @@ from ..constants import (
     LANGUAGE_MAX_LENGTH,
     REVISION_MIN_VALUE,
     SHORT_DESCRIPTION_LENGTH,
-    SOURCE_MAX_LENGTH,
     TITLE_MAX_LENGTH,
     TLP_CHOICES,
 )
@@ -31,9 +30,6 @@ class RelationshipSchema(Schema):
     """
     https://github.com/threatgrid/ctim/blob/master/doc/structures/relationship.md
     """
-    id = fields.String(
-        validate=validate_string,
-    )
     relationship_type = fields.String(
         validate=partial(validate_string, choices=RELATIONSHIP_TYPE_CHOICES),
         required=True,
@@ -49,11 +45,6 @@ class RelationshipSchema(Schema):
     description = fields.String(
         validate=partial(validate_string, max_length=DESCRIPTION_MAX_LENGTH),
     )
-    external_ids = fields.List(
-        fields.String(
-            validate=validate_string,
-        )
-    )
     external_references = fields.List(
         fields.Nested(ExternalReferenceSchema)
     )
@@ -65,12 +56,6 @@ class RelationshipSchema(Schema):
     )
     short_description = fields.String(
         validate=partial(validate_string, max_length=SHORT_DESCRIPTION_LENGTH),
-    )
-    source = fields.String(
-        validate=partial(validate_string, max_length=SOURCE_MAX_LENGTH),
-    )
-    source_uri = fields.String(
-        validate=validate_string,
     )
     timestamp = DateTimeField()
     title = fields.String(

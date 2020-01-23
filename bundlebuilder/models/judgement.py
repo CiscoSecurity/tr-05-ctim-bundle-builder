@@ -22,7 +22,6 @@ from ..constants import (
     PRIORITY_MIN_VALUE,
     PRIORITY_MAX_VALUE,
     SEVERITY_CHOICES,
-    SOURCE_MAX_LENGTH,
     LANGUAGE_MAX_LENGTH,
     REASON_MAX_LENGTH,
     REVISION_MIN_VALUE,
@@ -46,9 +45,6 @@ class JudgementSchema(Schema):
         validate=partial(validate_string, choices=DISPOSITION_MAP.values()),
         required=True,
     )
-    id = fields.String(
-        validate=validate_string,
-    )
     observable = fields.Nested(
         ObservableSchema,
         required=True,
@@ -65,18 +61,9 @@ class JudgementSchema(Schema):
         validate=partial(validate_string, choices=SEVERITY_CHOICES),
         required=True,
     )
-    source = fields.String(
-        validate=partial(validate_string, max_length=SOURCE_MAX_LENGTH),
-        required=True,
-    )
     valid_time = fields.Nested(
         ValidTimeSchema,
         required=True,
-    )
-    external_ids = fields.List(
-        fields.String(
-            validate=validate_string,
-        )
     )
     external_references = fields.List(
         fields.Nested(ExternalReferenceSchema)
@@ -92,9 +79,6 @@ class JudgementSchema(Schema):
     )
     revision = fields.Integer(
         validate=partial(validate_integer, min_value=REVISION_MIN_VALUE),
-    )
-    source_uri = fields.String(
-        validate=validate_string,
     )
     timestamp = DateTimeField()
     tlp = fields.String(

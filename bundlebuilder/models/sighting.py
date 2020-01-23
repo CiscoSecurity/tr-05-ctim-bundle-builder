@@ -28,7 +28,6 @@ from ..constants import (
     SENSOR_CHOICES,
     SEVERITY_CHOICES,
     SHORT_DESCRIPTION_LENGTH,
-    SOURCE_MAX_LENGTH,
     TITLE_MAX_LENGTH,
     TLP_CHOICES,
 )
@@ -46,9 +45,6 @@ class SightingSchema(Schema):
         validate=partial(validate_integer, min_value=COUNT_MIN_VALUE),
         required=True,
     )
-    id = fields.String(
-        validate=validate_string,
-    )
     observed_time = fields.Nested(
         ObservedTimeSchema,
         required=True,
@@ -56,11 +52,6 @@ class SightingSchema(Schema):
     data = fields.Nested(SightingDataTableSchema)
     description = fields.String(
         validate=partial(validate_string, max_length=DESCRIPTION_MAX_LENGTH),
-    )
-    external_ids = fields.List(
-        fields.String(
-            validate=validate_string,
-        )
     )
     external_references = fields.List(
         fields.Nested(ExternalReferenceSchema)
@@ -92,12 +83,6 @@ class SightingSchema(Schema):
     )
     short_description = fields.String(
         validate=partial(validate_string, max_length=SHORT_DESCRIPTION_LENGTH),
-    )
-    source = fields.String(
-        validate=partial(validate_string, max_length=SOURCE_MAX_LENGTH),
-    )
-    source_uri = fields.String(
-        validate=validate_string,
     )
     targets = fields.List(
         fields.Nested(IdentitySpecificationSchema)
