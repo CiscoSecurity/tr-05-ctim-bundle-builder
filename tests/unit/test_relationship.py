@@ -51,9 +51,8 @@ def test_relationship_validation_fails():
     assert error.data == {
         'greeting': ['Unknown field.'],
         'relationship_type': [
-            'Must be one of: {}.'.format(
-                ', '.join(map(repr, RELATIONSHIP_TYPE_CHOICES))
-            )
+            'Must be one of: '
+            f'{", ".join(map(repr, RELATIONSHIP_TYPE_CHOICES))}.'
         ],
         'source_ref': ['Missing data for required field.'],
         'target_ref': ['Not a valid string or a CTIM entity.'],
@@ -65,20 +64,14 @@ def test_relationship_validation_fails():
             },
         },
         'revision': [
-            'Must be greater than or equal to {}.'.format(
-                REVISION_MIN_VALUE
-            )
+            f'Must be greater than or equal to {REVISION_MIN_VALUE}.'
         ],
         'short_description': [
-            'Must be at most {} characters long.'.format(
-                SHORT_DESCRIPTION_LENGTH
-            )
+            f'Must be at most {SHORT_DESCRIPTION_LENGTH} characters long.'
         ],
         'timestamp': ['Not a valid datetime.'],
         'tlp': [
-            'Must be one of: {}.'.format(
-                ', '.join(map(repr, TLP_CHOICES))
-            )
+            f'Must be one of: {", ".join(map(repr, TLP_CHOICES))}.'
         ],
     }
 

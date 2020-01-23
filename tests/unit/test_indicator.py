@@ -72,15 +72,12 @@ def test_indicator_validation_fails():
         },
         'composite_indicator_expression': {
             'operator': [
-                'Must be one of: {}.'.format(
-                    ', '.join(map(repr, BOOLEAN_OPERATOR_CHOICES))
-                )
+                'Must be one of: '
+                f'{", ".join(map(repr, BOOLEAN_OPERATOR_CHOICES))}.'
             ],
         },
         'confidence': [
-            'Must be one of: {}.'.format(
-                ', '.join(map(repr, CONFIDENCE_CHOICES))
-            )
+            f'Must be one of: {", ".join(map(repr, CONFIDENCE_CHOICES))}.'
         ],
         'external_references': {
             0: {
@@ -91,55 +88,43 @@ def test_indicator_validation_fails():
         },
         'indicator_type': {
             0: [
-                'Must be one of: {}.'.format(
-                    ', '.join(map(repr, INDICATOR_TYPE_CHOICES))
-                )
+                'Must be one of: '
+                f'{", ".join(map(repr, INDICATOR_TYPE_CHOICES))}.'
             ],
         },
         'kill_chain_phases': {
             0: {
                 'kill_chain_name': ['Missing data for required field.'],
                 'phase_name': [
-                    'Must be one of: {}.'.format(
-                        ', '.join(map(repr, KILL_CHAIN_PHASE_NAME_CHOICES))
-                    )
+                    'Must be one of: '
+                    f'{", ".join(map(repr, KILL_CHAIN_PHASE_NAME_CHOICES))}.'
                 ],
             },
         },
         'likely_impact': [
-            'Must be at most {} characters long.'.format(
-                LIKELY_IMPACT_MAX_LENGTH
-            )
+            f'Must be at most {LIKELY_IMPACT_MAX_LENGTH} characters long.'
         ],
         'negate': ['Not a valid boolean.'],
         'revision': [
-            'Must be greater than or equal to {}.'.format(REVISION_MIN_VALUE)
+            f'Must be greater than or equal to {REVISION_MIN_VALUE}.'
         ],
         'severity': [
-            'Must be one of: {}.'.format(
-                ', '.join(map(repr, SEVERITY_CHOICES))
-            )
+            f'Must be one of: {", ".join(map(repr, SEVERITY_CHOICES))}.'
         ],
         'short_description': [
-            'Must be at most {} characters long.'.format(
-                SHORT_DESCRIPTION_LENGTH
-            )
+            f'Must be at most {SHORT_DESCRIPTION_LENGTH} characters long.'
         ],
         'specification': {
             'variables': ['Missing data for required field.'],
         },
         'test_mechanisms': {
             0: [
-                'Must be at most {} characters long.'.format(
-                    TEST_MECHANISM_MAX_LENGTH
-                )
+                f'Must be at most {TEST_MECHANISM_MAX_LENGTH} characters long.'
             ],
         },
         'timestamp': ['Not a valid datetime.'],
         'tlp': [
-            'Must be one of: {}.'.format(
-                ', '.join(map(repr, TLP_CHOICES))
-            )
+            f'Must be one of: {", ".join(map(repr, TLP_CHOICES))}.'
         ],
     }
 

@@ -5,21 +5,19 @@ def validate_integer(value, *, min_value=None, max_value=None, choices=None):
     if min_value is not None:
         if value < min_value:
             raise ValidationError(
-                'Must be greater than or equal to {}.'.format(min_value)
+                f'Must be greater than or equal to {min_value}.'
             )
 
     if max_value is not None:
         if value > max_value:
             raise ValidationError(
-                'Must be less than or equal to {}.'.format(max_value)
+                f'Must be less than or equal to {max_value}.'
             )
 
     if choices is not None:
         if value not in choices:
             raise ValidationError(
-                'Must be one of: {}.'.format(
-                    ', '.join(map(repr, choices))
-                )
+                f'Must be one of: {", ".join(map(repr, choices))}.'
             )
 
 
@@ -30,13 +28,11 @@ def validate_string(value, *, max_length=None, choices=None):
     if max_length is not None:
         if len(value) > max_length:
             raise ValidationError(
-                'Must be at most {} characters long.'.format(max_length)
+                f'Must be at most {max_length} characters long.'
             )
 
     if choices is not None:
         if value not in choices:
             raise ValidationError(
-                'Must be one of: {}.'.format(
-                    ', '.join(map(repr, choices))
-                )
+                f'Must be one of: {", ".join(map(repr, choices))}.'
             )

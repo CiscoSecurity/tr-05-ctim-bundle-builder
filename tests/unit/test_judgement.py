@@ -59,36 +59,28 @@ def test_judgement_validation_fails():
     assert error.data == {
         'greeting': ['Unknown field.'],
         'confidence': [
-            'Must be one of: {}.'.format(
-                ', '.join(map(repr, CONFIDENCE_CHOICES))
-            )
+            f'Must be one of: {", ".join(map(repr, CONFIDENCE_CHOICES))}.'
         ],
         'disposition': [
-            'Must be one of: {}.'.format(
-                ', '.join(map(repr, DISPOSITION_MAP.keys()))
-            )
+            f'Must be one of: { ", ".join(map(repr, DISPOSITION_MAP.keys()))}.'
         ],
         'disposition_name': [
-            'Must be one of: {}.'.format(
-                ', '.join(map(repr, DISPOSITION_MAP.values()))
-            )
+            'Must be one of: '
+            f'{", ".join(map(repr, DISPOSITION_MAP.values()))}.'
         ],
         'observable': {
             'dangerous': ['Unknown field.'],
             'type': [
-                'Must be one of: {}.'.format(
-                    ', '.join(map(repr, OBSERVABLE_TYPE_CHOICES))
-                )
+                'Must be one of: '
+                f'{", ".join(map(repr, OBSERVABLE_TYPE_CHOICES))}.'
             ],
             'value': ['Missing data for required field.'],
         },
         'priority': [
-            'Must be less than or equal to {}.'.format(PRIORITY_MAX_VALUE)
+            f'Must be less than or equal to {PRIORITY_MAX_VALUE}.'
         ],
         'severity': [
-            'Must be one of: {}.'.format(
-                ', '.join(map(repr, SEVERITY_CHOICES))
-            )
+            f'Must be one of: {", ".join(map(repr, SEVERITY_CHOICES))}.'
         ],
         'valid_time': {
             'middle_time': ['Unknown field.'],
@@ -101,20 +93,14 @@ def test_judgement_validation_fails():
             },
         },
         'reason': [
-            'Must be at most {} characters long.'.format(
-                REASON_MAX_LENGTH
-            )
+            f'Must be at most {REASON_MAX_LENGTH} characters long.'
         ],
         'revision': [
-            'Must be greater than or equal to {}.'.format(
-                REVISION_MIN_VALUE
-            )
+            f'Must be greater than or equal to {REVISION_MIN_VALUE}.'
         ],
         'timestamp': ['Not a valid datetime.'],
         'tlp': [
-            'Must be one of: {}.'.format(
-                ', '.join(map(repr, TLP_CHOICES))
-            )
+            f'Must be one of: {", ".join(map(repr, TLP_CHOICES))}.'
         ],
     }
 

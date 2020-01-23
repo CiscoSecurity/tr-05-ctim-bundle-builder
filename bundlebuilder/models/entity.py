@@ -22,11 +22,7 @@ class EntityMeta(abc.ABCMeta):
         if not (
             isinstance(cls_schema, type) and issubclass(cls_schema, Schema)
         ):
-            raise SchemaError(
-                '{}.schema must be a subclass of {} instead of {}.'.format(
-                    cls, Schema, cls_schema
-                )
-            )
+            raise SchemaError(f'{cls}.schema must be a subclass of {Schema}.')
 
         cls_type = cls_dict.get('type')
         if cls_type is None:

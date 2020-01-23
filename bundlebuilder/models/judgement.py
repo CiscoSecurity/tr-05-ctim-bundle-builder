@@ -94,9 +94,8 @@ class JudgementSchema(Schema):
         if DISPOSITION_MAP[data['disposition']] != data['disposition_name']:
             message = (
                 'Not a consistent disposition name for the specified '
-                'disposition number. Must be {!r}.'.format(
-                    DISPOSITION_MAP[data['disposition']]
-                )
+                'disposition number. Must be '
+                f'{DISPOSITION_MAP[data["disposition"]]!r}.'
             )
             raise ValidationError(message)
 

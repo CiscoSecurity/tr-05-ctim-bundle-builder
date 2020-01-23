@@ -86,9 +86,7 @@ def test_sighting_validation_fails():
     assert error.data == {
         'greeting': ['Unknown field.'],
         'confidence': [
-            'Must be one of: {}.'.format(
-                ', '.join(map(repr, CONFIDENCE_CHOICES))
-            )
+            f'Must be one of: {", ".join(map(repr, CONFIDENCE_CHOICES))}.'
         ],
         'count': ['Missing data for required field.'],
         'observed_time': {
@@ -101,9 +99,8 @@ def test_sighting_validation_fails():
                 0: {
                     'name': ['Missing data for required field.'],
                     'type': [
-                        'Must be one of: {}.'.format(
-                            ', '.join(map(repr, COLUMN_TYPE_CHOICES))
-                        )
+                        'Must be one of: '
+                        f'{", ".join(map(repr, COLUMN_TYPE_CHOICES))}.'
                     ],
                 }
             },
@@ -111,7 +108,7 @@ def test_sighting_validation_fails():
                 0: ['Not a valid list.'],
             },
             'row_count': [
-                'Must be greater than or equal to {}.'.format(COUNT_MIN_VALUE)
+                f'Must be greater than or equal to {COUNT_MIN_VALUE}.'
             ],
         },
         'external_references': {
@@ -126,9 +123,8 @@ def test_sighting_validation_fails():
             0: {
                 'dangerous': ['Unknown field.'],
                 'type': [
-                    'Must be one of: {}.'.format(
-                        ', '.join(map(repr, OBSERVABLE_TYPE_CHOICES))
-                    )
+                    'Must be one of: '
+                    f'{", ".join(map(repr, OBSERVABLE_TYPE_CHOICES))}.'
                 ],
                 'value': ['Missing data for required field.'],
             },
@@ -138,62 +134,45 @@ def test_sighting_validation_fails():
                 'score': ['Unknown field.'],
                 'origin': ['Missing data for required field.'],
                 'relation': [
-                    'Must be one of: {}.'.format(
-                        ', '.join(map(repr, OBSERVABLE_RELATION_CHOICES))
-                    )
+                    'Must be one of: '
+                    f'{", ".join(map(repr, OBSERVABLE_RELATION_CHOICES))}.'
                 ],
             }
         },
         'resolution': [
-            'Must be one of: {}.'.format(
-                ', '.join(map(repr, RESOLUTION_CHOICES))
-            )
+            f'Must be one of: {", ".join(map(repr, RESOLUTION_CHOICES))}.'
         ],
         'revision': [
-            'Must be greater than or equal to {}.'.format(
-                REVISION_MIN_VALUE
-            )
+            f'Must be greater than or equal to {REVISION_MIN_VALUE}.'
         ],
         'sensor': [
-            'Must be one of: {}.'.format(
-                ', '.join(map(repr, SENSOR_CHOICES))
-            )
+            f'Must be one of: {", ".join(map(repr, SENSOR_CHOICES))}.'
         ],
         'sensor_coordinates': {
             0: {
                 'location': ['Unknown field.'],
                 'type': [
-                    'Must be one of: {}.'.format(
-                        ', '.join(map(repr, SENSOR_CHOICES))
-                    )
+                    f'Must be one of: {", ".join(map(repr, SENSOR_CHOICES))}.'
                 ],
             },
         },
         'severity':  [
-            'Must be one of: {}.'.format(
-                ', '.join(map(repr, SEVERITY_CHOICES))
-            )
+            f'Must be one of: {", ".join(map(repr, SEVERITY_CHOICES))}.'
         ],
         'short_description': [
-            'Must be at most {} characters long.'.format(
-                SHORT_DESCRIPTION_LENGTH
-            )
+            f'Must be at most {SHORT_DESCRIPTION_LENGTH} characters long.'
         ],
         'targets': {
             0: {
                 'observables': ['Missing data for required field.'],
                 'type': [
-                    'Must be one of: {}.'.format(
-                        ', '.join(map(repr, SENSOR_CHOICES))
-                    )
+                    f'Must be one of: {", ".join(map(repr, SENSOR_CHOICES))}.'
                 ],
             },
         },
         'timestamp': ['Not a valid datetime.'],
         'tlp': [
-            'Must be one of: {}.'.format(
-                ', '.join(map(repr, TLP_CHOICES))
-            )
+            f'Must be one of: {", ".join(map(repr, TLP_CHOICES))}.'
         ],
     }
 
