@@ -1,9 +1,13 @@
 from functools import partial
 
 from marshmallow import fields
-from marshmallow.decorators import validates_schema
+from marshmallow.decorators import (
+    validates_schema,
+    post_load,
+)
 from marshmallow.exceptions import ValidationError
 from marshmallow.schema import Schema
+from marshmallow.utils import INCLUDE
 
 from .fields import DateTimeField
 from .validators import (
@@ -19,6 +23,10 @@ from ...constants import (
     OBSERVABLE_TYPE_CHOICES,
     OBSERVABLE_RELATION_CHOICES,
     SENSOR_CHOICES,
+    BOOLEAN_OPERATOR_CHOICES,
+    KILL_CHAIN_PHASE_NAME_CHOICES,
+    CONFIDENCE_CHOICES,
+    SPECIFICATION_TYPE_CHOICES,
 )
 
 
@@ -170,3 +178,130 @@ class ValidTimeSchema(Schema):
         if data['start_time'] > data['end_time']:
             message = 'Not a valid period of time: start must be before end.'
             raise ValidationError(message)
+
+
+class CompositeIndicatorExpressionSchema(Schema):
+    indicator_ids = fields.List(
+        fields.String(
+            validate=validate_string,
+        ),
+        required=True,
+    )
+    operator = fields.String(
+        validate=partial(validate_string, choices=BOOLEAN_OPERATOR_CHOICES),
+        required=True,
+    )
+
+
+class KillChainPhaseSchema(Schema):
+    kill_chain_name = fields.String(
+        validate=validate_string,
+        required=True,
+    )
+    phase_name = fields.String(
+        validate=partial(
+            validate_string,
+            choices=KILL_CHAIN_PHASE_NAME_CHOICES,
+        ),
+        required=True,
+    )
+
+    @post_load
+    def normalize_kill_chain_name(self, data, **kwargs):
+        if 'kill_chain_name' in data:
+            value = data['kill_chain_name']
+            value = value.lower().strip().split()
+            value = ' '.join(value)
+            value = value.replace(' ', '_').replace('_', '-')
+            data['kill_chain_name'] = value
+        return data
+
+
+class BaseSpecificationSchema(Schema):
+    pass
+
+
+class RelatedJudgementSchema(Schema):
+    judgement_id = fields.String(
+        validate=validate_string,
+        required=True,
+    )
+    confidence = fields.String(
+        validate=partial(validate_string, choices=CONFIDENCE_CHOICES),
+    )
+    relationship = fields.String(
+        validate=validate_string,
+    )
+    source = fields.String(
+        validate=validate_string,
+    )
+
+
+class JudgementSpecificationSchema(BaseSpecificationSchema):
+    judgements = fields.List(
+        fields.String(
+            validate=validate_string,
+        ),
+        required=True,
+    )
+    required_judgements = fields.List(
+        fields.Nested(RelatedJudgementSchema),
+        required=True,
+    )
+
+
+class ThreatBrainSpecificationSchema(BaseSpecificationSchema):
+    variables = fields.List(
+        fields.String(
+            validate=validate_string,
+        ),
+        required=True,
+    )
+    query = fields.String(
+        validate=validate_string,
+    )
+
+
+class SnortSpecificationSchema(BaseSpecificationSchema):
+    snort_sig = fields.String(
+        validate=validate_string,
+        required=True,
+    )
+
+
+class SIOCSpecificationSchema(BaseSpecificationSchema):
+    SIOC = fields.String(
+        validate=validate_string,
+        required=True,
+    )
+
+
+class OpenIOCSpecificationSchema(BaseSpecificationSchema):
+    open_IOC = fields.String(
+        validate=validate_string,
+        required=True,
+    )
+
+
+SPECIFICATION_SCHEMA_MAP = dict(
+    zip(SPECIFICATION_TYPE_CHOICES, BaseSpecificationSchema.__subclasses__())
+)
+
+
+class SpecificationSchema(Schema):
+    type = fields.String(
+        validate=partial(validate_string, choices=SPECIFICATION_TYPE_CHOICES),
+        required=True,
+    )
+
+    def load(self, data, **kwargs):
+        kwargs['unknown'] = INCLUDE
+
+        data = super().load(data, **kwargs)
+
+        schema = SPECIFICATION_SCHEMA_MAP[data['type']]
+
+        return {
+            'type': data.pop('type'),
+            **schema().load(data)
+        }
