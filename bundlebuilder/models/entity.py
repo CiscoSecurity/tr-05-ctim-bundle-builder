@@ -90,10 +90,10 @@ class Entity(metaclass=EntityMeta):
     @property
     def external_id_deterministic_value(self) -> str:
         return '|'.join(
-            chain(self.external_id_core_values, self.external_id_extra_values)
+            chain(self.external_id_seed_values, self.external_id_extra_values)
         )
 
     @property
     @abc.abstractmethod
-    def external_id_core_values(self) -> List[str]:
+    def external_id_seed_values(self) -> List[str]:
         pass

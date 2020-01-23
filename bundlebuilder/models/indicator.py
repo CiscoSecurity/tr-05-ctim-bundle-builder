@@ -109,6 +109,6 @@ class Indicator(Entity):
     schema = IndicatorSchema
 
     @property
-    def external_id_core_values(self) -> List[str]:
+    def external_id_seed_values(self) -> List[str]:
         # TODO: replace with real implementation
         return []

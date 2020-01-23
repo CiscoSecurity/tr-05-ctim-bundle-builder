@@ -48,7 +48,7 @@ def test_empty_schema_validation_succeeds():
         schema = GoodSchema
 
         @property
-        def external_id_core_values(self):
+        def external_id_seed_values(self):
             return []
 
     expected_type = 'good'
@@ -77,9 +77,9 @@ def test_empty_schema_validation_succeeds():
 
     for index in range(10):
         session = Session(
-            external_id_prefix='session-%d' % index,
-            source='Session %d' % index,
-            source_uri='https://bundlebuilder.com/session/%d' % index,
+            external_id_prefix=f'session-{index}',
+            source=f'Session {index}',
+            source_uri=f'https://bundlebuilder.com/session/{index}',
         )
 
         with session:

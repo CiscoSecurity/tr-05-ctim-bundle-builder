@@ -37,15 +37,15 @@ class SessionSchema(Schema):
 Session = namedtuple('Session', ['external_id_prefix', 'source', 'source_uri'])
 
 
-def get_session():
+def get_session() -> Session:
     return _SESSION
 
 
-def get_default_session():
+def get_default_session() -> Session:
     return _DEFAULT_SESSION
 
 
-def set_session(external_id_prefix, source, source_uri):
+def set_session(external_id_prefix: str, source: str, source_uri: str) -> None:
     data = {
         'external_id_prefix': external_id_prefix,
         'source': source,
@@ -61,7 +61,7 @@ def set_session(external_id_prefix, source, source_uri):
     _SESSION = Session(**data)
 
 
-def set_default_session():
+def set_default_session() -> None:
     global _SESSION
     _SESSION = _DEFAULT_SESSION
 
