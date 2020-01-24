@@ -1,5 +1,4 @@
 from functools import partial
-from operator import itemgetter
 from typing import List
 
 from marshmallow import fields
@@ -114,10 +113,4 @@ class Sighting(Entity):
             self.type,
             self.title or '',
             (self.timestamp or '').split('T', 1)[0],
-        ] + [
-            '{type}:{value}'.format(**observable)
-            for observable in sorted(
-                self.observables or [],
-                key=itemgetter('type', 'value'),
-            )
         ]
