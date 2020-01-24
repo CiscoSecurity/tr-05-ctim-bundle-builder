@@ -4,11 +4,11 @@ import re
 from mock import MagicMock
 
 
-def mock_id(external_id_prefix, type):
+def mock_transient_id(external_id_prefix, type):
     id_mock = MagicMock()
 
     id_re = re.compile(
-        f'^transient:{external_id_prefix}-{type}-[0-9a-z]{{64}}$'
+        f'^transient:{external_id_prefix}-{type}-[0-9a-z]{{32}}$'
     )
     id_mock.__eq__ = lambda self, other: (
         bool(id_re.match(other))

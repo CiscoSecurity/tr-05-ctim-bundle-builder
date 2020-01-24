@@ -4,14 +4,14 @@
 
 # Bundle Builder
 
-Bundle Builder (or BB for short) is a tool for building CTIM entities and
-packaging them into so called bundles.
+Bundle Builder (or BB for short) is a tool for manipulating CTIM entities and
+packaging them into so-called bundles.
 
 Features (more details later):
 - Support for sessions per each particular use of BB.
 - Validation of fields for CTIM entities according to the
 [latest schemas](https://github.com/threatgrid/ctim/tree/master/doc/structures).
-- Generation of external IDs (XIDs) and transient IDs according to the
+- Generation of transient IDs and external IDs (XIDs) according to the
 [best practices](https://github.com/threatgrid/ctim/blob/master/doc/tutorials/modeling-threat-intel-ctim.md#1113-best-practices-for-external-ids).
 
 ## Installation

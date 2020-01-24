@@ -1,5 +1,8 @@
 from functools import partial
-from typing import List
+from typing import (
+    Iterator,
+    Tuple,
+)
 
 from marshmallow import fields
 from marshmallow.decorators import validates_schema
@@ -109,13 +112,12 @@ class JudgementSchema(Schema):
 class Judgement(Entity):
     schema = JudgementSchema
 
-    @property
-    def external_id_seed_values(self) -> List[str]:
-        return [
+    def generate_external_id_seed_values(self) -> Iterator[Tuple[str]]:
+        yield (
             self.external_id_prefix,
             self.type,
             self.source,
             self.observable['value'],
             str(self.disposition),
             (self.timestamp or '').split('T', 1)[0],
-        ]
+        )

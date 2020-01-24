@@ -15,7 +15,7 @@ from bundlebuilder.session import (
     Session,
 )
 from .utils import (
-    mock_id,
+    mock_transient_id,
     mock_external_id,
 )
 
@@ -47,11 +47,10 @@ def test_empty_schema_validation_succeeds():
     class Good(Entity):
         schema = GoodSchema
 
-        @property
-        def external_id_seed_values(self):
-            return []
+        def generate_external_id_seed_values(self):
+            yield ()
 
-    expected_type = 'good'
+    type_ = 'good'
 
     assert get_session() == get_default_session()
 
@@ -65,13 +64,13 @@ def test_empty_schema_validation_succeeds():
         'id': good.id,
         'external_ids': good.external_ids,
     } == {
-        'type': expected_type,
+        'type': type_,
         'schema_version': SCHEMA_VERSION,
         'source': DEFAULT_SESSION_SOURCE,
         'source_uri': DEFAULT_SESSION_SOURCE_URI,
-        'id': mock_id(DEFAULT_SESSION_EXTERNAL_ID_PREFIX, expected_type),
+        'id': mock_transient_id(DEFAULT_SESSION_EXTERNAL_ID_PREFIX, type_),
         'external_ids': [
-            mock_external_id(DEFAULT_SESSION_EXTERNAL_ID_PREFIX, expected_type)
+            mock_external_id(DEFAULT_SESSION_EXTERNAL_ID_PREFIX, type_)
         ],
     }
 
@@ -89,12 +88,12 @@ def test_empty_schema_validation_succeeds():
         assert get_session() == get_default_session()
 
         assert good.json == {
-            'type': expected_type,
+            'type': type_,
             'schema_version': SCHEMA_VERSION,
             'source': session.source,
             'source_uri': session.source_uri,
-            'id': mock_id(session.external_id_prefix, expected_type),
+            'id': mock_transient_id(session.external_id_prefix, type_),
             'external_ids': [
-                mock_external_id(session.external_id_prefix, expected_type)
+                mock_external_id(session.external_id_prefix, type_)
             ],
         }

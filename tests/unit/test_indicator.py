@@ -20,7 +20,7 @@ from bundlebuilder.constants import (
 from bundlebuilder.exceptions import ValidationError
 from bundlebuilder.models import Indicator
 from .utils import (
-    mock_id,
+    mock_transient_id,
     mock_external_id,
     utc_now_iso,
 )
@@ -163,16 +163,16 @@ def test_indicator_validation_succeeds():
         {'kill_chain_name': 'kill-chain-name'}
     )
 
-    expected_type = 'indicator'
+    type_ = 'indicator'
 
     assert indicator.json == {
-        'type': expected_type,
+        'type': type_,
         'schema_version': SCHEMA_VERSION,
         'source': DEFAULT_SESSION_SOURCE,
         'source_uri': DEFAULT_SESSION_SOURCE_URI,
-        'id': mock_id(DEFAULT_SESSION_EXTERNAL_ID_PREFIX, expected_type),
+        'id': mock_transient_id(DEFAULT_SESSION_EXTERNAL_ID_PREFIX, type_),
         'external_ids': [
-            mock_external_id(DEFAULT_SESSION_EXTERNAL_ID_PREFIX, expected_type)
+            mock_external_id(DEFAULT_SESSION_EXTERNAL_ID_PREFIX, type_)
         ],
         **indicator_data
     }

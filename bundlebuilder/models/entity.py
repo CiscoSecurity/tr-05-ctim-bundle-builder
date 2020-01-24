@@ -4,7 +4,9 @@ from itertools import chain
 from typing import (
     List,
     Iterator,
+    Tuple,
 )
+from uuid import uuid4
 
 from marshmallow.exceptions import (
     ValidationError as MarshmallowValidationError
@@ -66,37 +68,49 @@ class Entity(metaclass=EntityMeta):
         self.json['source'] = session.source
         self.json['source_uri'] = session.source_uri
 
-        # Generate and set a transient ID and an XID only after
-        # all the other attributes are already set properly.
-        self.json['id'] = self.generate_id()
-        self.json['external_ids'] = [self.generate_external_id()]
+        # Generate and set a transient ID and a list of XIDs only after all the
+        # other attributes are already set properly.
+        self.json['id'] = self.generate_transient_id()
+        self.json['external_ids'] = self.generate_external_ids()
 
     def __getattr__(self, field):
         return self.json.get(field)
 
-    def generate_id(self) -> str:
-        return 'transient:' + self.generate_external_id()
-
-    def generate_external_id(self) -> str:
-        return '{prefix}-{type}-{sha256}'.format(
+    def generate_transient_id(self) -> str:
+        return 'transient:{prefix}-{type}-{uuid}'.format(
             prefix=self.external_id_prefix,
             type=self.type,
-            sha256=hashlib.sha256(
-                bytes(self.external_id_deterministic_value, 'utf-8')
-            ).hexdigest(),
+            uuid=uuid4().hex,
         )
 
-    @property
-    def external_id_deterministic_value(self) -> str:
-        # Chain together all the values available.
-        values: Iterator[str] = chain(self.external_id_seed_values,
-                                      self.external_id_extra_values)
-        # Filter out any empty values.
-        values: Iterator[str] = filter(bool, values)
-        # Join up all the values left.
-        return '|'.join(values)
+    def generate_external_ids(self) -> List[str]:
+        return [
+            '{prefix}-{type}-{sha256}'.format(
+                prefix=self.external_id_prefix,
+                type=self.type,
+                sha256=hashlib.sha256(
+                    bytes(external_id_deterministic_value, 'utf-8')
+                ).hexdigest(),
+            )
+            for external_id_deterministic_value
+            in self.generate_external_id_deterministic_value()
+        ]
 
-    @property
+    def generate_external_id_deterministic_value(self) -> Iterator[str]:
+        for external_id_seed_values in self.generate_external_id_seed_values():
+            # Chain together all the values available.
+            # Filter out any empty values.
+            # Join up all the values left.
+            yield '|'.join(
+                filter(
+                    bool,
+                    chain(
+                        external_id_seed_values,
+                        self.external_id_extra_values,
+                    )
+                )
+            )
+
     @abc.abstractmethod
-    def external_id_seed_values(self) -> List[str]:
+    def generate_external_id_seed_values(self) -> Iterator[Tuple[str]]:
         pass

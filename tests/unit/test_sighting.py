@@ -21,7 +21,7 @@ from bundlebuilder.constants import (
 from bundlebuilder.exceptions import ValidationError
 from bundlebuilder.models import Sighting
 from .utils import (
-    mock_id,
+    mock_transient_id,
     mock_external_id,
     utc_now_iso,
 )
@@ -220,16 +220,16 @@ def test_sighting_validation_succeeds():
 
     sighting = Sighting(**sighting_data)
 
-    expected_type = 'sighting'
+    type_ = 'sighting'
 
     assert sighting.json == {
-        'type': expected_type,
+        'type': type_,
         'schema_version': SCHEMA_VERSION,
         'source': DEFAULT_SESSION_SOURCE,
         'source_uri': DEFAULT_SESSION_SOURCE_URI,
-        'id': mock_id(DEFAULT_SESSION_EXTERNAL_ID_PREFIX, expected_type),
+        'id': mock_transient_id(DEFAULT_SESSION_EXTERNAL_ID_PREFIX, type_),
         'external_ids': [
-            mock_external_id(DEFAULT_SESSION_EXTERNAL_ID_PREFIX, expected_type)
+            mock_external_id(DEFAULT_SESSION_EXTERNAL_ID_PREFIX, type_)
         ],
         **sighting_data
     }

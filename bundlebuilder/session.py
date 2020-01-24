@@ -34,7 +34,7 @@ class SessionSchema(Schema):
     )
 
 
-Session = namedtuple('Session', ['external_id_prefix', 'source', 'source_uri'])
+Session = namedtuple('Session', ('external_id_prefix', 'source', 'source_uri'))
 
 
 def get_session() -> Session:

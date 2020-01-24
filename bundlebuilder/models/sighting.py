@@ -1,5 +1,8 @@
 from functools import partial
-from typing import List
+from typing import (
+    Iterator,
+    Tuple,
+)
 
 from marshmallow import fields
 from marshmallow.schema import Schema
@@ -106,11 +109,10 @@ class SightingSchema(Schema):
 class Sighting(Entity):
     schema = SightingSchema
 
-    @property
-    def external_id_seed_values(self) -> List[str]:
-        return [
+    def generate_external_id_seed_values(self) -> Iterator[Tuple[str]]:
+        yield (
             self.external_id_prefix,
             self.type,
             self.title or '',
             (self.timestamp or '').split('T', 1)[0],
-        ]
+        )

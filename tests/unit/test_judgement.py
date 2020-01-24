@@ -17,7 +17,7 @@ from bundlebuilder.constants import (
 from bundlebuilder.exceptions import ValidationError
 from bundlebuilder.models import Judgement
 from .utils import (
-    mock_id,
+    mock_transient_id,
     mock_external_id,
     utc_now_iso,
 )
@@ -121,16 +121,16 @@ def test_judgement_validation_succeeds():
 
     judgement = Judgement(**judgment_data)
 
-    expected_type = 'judgement'
+    type_ = 'judgement'
 
     assert judgement.json == {
-        'type': expected_type,
+        'type': type_,
         'schema_version': SCHEMA_VERSION,
         'source': DEFAULT_SESSION_SOURCE,
         'source_uri': DEFAULT_SESSION_SOURCE_URI,
-        'id': mock_id(DEFAULT_SESSION_EXTERNAL_ID_PREFIX, expected_type),
+        'id': mock_transient_id(DEFAULT_SESSION_EXTERNAL_ID_PREFIX, type_),
         'external_ids': [
-            mock_external_id(DEFAULT_SESSION_EXTERNAL_ID_PREFIX, expected_type)
+            mock_external_id(DEFAULT_SESSION_EXTERNAL_ID_PREFIX, type_)
         ],
         **judgment_data
     }
