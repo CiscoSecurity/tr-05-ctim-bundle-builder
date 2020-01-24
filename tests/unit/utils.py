@@ -33,4 +33,4 @@ def mock_external_id(external_id_prefix, type):
 def utc_now_iso():
     # Python datetime objects don't have time zone info by default,
     # and without it, Python actually violates the ISO 8601 specification.
-    return dt.datetime.utcnow().isoformat() + 'Z'
+    return dt.datetime.utcnow().isoformat(timespec='milliseconds') + 'Z'

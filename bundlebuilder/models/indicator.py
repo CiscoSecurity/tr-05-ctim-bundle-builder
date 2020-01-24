@@ -119,6 +119,6 @@ class Indicator(Entity):
         return [
             self.external_id_prefix,
             self.type,
-            self.title,
+            self.title or '',
             self.producer,
         ]

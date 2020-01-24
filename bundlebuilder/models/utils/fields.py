@@ -32,4 +32,4 @@ class DateTimeField(fields.NaiveDateTime):
         # but don't convert to a DateTime object.
         datetime = super()._deserialize(value, attr, data, **kwargs)
 
-        return datetime.isoformat() + 'Z'
+        return datetime.isoformat(timespec='milliseconds') + 'Z'

@@ -92,10 +92,9 @@ class Entity(metaclass=EntityMeta):
         values: Iterator[str] = chain(self.external_id_seed_values,
                                       self.external_id_extra_values)
         # Filter out any empty values.
-        values: Iterator[str] = filter(lambda value: value is not None,
-                                       values)
+        values: Iterator[str] = filter(bool, values)
         # Join up all the values left.
-        return '|'.join(map(str, values))
+        return '|'.join(values)
 
     @property
     @abc.abstractmethod

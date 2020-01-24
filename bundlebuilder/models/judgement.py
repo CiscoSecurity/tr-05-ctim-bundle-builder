@@ -114,4 +114,8 @@ class Judgement(Entity):
         return [
             self.external_id_prefix,
             self.type,
+            self.source,
+            self.observable['value'],
+            str(self.disposition),
+            (self.timestamp or '').split('T', 1)[0],
         ]
