@@ -1,4 +1,4 @@
-[![Travis CI Build Status](https://travis-ci.com/CiscoSecurity/tr-05-ctim-bundle-builder.svg)](https://travis-ci.com/CiscoSecurity/tr-05-ctim-bundle-builder)
+[![Travis CI Build Status](https://travis-ci.com/CiscoSecurity/tr-05-ctim-bundle-builder.svg?branch=develop)](https://travis-ci.com/CiscoSecurity/tr-05-ctim-bundle-builder)
 [![PyPi Version](https://img.shields.io/pypi/v/bundlebuilder.svg)](https://pypi.python.org/pypi/bundlebuilder)
 [![Python Versions](https://img.shields.io/pypi/pyversions/bundlebuilder.svg)](https://pypi.python.org/pypi/bundlebuilder)
 
