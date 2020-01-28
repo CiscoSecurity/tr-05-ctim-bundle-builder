@@ -2,13 +2,13 @@
 [![PyPi Version](https://img.shields.io/pypi/v/bundlebuilder.svg)](https://pypi.python.org/pypi/bundlebuilder)
 [![Python Versions](https://img.shields.io/pypi/pyversions/bundlebuilder.svg)](https://pypi.python.org/pypi/bundlebuilder)
 
-# Bundle Builder
+# CTIM Bundle Builder
 
-Bundle Builder (or BB for short) is a tool for manipulating CTIM entities and
-packaging them into so-called bundles.
+A Python tool for building CTIM entities, relationships between them, and
+finally packaging everything up into so-called bundles.
 
 Features (more details later):
-- Support for sessions per each particular use of BB.
+- Support for sessions per each particular use of the tool.
 - Validation of fields for CTIM entities according to the
 [latest schemas](https://github.com/threatgrid/ctim/tree/master/doc/structures).
 - Generation of transient IDs and external IDs (XIDs) according to the

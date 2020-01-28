@@ -30,7 +30,7 @@ NAME = 'bundlebuilder'
 
 VERSION = read_version()
 
-DESCRIPTION = 'Python CTIM Bundle Builder'
+DESCRIPTION = 'CTIM Bundle Builder'
 
 LONG_DESCRIPTION = read_readme()
 
@@ -48,7 +48,7 @@ PYTHON_REQUIRES = '>=3.6'
 
 INSTALL_REQUIRES = read_requirements()
 
-KEYWORDS = ['cisco', 'security', 'python', 'ctim', 'bundle', 'builder']
+KEYWORDS = ['cisco', 'security', 'ctim', 'bundle', 'builder', 'python']
 
 CLASSIFIERS = [
     'Intended Audience :: Developers',
