@@ -8,5 +8,5 @@ install:
 - pip install -U .
 - pip install -U -r test-requirements.txt
 script:
-- flake8 bundlebuilder/
-- pytest tests/
+- flake8 bundlebuilder
+- pytest tests/unit -v
