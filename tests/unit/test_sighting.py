@@ -14,11 +14,14 @@ from bundlebuilder.constants import (
     SHORT_DESCRIPTION_LENGTH,
     TLP_CHOICES,
     SCHEMA_VERSION,
+    DEFAULT_SESSION_SOURCE,
+    DEFAULT_SESSION_SOURCE_URI,
+    DEFAULT_SESSION_EXTERNAL_ID_PREFIX,
 )
 from bundlebuilder.exceptions import ValidationError
 from bundlebuilder.models import Sighting
 from .utils import (
-    mock_id,
+    mock_transient_id,
     mock_external_id,
     utc_now_iso,
 )
@@ -28,7 +31,6 @@ def test_sighting_validation_fails():
     sighting_data = {
         'greeting': '¡Hola!',
         'confidence': 'Unbelievable',
-        'id': None,
         'observed_time': {
             'middle_time': 'This value will be ignored anyway, right?',
             'end_time': '1970-01-01T00:00:00Z',
@@ -36,11 +38,10 @@ def test_sighting_validation_fails():
         'data': {
             'column_count': +1,
             'columns': [{'type': 'anything'}],
-            'rows': [''],
+            'rows': [object()],
             'row_count': -1,
         },
         'description': '\U0001f4a9' * DESCRIPTION_MAX_LENGTH,
-        'external_ids': ['foo', 'bar'],
         'external_references': [{
             'description': '',
             'external_id': None,
@@ -68,7 +69,6 @@ def test_sighting_validation_fails():
         }],
         'severity': 'Insignificant',
         'short_description': '\U0001f4a9' * DESCRIPTION_MAX_LENGTH,
-        'source': '',
         'targets': [{
             'observed_time': {'start_time': '1970-01-01T00:00:00Z'},
             'type': 'actuator',
@@ -78,20 +78,17 @@ def test_sighting_validation_fails():
         'tlp': 'razzmatazz',
     }
 
-    with assert_raises(ValidationError) as exception_info:
+    with assert_raises(ValidationError) as exc_info:
         Sighting(**sighting_data)
 
-    error = exception_info.value
+    error = exc_info.value
 
     assert error.data == {
         'greeting': ['Unknown field.'],
         'confidence': [
-            'Must be one of: {}.'.format(
-                ', '.join(map(repr, CONFIDENCE_CHOICES))
-            )
+            f'Must be one of: {", ".join(map(repr, CONFIDENCE_CHOICES))}.'
         ],
         'count': ['Missing data for required field.'],
-        'id': ['Field may not be null.'],
         'observed_time': {
             'start_time': ['Missing data for required field.'],
             'middle_time': ['Unknown field.'],
@@ -102,9 +99,8 @@ def test_sighting_validation_fails():
                 0: {
                     'name': ['Missing data for required field.'],
                     'type': [
-                        'Must be one of: {}.'.format(
-                            ', '.join(map(repr, COLUMN_TYPE_CHOICES))
-                        )
+                        'Must be one of: '
+                        f'{", ".join(map(repr, COLUMN_TYPE_CHOICES))}.'
                     ],
                 }
             },
@@ -112,7 +108,7 @@ def test_sighting_validation_fails():
                 0: ['Not a valid list.'],
             },
             'row_count': [
-                'Must be greater than or equal to {}.'.format(COUNT_MIN_VALUE)
+                f'Must be greater than or equal to {COUNT_MIN_VALUE}.'
             ],
         },
         'external_references': {
@@ -127,9 +123,8 @@ def test_sighting_validation_fails():
             0: {
                 'dangerous': ['Unknown field.'],
                 'type': [
-                    'Must be one of: {}.'.format(
-                        ', '.join(map(repr, OBSERVABLE_TYPE_CHOICES))
-                    )
+                    'Must be one of: '
+                    f'{", ".join(map(repr, OBSERVABLE_TYPE_CHOICES))}.'
                 ],
                 'value': ['Missing data for required field.'],
             },
@@ -139,63 +134,45 @@ def test_sighting_validation_fails():
                 'score': ['Unknown field.'],
                 'origin': ['Missing data for required field.'],
                 'relation': [
-                    'Must be one of: {}.'.format(
-                        ', '.join(map(repr, OBSERVABLE_RELATION_CHOICES))
-                    )
+                    'Must be one of: '
+                    f'{", ".join(map(repr, OBSERVABLE_RELATION_CHOICES))}.'
                 ],
             }
         },
         'resolution': [
-            'Must be one of: {}.'.format(
-                ', '.join(map(repr, RESOLUTION_CHOICES))
-            )
+            f'Must be one of: {", ".join(map(repr, RESOLUTION_CHOICES))}.'
         ],
         'revision': [
-            'Must be greater than or equal to {}.'.format(
-                REVISION_MIN_VALUE
-            )
+            f'Must be greater than or equal to {REVISION_MIN_VALUE}.'
         ],
         'sensor': [
-            'Must be one of: {}.'.format(
-                ', '.join(map(repr, SENSOR_CHOICES))
-            )
+            f'Must be one of: {", ".join(map(repr, SENSOR_CHOICES))}.'
         ],
         'sensor_coordinates': {
             0: {
                 'location': ['Unknown field.'],
                 'type': [
-                    'Must be one of: {}.'.format(
-                        ', '.join(map(repr, SENSOR_CHOICES))
-                    )
+                    f'Must be one of: {", ".join(map(repr, SENSOR_CHOICES))}.'
                 ],
             },
         },
         'severity':  [
-            'Must be one of: {}.'.format(
-                ', '.join(map(repr, SEVERITY_CHOICES))
-            )
+            f'Must be one of: {", ".join(map(repr, SEVERITY_CHOICES))}.'
         ],
         'short_description': [
-            'Must be at most {} characters long.'.format(
-                SHORT_DESCRIPTION_LENGTH
-            )
+            f'Must be at most {SHORT_DESCRIPTION_LENGTH} characters long.'
         ],
-        'source': ['Field may not be blank.'],
         'targets': {
             0: {
                 'observables': ['Missing data for required field.'],
                 'type': [
-                    'Must be one of: {}.'.format(
-                        ', '.join(map(repr, SENSOR_CHOICES))
-                    )
+                    f'Must be one of: {", ".join(map(repr, SENSOR_CHOICES))}.'
                 ],
             },
         },
         'timestamp': ['Not a valid datetime.'],
         'tlp': [
-            'Must be one of: {}.'.format(
-                ', '.join(map(repr, TLP_CHOICES))
-            )
+            f'Must be one of: {", ".join(map(repr, TLP_CHOICES))}.'
         ],
     }
 
@@ -231,10 +208,6 @@ def test_sighting_validation_succeeds():
             'type': 'endpoint.laptop',
             'os': 'Linux',
         }],
-        'source': 'Python CTIM Bundle Builder : Sighting',
-        'source_uri': (
-            'https://github.com/CiscoSecurity/tr-05-ctim-bundle-builder'
-        ),
         'targets': [{
             'observables': [{'type': 'sha256', 'value': '01' * 32}],
             'observed_time': {'start_time': utc_now_iso()},
@@ -247,10 +220,16 @@ def test_sighting_validation_succeeds():
 
     sighting = Sighting(**sighting_data)
 
+    type_ = 'sighting'
+
     assert sighting.json == {
-        'type': 'sighting',
+        'type': type_,
         'schema_version': SCHEMA_VERSION,
-        'id': mock_id('sighting'),
-        'external_ids': [mock_external_id('sighting')],
+        'source': DEFAULT_SESSION_SOURCE,
+        'source_uri': DEFAULT_SESSION_SOURCE_URI,
+        'id': mock_transient_id(DEFAULT_SESSION_EXTERNAL_ID_PREFIX, type_),
+        'external_ids': [
+            mock_external_id(DEFAULT_SESSION_EXTERNAL_ID_PREFIX, type_)
+        ],
         **sighting_data
     }

@@ -1,4 +1,8 @@
 from functools import partial
+from typing import (
+    Iterator,
+    Tuple,
+)
 
 from marshmallow import fields
 from marshmallow.schema import Schema
@@ -28,7 +32,6 @@ from ..constants import (
     SENSOR_CHOICES,
     SEVERITY_CHOICES,
     SHORT_DESCRIPTION_LENGTH,
-    SOURCE_MAX_LENGTH,
     TITLE_MAX_LENGTH,
     TLP_CHOICES,
 )
@@ -46,9 +49,6 @@ class SightingSchema(Schema):
         validate=partial(validate_integer, min_value=COUNT_MIN_VALUE),
         required=True,
     )
-    id = fields.String(
-        validate=validate_string,
-    )
     observed_time = fields.Nested(
         ObservedTimeSchema,
         required=True,
@@ -56,11 +56,6 @@ class SightingSchema(Schema):
     data = fields.Nested(SightingDataTableSchema)
     description = fields.String(
         validate=partial(validate_string, max_length=DESCRIPTION_MAX_LENGTH),
-    )
-    external_ids = fields.List(
-        fields.String(
-            validate=validate_string,
-        )
     )
     external_references = fields.List(
         fields.Nested(ExternalReferenceSchema)
@@ -93,12 +88,6 @@ class SightingSchema(Schema):
     short_description = fields.String(
         validate=partial(validate_string, max_length=SHORT_DESCRIPTION_LENGTH),
     )
-    source = fields.String(
-        validate=partial(validate_string, max_length=SOURCE_MAX_LENGTH),
-    )
-    source_uri = fields.String(
-        validate=validate_string,
-    )
     targets = fields.List(
         fields.Nested(IdentitySpecificationSchema)
     )
@@ -110,10 +99,33 @@ class SightingSchema(Schema):
         validate=partial(validate_string, choices=TLP_CHOICES),
     )
 
+    external_id_extra_values = fields.List(
+        fields.String(
+            validate=validate_string,
+        )
+    )
+
 
 class Sighting(Entity):
     schema = SightingSchema
 
-    def generate_external_id_seed(self):
-        # TODO: replace with real implementation
-        return ''
+    def generate_external_id_seed_values(self) -> Iterator[Tuple[str]]:
+        observables = self.observables or []
+
+        if observables:
+            for observable in observables:
+                yield (
+                    self.external_id_prefix,
+                    self.type,
+                    self.title or '',
+                    (self.timestamp or '').split('T', 1)[0],
+                    observable['value'],
+                )
+
+        else:
+            yield (
+                self.external_id_prefix,
+                self.type,
+                self.title or '',
+                (self.timestamp or '').split('T', 1)[0],
+            )

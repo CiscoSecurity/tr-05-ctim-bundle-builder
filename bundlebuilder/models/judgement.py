@@ -1,4 +1,8 @@
 from functools import partial
+from typing import (
+    Iterator,
+    Tuple,
+)
 
 from marshmallow import fields
 from marshmallow.decorators import validates_schema
@@ -22,7 +26,6 @@ from ..constants import (
     PRIORITY_MIN_VALUE,
     PRIORITY_MAX_VALUE,
     SEVERITY_CHOICES,
-    SOURCE_MAX_LENGTH,
     LANGUAGE_MAX_LENGTH,
     REASON_MAX_LENGTH,
     REVISION_MIN_VALUE,
@@ -46,9 +49,6 @@ class JudgementSchema(Schema):
         validate=partial(validate_string, choices=DISPOSITION_MAP.values()),
         required=True,
     )
-    id = fields.String(
-        validate=validate_string,
-    )
     observable = fields.Nested(
         ObservableSchema,
         required=True,
@@ -65,18 +65,9 @@ class JudgementSchema(Schema):
         validate=partial(validate_string, choices=SEVERITY_CHOICES),
         required=True,
     )
-    source = fields.String(
-        validate=partial(validate_string, max_length=SOURCE_MAX_LENGTH),
-        required=True,
-    )
     valid_time = fields.Nested(
         ValidTimeSchema,
         required=True,
-    )
-    external_ids = fields.List(
-        fields.String(
-            validate=validate_string,
-        )
     )
     external_references = fields.List(
         fields.Nested(ExternalReferenceSchema)
@@ -93,12 +84,15 @@ class JudgementSchema(Schema):
     revision = fields.Integer(
         validate=partial(validate_integer, min_value=REVISION_MIN_VALUE),
     )
-    source_uri = fields.String(
-        validate=validate_string,
-    )
     timestamp = DateTimeField()
     tlp = fields.String(
         validate=partial(validate_string, choices=TLP_CHOICES),
+    )
+
+    external_id_extra_values = fields.List(
+        fields.String(
+            validate=validate_string,
+        )
     )
 
     @validates_schema
@@ -109,9 +103,8 @@ class JudgementSchema(Schema):
         if DISPOSITION_MAP[data['disposition']] != data['disposition_name']:
             message = (
                 'Not a consistent disposition name for the specified '
-                'disposition number. Must be {!r}.'.format(
-                    DISPOSITION_MAP[data['disposition']]
-                )
+                'disposition number. Must be '
+                f'{DISPOSITION_MAP[data["disposition"]]!r}.'
             )
             raise ValidationError(message)
 
@@ -119,6 +112,12 @@ class JudgementSchema(Schema):
 class Judgement(Entity):
     schema = JudgementSchema
 
-    def generate_external_id_seed(self):
-        # TODO: replace with real implementation
-        return ''
+    def generate_external_id_seed_values(self) -> Iterator[Tuple[str]]:
+        yield (
+            self.external_id_prefix,
+            self.type,
+            self.source,
+            self.observable['value'],
+            str(self.disposition),
+            (self.timestamp or '').split('T', 1)[0],
+        )

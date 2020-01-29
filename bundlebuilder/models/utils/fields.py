@@ -5,15 +5,13 @@ from marshmallow import fields
 from ..entity import Entity
 
 
-class EntityRefField(fields.String):
-    default_error_messages = {
-        'invalid': 'Not a valid string or a CTIM entity.',
-    }
+class EntityRefField(fields.Field):
+    default_error_messages = {'invalid': 'Not a valid CTIM entity.'}
 
     def _deserialize(self, value, attr, data, **kwargs):
         if isinstance(value, Entity):
-            value = value.id
-        return super()._deserialize(value, attr, data, **kwargs)
+            return value.id
+        raise self.make_error('invalid')
 
 
 class DateTimeField(fields.NaiveDateTime):
@@ -32,4 +30,4 @@ class DateTimeField(fields.NaiveDateTime):
         # but don't convert to a DateTime object.
         datetime = super()._deserialize(value, attr, data, **kwargs)
 
-        return datetime.isoformat() + 'Z'
+        return datetime.isoformat(timespec='milliseconds') + 'Z'

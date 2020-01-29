@@ -7,7 +7,10 @@ from marshmallow.decorators import (
 )
 from marshmallow.exceptions import ValidationError
 from marshmallow.schema import Schema
-from marshmallow.utils import INCLUDE
+from marshmallow.utils import (
+    INCLUDE,
+    RAISE,
+)
 
 from .fields import DateTimeField
 from .validators import (
@@ -295,13 +298,34 @@ class SpecificationSchema(Schema):
     )
 
     def load(self, data, **kwargs):
+        kwargs['partial'] = False
         kwargs['unknown'] = INCLUDE
 
         data = super().load(data, **kwargs)
 
-        schema = SPECIFICATION_SCHEMA_MAP[data['type']]
+        singleton = False
 
-        return {
-            'type': data.pop('type'),
-            **schema().load(data)
-        }
+        if not isinstance(data, list):
+            singleton = True
+            data = [data]
+
+        message = {}
+
+        kwargs['many'] = False
+        kwargs['unknown'] = RAISE
+
+        for index, _ in enumerate(data):
+            schema = SPECIFICATION_SCHEMA_MAP[data[index]['type']]
+
+            try:
+                data[index] = {
+                    'type': data[index].pop('type'),
+                    **schema().load(data[index], **kwargs)
+                }
+            except ValidationError as error:
+                message[index] = error.messages
+
+        if message:
+            raise ValidationError(message[0] if singleton else message)
+
+        return data[0] if singleton else data

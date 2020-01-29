@@ -13,11 +13,14 @@ from bundlebuilder.constants import (
     SHORT_DESCRIPTION_LENGTH,
     TLP_CHOICES,
     SCHEMA_VERSION,
+    DEFAULT_SESSION_SOURCE,
+    DEFAULT_SESSION_SOURCE_URI,
+    DEFAULT_SESSION_EXTERNAL_ID_PREFIX,
 )
 from bundlebuilder.exceptions import ValidationError
 from bundlebuilder.models import Indicator
 from .utils import (
-    mock_id,
+    mock_transient_id,
     mock_external_id,
     utc_now_iso,
 )
@@ -26,7 +29,6 @@ from .utils import (
 def test_indicator_validation_fails():
     indicator_data = {
         'greeting': '¡Hola!',
-        'id': None,
         'valid_time': {
             'start_time': '1970-01-01T00:00:00Z',
             'middle_time': 'This value will be ignored anyway, right?',
@@ -37,7 +39,6 @@ def test_indicator_validation_fails():
         },
         'confidence': 'Unbelievable',
         'description': '\U0001f4a9' * DESCRIPTION_MAX_LENGTH,
-        'external_ids': ['foo', 'bar'],
         'external_references': [{
             'description': '',
             'external_id': None,
@@ -51,40 +52,32 @@ def test_indicator_validation_fails():
         'revision': -273,
         'severity': 'Insignificant',
         'short_description': '\U0001f4a9' * DESCRIPTION_MAX_LENGTH,
-        'source': '',
-        'specification': {
-            'type': 'ThreatBrain',
-            'query': None,
-        },
+        'specification': {'type': 'ThreatBrain'},
         'test_mechanisms': ['\U0001f4a9' * (TEST_MECHANISM_MAX_LENGTH + 1)],
         'timestamp': '4:20',
         'title': 'OMG! The Best CTIM Bundle Builder Ever!',
         'tlp': 'razzmatazz',
     }
 
-    with assert_raises(ValidationError) as exception_info:
+    with assert_raises(ValidationError) as exc_info:
         Indicator(**indicator_data)
 
-    error = exception_info.value
+    error = exc_info.value
 
     assert error.data == {
         'greeting': ['Unknown field.'],
-        'id': ['Field may not be null.'],
         'producer': ['Missing data for required field.'],
         'valid_time': {
             'middle_time': ['Unknown field.'],
         },
         'composite_indicator_expression': {
             'operator': [
-                'Must be one of: {}.'.format(
-                    ', '.join(map(repr, BOOLEAN_OPERATOR_CHOICES))
-                )
+                'Must be one of: '
+                f'{", ".join(map(repr, BOOLEAN_OPERATOR_CHOICES))}.'
             ],
         },
         'confidence': [
-            'Must be one of: {}.'.format(
-                ', '.join(map(repr, CONFIDENCE_CHOICES))
-            )
+            f'Must be one of: {", ".join(map(repr, CONFIDENCE_CHOICES))}.'
         ],
         'external_references': {
             0: {
@@ -95,57 +88,43 @@ def test_indicator_validation_fails():
         },
         'indicator_type': {
             0: [
-                'Must be one of: {}.'.format(
-                    ', '.join(map(repr, INDICATOR_TYPE_CHOICES))
-                )
+                'Must be one of: '
+                f'{", ".join(map(repr, INDICATOR_TYPE_CHOICES))}.'
             ],
         },
         'kill_chain_phases': {
             0: {
                 'kill_chain_name': ['Missing data for required field.'],
                 'phase_name': [
-                    'Must be one of: {}.'.format(
-                        ', '.join(map(repr, KILL_CHAIN_PHASE_NAME_CHOICES))
-                    )
+                    'Must be one of: '
+                    f'{", ".join(map(repr, KILL_CHAIN_PHASE_NAME_CHOICES))}.'
                 ],
             },
         },
         'likely_impact': [
-            'Must be at most {} characters long.'.format(
-                LIKELY_IMPACT_MAX_LENGTH
-            )
+            f'Must be at most {LIKELY_IMPACT_MAX_LENGTH} characters long.'
         ],
         'negate': ['Not a valid boolean.'],
         'revision': [
-            'Must be greater than or equal to {}.'.format(REVISION_MIN_VALUE)
+            f'Must be greater than or equal to {REVISION_MIN_VALUE}.'
         ],
         'severity': [
-            'Must be one of: {}.'.format(
-                ', '.join(map(repr, SEVERITY_CHOICES))
-            )
+            f'Must be one of: {", ".join(map(repr, SEVERITY_CHOICES))}.'
         ],
         'short_description': [
-            'Must be at most {} characters long.'.format(
-                SHORT_DESCRIPTION_LENGTH
-            )
+            f'Must be at most {SHORT_DESCRIPTION_LENGTH} characters long.'
         ],
-        'source': ['Field may not be blank.'],
         'specification': {
             'variables': ['Missing data for required field.'],
-            'query': ['Field may not be null.'],
         },
         'test_mechanisms': {
             0: [
-                'Must be at most {} characters long.'.format(
-                    TEST_MECHANISM_MAX_LENGTH
-                )
+                f'Must be at most {TEST_MECHANISM_MAX_LENGTH} characters long.'
             ],
         },
         'timestamp': ['Not a valid datetime.'],
         'tlp': [
-            'Must be one of: {}.'.format(
-                ', '.join(map(repr, TLP_CHOICES))
-            )
+            f'Must be one of: {", ".join(map(repr, TLP_CHOICES))}.'
         ],
     }
 
@@ -153,7 +132,7 @@ def test_indicator_validation_fails():
 def test_indicator_validation_succeeds():
     judgement_id = 'transient:prefix-judgement-sha256'
     judgement_uri = (
-        'https://private.intel.amp.cisco.com/ctia/judgement/%s' % judgement_id
+        f'https://private.intel.amp.cisco.com/ctia/judgement/{judgement_id}'
     )
 
     indicator_data = {
@@ -168,10 +147,6 @@ def test_indicator_validation_succeeds():
         'negate': True,
         'revision': 0,
         'severity': 'High',
-        'source': 'Python CTIM Bundle Builder : Indicator',
-        'source_uri': (
-            'https://github.com/CiscoSecurity/tr-05-ctim-bundle-builder'
-        ),
         'specification': {
             'type': 'Judgement',
             'judgements': [judgement_uri],
@@ -188,10 +163,16 @@ def test_indicator_validation_succeeds():
         {'kill_chain_name': 'kill-chain-name'}
     )
 
+    type_ = 'indicator'
+
     assert indicator.json == {
-        'type': 'indicator',
+        'type': type_,
         'schema_version': SCHEMA_VERSION,
-        'id': mock_id('indicator'),
-        'external_ids': [mock_external_id('indicator')],
+        'source': DEFAULT_SESSION_SOURCE,
+        'source_uri': DEFAULT_SESSION_SOURCE_URI,
+        'id': mock_transient_id(DEFAULT_SESSION_EXTERNAL_ID_PREFIX, type_),
+        'external_ids': [
+            mock_external_id(DEFAULT_SESSION_EXTERNAL_ID_PREFIX, type_)
+        ],
         **indicator_data
     }

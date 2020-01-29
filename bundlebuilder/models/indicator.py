@@ -1,4 +1,8 @@
 from functools import partial
+from typing import (
+    Iterator,
+    Tuple,
+)
 
 from marshmallow import fields
 from marshmallow.schema import Schema
@@ -26,7 +30,6 @@ from ..constants import (
     REVISION_MIN_VALUE,
     SEVERITY_CHOICES,
     SHORT_DESCRIPTION_LENGTH,
-    SOURCE_MAX_LENGTH,
     TAG_MAX_LENGTH,
     TEST_MECHANISM_MAX_LENGTH,
     TITLE_MAX_LENGTH,
@@ -38,9 +41,6 @@ class IndicatorSchema(Schema):
     """
     https://github.com/threatgrid/ctim/blob/master/doc/structures/indicator.md
     """
-    id = fields.String(
-        validate=validate_string,
-    )
     producer = fields.String(
         validate=partial(validate_string, max_length=PRODUCER_MAX_LENGTH),
         required=True,
@@ -57,11 +57,6 @@ class IndicatorSchema(Schema):
     )
     description = fields.String(
         validate=partial(validate_string, max_length=DESCRIPTION_MAX_LENGTH),
-    )
-    external_ids = fields.List(
-        fields.String(
-            validate=validate_string,
-        )
     )
     external_references = fields.List(
         fields.Nested(ExternalReferenceSchema)
@@ -90,12 +85,6 @@ class IndicatorSchema(Schema):
     short_description = fields.String(
         validate=partial(validate_string, max_length=SHORT_DESCRIPTION_LENGTH),
     )
-    source = fields.String(
-        validate=partial(validate_string, max_length=SOURCE_MAX_LENGTH),
-    )
-    source_uri = fields.String(
-        validate=validate_string,
-    )
     specification = fields.Nested(SpecificationSchema)
     tags = fields.List(
         fields.String(
@@ -118,10 +107,20 @@ class IndicatorSchema(Schema):
         validate=partial(validate_string, choices=TLP_CHOICES),
     )
 
+    external_id_extra_values = fields.List(
+        fields.String(
+            validate=validate_string,
+        )
+    )
+
 
 class Indicator(Entity):
     schema = IndicatorSchema
 
-    def generate_external_id_seed(self):
-        # TODO: replace with real implementation
-        return ''
+    def generate_external_id_seed_values(self) -> Iterator[Tuple[str]]:
+        yield (
+            self.external_id_prefix,
+            self.type,
+            self.title or '',
+            self.producer,
+        )

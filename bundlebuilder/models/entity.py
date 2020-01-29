@@ -1,15 +1,19 @@
 import abc
 import hashlib
+from itertools import chain
+from typing import (
+    List,
+    Iterator,
+    Tuple,
+)
+from uuid import uuid4
 
 from marshmallow.exceptions import (
     ValidationError as MarshmallowValidationError
 )
 from marshmallow.schema import Schema
 
-from ..constants import (
-    SCHEMA_VERSION,
-    EXTERNAL_ID_PREFIX,
-)
+from ..constants import SCHEMA_VERSION
 from ..exceptions import (
     SchemaError,
     ValidationError as BundleBuilderValidationError,
@@ -23,11 +27,7 @@ class EntityMeta(abc.ABCMeta):
         if not (
             isinstance(cls_schema, type) and issubclass(cls_schema, Schema)
         ):
-            raise SchemaError(
-                '{}.schema must be a subclass of {} instead of {}.'.format(
-                    cls, Schema, cls_schema
-                )
-            )
+            raise SchemaError(f'{cls}.schema must be a subclass of {Schema}.')
 
         cls_type = cls_dict.get('type')
         if cls_type is None:
@@ -53,27 +53,75 @@ class Entity(metaclass=EntityMeta):
 
         self.json['schema_version'] = SCHEMA_VERSION
 
-        self.json.setdefault('id', self.generate_id())
+        # Use a dynamic import to break the circular dependency.
+        from ..session import get_session
 
-        self.json.setdefault('external_ids', []).append(
-            self.generate_external_id()
+        session = get_session()
+
+        self.external_id_prefix = session.external_id_prefix
+
+        # This isn't really a part of the CTIM JSON payload, so extract it out.
+        self.external_id_extra_values: List[str] = sorted(
+            self.json.pop('external_id_extra_values', [])
         )
+
+        self.json['source'] = session.source
+        self.json['source_uri'] = session.source_uri
+
+        # Generate and set a transient ID and a list of XIDs only after all the
+        # other attributes are already set properly.
+        self.json['id'] = self.generate_transient_id()
+        self.json['external_ids'] = self.generate_external_ids()
+
+        # Make the auto-filled fields be always listed first.
+        self.json = {
+            'type': self.json.pop('type'),
+            'schema_version': self.json.pop('schema_version'),
+            'source': self.json.pop('source'),
+            'source_uri': self.json.pop('source_uri'),
+            'id': self.json.pop('id'),
+            'external_ids': self.json.pop('external_ids'),
+            **self.json
+        }
 
     def __getattr__(self, field):
         return self.json.get(field)
 
-    def generate_id(self):
-        return 'transient:' + self.generate_external_id()
-
-    def generate_external_id(self):
-        return '{prefix}-{type}-{sha256}'.format(
-            prefix=EXTERNAL_ID_PREFIX,
+    def generate_transient_id(self) -> str:
+        return 'transient:{prefix}-{type}-{uuid}'.format(
+            prefix=self.external_id_prefix,
             type=self.type,
-            sha256=hashlib.sha256(
-                bytes(self.generate_external_id_seed(), 'utf-8')
-            ).hexdigest(),
+            uuid=uuid4().hex,
         )
 
+    def generate_external_ids(self) -> List[str]:
+        return [
+            '{prefix}-{type}-{sha256}'.format(
+                prefix=self.external_id_prefix,
+                type=self.type,
+                sha256=hashlib.sha256(
+                    bytes(external_id_deterministic_value, 'utf-8')
+                ).hexdigest(),
+            )
+            for external_id_deterministic_value
+            in self.generate_external_id_deterministic_value()
+        ]
+
+    def generate_external_id_deterministic_value(self) -> Iterator[str]:
+        for external_id_seed_values in self.generate_external_id_seed_values():
+            # Chain together all the values available.
+            # Filter out any empty values.
+            # Join up all the values left.
+            yield '|'.join(
+                filter(
+                    bool,
+                    chain(
+                        external_id_seed_values,
+                        self.external_id_extra_values,
+                    )
+                )
+            )
+
     @abc.abstractmethod
-    def generate_external_id_seed(self):
-        """Return a deterministic string based on some fields of the entity."""
+    def generate_external_id_seed_values(self) -> Iterator[Tuple[str]]:
+        pass

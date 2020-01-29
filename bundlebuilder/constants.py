@@ -1,6 +1,14 @@
-EXTERNAL_ID_PREFIX = 'ctim-bundle-builder'
-
 SCHEMA_VERSION = '1.0.14'
+
+# Default session configuration.
+
+DEFAULT_SESSION_EXTERNAL_ID_PREFIX = 'ctim-bundle-builder'
+
+DEFAULT_SESSION_SOURCE = 'CTIM Bundle Builder'
+
+DEFAULT_SESSION_SOURCE_URI = (
+    'https://github.com/CiscoSecurity/tr-05-ctim-bundle-builder'
+)
 
 # Restrictions on fields of CTIM entities.
 
