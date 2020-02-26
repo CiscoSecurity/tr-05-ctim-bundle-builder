@@ -69,7 +69,7 @@ class RelationshipSchema(Schema):
         validate=partial(validate_string, choices=TLP_CHOICES),
     )
 
-    external_id_extra_values = fields.List(
+    external_id_salt_values = fields.List(
         fields.String(
             validate=validate_string,
         )

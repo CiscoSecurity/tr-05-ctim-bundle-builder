@@ -70,8 +70,8 @@ class Entity(metaclass=EntityMeta):
         self.external_id_prefix = session.external_id_prefix
 
         # This isn't really a part of the CTIM JSON payload, so extract it out.
-        self.external_id_extra_values: List[str] = sorted(
-            self.json.pop('external_id_extra_values', [])
+        self.external_id_salt_values: List[str] = sorted(
+            self.json.pop('external_id_salt_values', [])
         )
 
         self.json['source'] = session.source
@@ -126,7 +126,7 @@ class Entity(metaclass=EntityMeta):
                     bool,
                     chain(
                         external_id_seed_values,
-                        self.external_id_extra_values,
+                        self.external_id_salt_values,
                     )
                 )
             )
