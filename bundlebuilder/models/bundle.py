@@ -8,11 +8,16 @@ from marshmallow import fields
 from marshmallow.schema import Schema
 
 from .entity import Entity
+from .indicator import Indicator
+from .judgement import Judgement
+from .relationship import Relationship
+from .sighting import Sighting
 from .utils.fields import (
     EntityField,
     DateTimeField,
 )
 from .utils.schemas import (
+    ValidTimeSchema,
     ExternalReferenceSchema,
 )
 from .utils.validators import (
@@ -20,7 +25,6 @@ from .utils.validators import (
     validate_integer,
 )
 from ..constants import (
-    RELATIONSHIP_TYPE_CHOICES,
     DESCRIPTION_MAX_LENGTH,
     LANGUAGE_MAX_LENGTH,
     REVISION_MIN_VALUE,
@@ -30,22 +34,12 @@ from ..constants import (
 )
 
 
-class RelationshipSchema(Schema):
+class BundleSchema(Schema):
     """
-    https://github.com/threatgrid/ctim/blob/master/doc/structures/relationship.md
+    https://github.com/threatgrid/ctim/blob/master/doc/structures/bundle.md
     """
-    relationship_type = fields.String(
-        validate=partial(validate_string, choices=RELATIONSHIP_TYPE_CHOICES),
-        required=True,
-    )
-    source_ref = EntityField(
-        ref=True,
-        validate=validate_string,
-        required=True,
-    )
-    target_ref = EntityField(
-        ref=True,
-        validate=validate_string,
+    valid_time = fields.Nested(
+        ValidTimeSchema,
         required=True,
     )
     description = fields.String(
@@ -54,14 +48,38 @@ class RelationshipSchema(Schema):
     external_references = fields.List(
         fields.Nested(ExternalReferenceSchema)
     )
+    indicator_refs = fields.List(
+        EntityField(type=Indicator, ref=True)
+    )
+    indicators = fields.List(
+        EntityField(type=Indicator)
+    )
+    judgment_refs = fields.List(
+        EntityField(type=Judgement, ref=True)
+    )
+    judgements = fields.List(
+        EntityField(type=Judgement)
+    )
     language = fields.String(
         validate=partial(validate_string, max_length=LANGUAGE_MAX_LENGTH),
+    )
+    relationship_refs = fields.List(
+        EntityField(type=Relationship, ref=True)
+    )
+    relationships = fields.List(
+        EntityField(type=Relationship)
     )
     revision = fields.Integer(
         validate=partial(validate_integer, min_value=REVISION_MIN_VALUE),
     )
     short_description = fields.String(
         validate=partial(validate_string, max_length=SHORT_DESCRIPTION_LENGTH),
+    )
+    sighting_refs = fields.List(
+        EntityField(type=Sighting, ref=True)
+    )
+    sightings = fields.List(
+        EntityField(type=Sighting)
     )
     timestamp = DateTimeField()
     title = fields.String(
@@ -78,8 +96,8 @@ class RelationshipSchema(Schema):
     )
 
 
-class Relationship(Entity):
-    schema = RelationshipSchema
+class Bundle(Entity):
+    schema = BundleSchema
 
     def generate_external_id_seed_values(self) -> Iterator[Tuple[str]]:
         yield (

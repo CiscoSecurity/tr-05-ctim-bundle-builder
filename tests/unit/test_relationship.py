@@ -55,7 +55,7 @@ def test_relationship_validation_fails():
             f'{", ".join(map(repr, RELATIONSHIP_TYPE_CHOICES))}.'
         ],
         'source_ref': ['Missing data for required field.'],
-        'target_ref': ['Not a valid CTIM entity.'],
+        'target_ref': ['Not a valid CTIM Entity.'],
         'external_references': {
             0: {
                 'source_name': ['Missing data for required field.'],
