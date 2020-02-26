@@ -1,5 +1,9 @@
 import abc
 import hashlib
+from inspect import (
+    Signature,
+    Parameter,
+)
 from itertools import chain
 from typing import (
     List,
@@ -32,6 +36,11 @@ class EntityMeta(abc.ABCMeta):
         cls_type = cls_dict.get('type')
         if cls_type is None:
             cls.type = cls.__name__.lower()
+
+        cls.__signature__ = Signature([
+            Parameter(name, Parameter.KEYWORD_ONLY)
+            for name in cls_schema().declared_fields.keys()
+        ])
 
         super().__init__(cls_name, cls_bases, cls_dict)
 
