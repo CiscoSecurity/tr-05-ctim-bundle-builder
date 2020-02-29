@@ -5,6 +5,9 @@ from typing import (
 )
 
 from marshmallow import fields
+from marshmallow.exceptions import (
+    ValidationError as MarshmallowValidationError
+)
 from marshmallow.schema import Schema
 
 from .entity import Entity
@@ -32,6 +35,9 @@ from ..constants import (
     TITLE_MAX_LENGTH,
     TLP_CHOICES,
 )
+from ..exceptions import (
+    ValidationError as BundleBuilderValidationError
+)
 
 
 class BundleSchema(Schema):
@@ -54,7 +60,7 @@ class BundleSchema(Schema):
     indicators = fields.List(
         EntityField(type=Indicator)
     )
-    judgment_refs = fields.List(
+    judgement_refs = fields.List(
         EntityField(type=Judgement, ref=True)
     )
     judgements = fields.List(
@@ -104,3 +110,29 @@ class Bundle(Entity):
             self.external_id_prefix,
             self.type,
         )
+
+    def _adder(self, type_, ref):
+        field = EntityField(type=type_, ref=ref)
+
+        def add(entity):
+            try:
+                data = field.deserialize(entity)
+            except MarshmallowValidationError as error:
+                raise BundleBuilderValidationError(*error.args) from error
+            else:
+                key = type_.type + ('_refs' if ref else 's')
+                self.json.setdefault(key, []).append(data)
+
+        return add
+
+    def add_indicator(self, indicator: Indicator, ref: bool = False):
+        self._adder(Indicator, ref)(indicator)
+
+    def add_judgement(self, judgement: Judgement, ref: bool = False):
+        self._adder(Judgement, ref)(judgement)
+
+    def add_relationship(self, relationship: Relationship, ref: bool = False):
+        self._adder(Relationship, ref)(relationship)
+
+    def add_sighting(self, sighting: Sighting, ref: bool = False):
+        self._adder(Sighting, ref)(sighting)

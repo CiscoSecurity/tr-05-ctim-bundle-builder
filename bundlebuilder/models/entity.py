@@ -56,7 +56,7 @@ class Entity(metaclass=EntityMeta):
         try:
             self.json = self.schema().load(data)
         except MarshmallowValidationError as error:
-            raise BundleBuilderValidationError(data=error.messages) from error
+            raise BundleBuilderValidationError(*error.args) from error
 
         self.json['type'] = self.type
 

@@ -56,7 +56,7 @@ def test_judgement_validation_fails():
 
     error = exc_info.value
 
-    assert error.data == {
+    assert error.args == ({
         'greeting': ['Unknown field.'],
         'confidence': [
             f'Must be one of: {", ".join(map(repr, CONFIDENCE_CHOICES))}.'
@@ -102,7 +102,7 @@ def test_judgement_validation_fails():
         'tlp': [
             f'Must be one of: {", ".join(map(repr, TLP_CHOICES))}.'
         ],
-    }
+    },)
 
 
 def test_judgement_validation_succeeds():

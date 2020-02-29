@@ -48,7 +48,7 @@ def test_relationship_validation_fails():
 
     error = exc_info.value
 
-    assert error.data == {
+    assert error.args == ({
         'greeting': ['Unknown field.'],
         'relationship_type': [
             'Must be one of: '
@@ -73,7 +73,7 @@ def test_relationship_validation_fails():
         'tlp': [
             f'Must be one of: {", ".join(map(repr, TLP_CHOICES))}.'
         ],
-    }
+    },)
 
 
 def test_relationship_validation_succeeds():
