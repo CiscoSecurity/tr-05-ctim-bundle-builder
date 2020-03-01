@@ -96,6 +96,9 @@ class Entity(metaclass=EntityMeta):
     def __getattr__(self, field):
         return self.json.get(field)
 
+    def __str__(self):
+        return self.id
+
     def generate_transient_id(self) -> str:
         return 'transient:{prefix}-{type}-{uuid}'.format(
             prefix=self.external_id_prefix,

@@ -44,10 +44,11 @@ class BundleSchema(Schema):
     """
     https://github.com/threatgrid/ctim/blob/master/doc/structures/bundle.md
     """
-    valid_time = fields.Nested(
-        ValidTimeSchema,
-        required=True,
-    )
+
+    class Meta:
+        ordered = True
+
+    valid_time = fields.Nested(ValidTimeSchema)
     description = fields.String(
         validate=partial(validate_string, max_length=DESCRIPTION_MAX_LENGTH),
     )
@@ -111,28 +112,25 @@ class Bundle(Entity):
             self.type,
         )
 
-    def _adder(self, type_, ref):
+    def _add(self, entity, type_, ref):
         field = EntityField(type=type_, ref=ref)
 
-        def add(entity):
-            try:
-                data = field.deserialize(entity)
-            except MarshmallowValidationError as error:
-                raise BundleBuilderValidationError(*error.args) from error
-            else:
-                key = type_.type + ('_refs' if ref else 's')
-                self.json.setdefault(key, []).append(data)
-
-        return add
+        try:
+            data = field.deserialize(entity)
+        except MarshmallowValidationError as error:
+            raise BundleBuilderValidationError(*error.args) from error
+        else:
+            key = type_.type + ('_refs' if ref else 's')
+            self.json.setdefault(key, []).append(data)
 
     def add_indicator(self, indicator: Indicator, ref: bool = False):
-        self._adder(Indicator, ref)(indicator)
+        self._add(indicator, Indicator, ref)
 
     def add_judgement(self, judgement: Judgement, ref: bool = False):
-        self._adder(Judgement, ref)(judgement)
+        self._add(judgement, Judgement, ref)
 
     def add_relationship(self, relationship: Relationship, ref: bool = False):
-        self._adder(Relationship, ref)(relationship)
+        self._add(relationship, Relationship, ref)
 
     def add_sighting(self, sighting: Sighting, ref: bool = False):
-        self._adder(Sighting, ref)(sighting)
+        self._add(sighting, Sighting, ref)

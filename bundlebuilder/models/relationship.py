@@ -34,6 +34,10 @@ class RelationshipSchema(Schema):
     """
     https://github.com/threatgrid/ctim/blob/master/doc/structures/relationship.md
     """
+
+    class Meta:
+        ordered = True
+
     relationship_type = fields.String(
         validate=partial(validate_string, choices=RELATIONSHIP_TYPE_CHOICES),
         required=True,

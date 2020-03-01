@@ -37,6 +37,10 @@ class JudgementSchema(Schema):
     """
     https://github.com/threatgrid/ctim/blob/master/doc/structures/judgement.md
     """
+
+    class Meta:
+        ordered = True
+
     confidence = fields.String(
         validate=partial(validate_string, choices=CONFIDENCE_CHOICES),
         required=True,

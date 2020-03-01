@@ -1,4 +1,5 @@
 from collections import namedtuple
+from contextlib import contextmanager
 from functools import partial
 
 from marshmallow import fields
@@ -55,7 +56,7 @@ def set_session(external_id_prefix: str, source: str, source_uri: str) -> None:
     try:
         data = SessionSchema().load(data)
     except MarshmallowValidationError as error:
-        raise BundleBuilderValidationError(data=error.messages) from error
+        raise BundleBuilderValidationError(*error.args) from error
 
     global _SESSION
     _SESSION = Session(**data)
@@ -67,14 +68,24 @@ def set_default_session() -> None:
 
 
 # Make each session a context manager being able to validate itself and set
-# globally on `__enter__` + automatically switch back to the default session on
-# `__exit__` when used in `with` statements.
-Session.__enter__ = lambda self: (
-    set_session(*self)
-)
-Session.__exit__ = lambda self, exc_type, exc_value, exc_tb: (
-    set_default_session()
-)
+# globally on `__enter__` + automatically switch back to the previous session
+# on `__exit__` when used in `with` statements.
+
+
+@contextmanager
+def _set(session: Session):
+    previous_session = get_session()
+    try:
+        # Validate the session before trying to set it globally.
+        set_session(*session)
+        yield
+    finally:
+        # The previous session is guaranteed to be valid anyway.
+        global _SESSION
+        _SESSION = previous_session
+
+
+Session.set = lambda self: _set(self)
 
 
 _DEFAULT_SESSION = Session(
