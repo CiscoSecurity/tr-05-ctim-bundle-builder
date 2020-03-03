@@ -64,7 +64,7 @@ def test_indicator_validation_fails():
 
     error = exc_info.value
 
-    assert error.data == {
+    assert error.args == ({
         'greeting': ['Unknown field.'],
         'producer': ['Missing data for required field.'],
         'valid_time': {
@@ -126,7 +126,7 @@ def test_indicator_validation_fails():
         'tlp': [
             f'Must be one of: {", ".join(map(repr, TLP_CHOICES))}.'
         ],
-    }
+    },)
 
 
 def test_indicator_validation_succeeds():

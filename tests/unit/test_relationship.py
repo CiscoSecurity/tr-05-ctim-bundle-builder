@@ -48,14 +48,14 @@ def test_relationship_validation_fails():
 
     error = exc_info.value
 
-    assert error.data == {
+    assert error.args == ({
         'greeting': ['Unknown field.'],
         'relationship_type': [
             'Must be one of: '
             f'{", ".join(map(repr, RELATIONSHIP_TYPE_CHOICES))}.'
         ],
         'source_ref': ['Missing data for required field.'],
-        'target_ref': ['Not a valid CTIM entity.'],
+        'target_ref': ['Not a valid CTIM Entity.'],
         'external_references': {
             0: {
                 'source_name': ['Missing data for required field.'],
@@ -73,7 +73,7 @@ def test_relationship_validation_fails():
         'tlp': [
             f'Must be one of: {", ".join(map(repr, TLP_CHOICES))}.'
         ],
-    }
+    },)
 
 
 def test_relationship_validation_succeeds():

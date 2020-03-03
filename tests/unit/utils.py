@@ -1,7 +1,6 @@
 import datetime as dt
 import re
-
-from mock import MagicMock
+from unittest.mock import MagicMock
 
 
 def mock_transient_id(external_id_prefix, type):

@@ -41,6 +41,10 @@ class IndicatorSchema(Schema):
     """
     https://github.com/threatgrid/ctim/blob/master/doc/structures/indicator.md
     """
+
+    class Meta:
+        ordered = True
+
     producer = fields.String(
         validate=partial(validate_string, max_length=PRODUCER_MAX_LENGTH),
         required=True,
@@ -107,7 +111,7 @@ class IndicatorSchema(Schema):
         validate=partial(validate_string, choices=TLP_CHOICES),
     )
 
-    external_id_extra_values = fields.List(
+    external_id_salt_values = fields.List(
         fields.String(
             validate=validate_string,
         )

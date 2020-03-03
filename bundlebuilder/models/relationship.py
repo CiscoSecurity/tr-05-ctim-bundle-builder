@@ -9,7 +9,7 @@ from marshmallow.schema import Schema
 
 from .entity import Entity
 from .utils.fields import (
-    EntityRefField,
+    EntityField,
     DateTimeField,
 )
 from .utils.schemas import (
@@ -34,15 +34,21 @@ class RelationshipSchema(Schema):
     """
     https://github.com/threatgrid/ctim/blob/master/doc/structures/relationship.md
     """
+
+    class Meta:
+        ordered = True
+
     relationship_type = fields.String(
         validate=partial(validate_string, choices=RELATIONSHIP_TYPE_CHOICES),
         required=True,
     )
-    source_ref = EntityRefField(
+    source_ref = EntityField(
+        ref=True,
         validate=validate_string,
         required=True,
     )
-    target_ref = EntityRefField(
+    target_ref = EntityField(
+        ref=True,
         validate=validate_string,
         required=True,
     )
@@ -69,7 +75,7 @@ class RelationshipSchema(Schema):
         validate=partial(validate_string, choices=TLP_CHOICES),
     )
 
-    external_id_extra_values = fields.List(
+    external_id_salt_values = fields.List(
         fields.String(
             validate=validate_string,
         )

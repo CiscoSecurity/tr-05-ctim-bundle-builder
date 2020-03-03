@@ -81,7 +81,7 @@ def test_empty_schema_validation_succeeds():
             source_uri=f'https://bundlebuilder.com/session/{index}',
         )
 
-        with session:
+        with session.set():
             assert get_session() == session
             good = Good()
 

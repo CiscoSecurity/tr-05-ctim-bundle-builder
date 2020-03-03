@@ -1,5 +1,9 @@
 import abc
 import hashlib
+from inspect import (
+    Signature,
+    Parameter,
+)
 from itertools import chain
 from typing import (
     List,
@@ -33,6 +37,11 @@ class EntityMeta(abc.ABCMeta):
         if cls_type is None:
             cls.type = cls.__name__.lower()
 
+        cls.__signature__ = Signature([
+            Parameter(name, Parameter.KEYWORD_ONLY)
+            for name in cls_schema().declared_fields.keys()
+        ])
+
         super().__init__(cls_name, cls_bases, cls_dict)
 
 
@@ -47,7 +56,7 @@ class Entity(metaclass=EntityMeta):
         try:
             self.json = self.schema().load(data)
         except MarshmallowValidationError as error:
-            raise BundleBuilderValidationError(data=error.messages) from error
+            raise BundleBuilderValidationError(*error.args) from error
 
         self.json['type'] = self.type
 
@@ -61,8 +70,8 @@ class Entity(metaclass=EntityMeta):
         self.external_id_prefix = session.external_id_prefix
 
         # This isn't really a part of the CTIM JSON payload, so extract it out.
-        self.external_id_extra_values: List[str] = sorted(
-            self.json.pop('external_id_extra_values', [])
+        self.external_id_salt_values: List[str] = sorted(
+            self.json.pop('external_id_salt_values', [])
         )
 
         self.json['source'] = session.source
@@ -86,6 +95,9 @@ class Entity(metaclass=EntityMeta):
 
     def __getattr__(self, field):
         return self.json.get(field)
+
+    def __str__(self):
+        return self.id
 
     def generate_transient_id(self) -> str:
         return 'transient:{prefix}-{type}-{uuid}'.format(
@@ -117,7 +129,7 @@ class Entity(metaclass=EntityMeta):
                     bool,
                     chain(
                         external_id_seed_values,
-                        self.external_id_extra_values,
+                        self.external_id_salt_values,
                     )
                 )
             )

@@ -5,13 +5,27 @@ from marshmallow import fields
 from ..entity import Entity
 
 
-class EntityRefField(fields.Field):
-    default_error_messages = {'invalid': 'Not a valid CTIM entity.'}
+class EntityField(fields.Field):
+    default_error_messages = {'invalid': 'Not a valid CTIM {type}.'}
+
+    def __init__(self, **kwargs):
+        type_ = kwargs.pop('type', None)
+        ref = kwargs.pop('ref', False)
+
+        super().__init__(**kwargs)
+
+        self.type = (
+            type_
+            if isinstance(type_, type) and issubclass(type_, Entity) else
+            Entity
+        )
+        self.attr = 'id' if ref else 'json'
 
     def _deserialize(self, value, attr, data, **kwargs):
-        if isinstance(value, Entity):
-            return value.id
-        raise self.make_error('invalid')
+        if isinstance(value, self.type):
+            return getattr(value, self.attr)
+
+        raise self.make_error('invalid', type=self.type.__name__)
 
 
 class DateTimeField(fields.NaiveDateTime):
