@@ -14,6 +14,7 @@ from bundlebuilder.models import (
     Judgement,
     Indicator,
     Relationship,
+    Verdict,
 )
 from bundlebuilder.session import Session
 from .utils import (
@@ -45,6 +46,7 @@ def test_bundle_validation_fails():
         'timestamp': '4:20',
         'title': 'OMG! The Best CTIM Bundle Builder Ever!',
         'tlp': 'razzmatazz',
+        'verdicts': [object()],
     }
 
     with assert_raises(ValidationError) as exc_info:
@@ -86,6 +88,9 @@ def test_bundle_validation_fails():
         'tlp': [
             f'Must be one of: {", ".join(map(repr, TLP_CHOICES))}.'
         ],
+        'verdicts': {
+            0: ['Not a valid CTIM Verdict.'],
+        },
     },)
 
 
@@ -159,9 +164,7 @@ def test_bundle_validation_succeeds():
             relationship_type='based-on',
             source_ref=judgement,
             target_ref=indicator,
-            short_description=(
-                f'judgement {judgement} is based-on indicator {indicator}'
-            ),
+            short_description=f'{judgement} is based-on {indicator}',
         )
 
         bundle.add_relationship(relationship_from_judgement_to_indicator)
@@ -170,12 +173,14 @@ def test_bundle_validation_succeeds():
             relationship_type='sighting-of',
             source_ref=sighting,
             target_ref=indicator,
-            short_description=(
-                f'sighting {sighting} is sighting-of indicator {indicator}'
-            ),
+            short_description=f'{sighting} is sighting-of {indicator}',
         )
 
         bundle.add_relationship(relationship_from_sighting_to_indicator)
+
+        verdict = Verdict.from_judgement(judgement)
+
+        bundle.add_verdict(verdict)
 
         bundle_data = {
             'sightings': [sighting.json],
@@ -185,6 +190,7 @@ def test_bundle_validation_succeeds():
                 relationship_from_judgement_to_indicator.json,
                 relationship_from_sighting_to_indicator.json,
             ],
+            'verdicts': [verdict.json],
         }
 
     type_ = 'bundle'

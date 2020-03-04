@@ -15,6 +15,7 @@ from .indicator import Indicator
 from .judgement import Judgement
 from .relationship import Relationship
 from .sighting import Sighting
+from .verdict import Verdict
 from .utils.fields import (
     EntityField,
     DateTimeField,
@@ -95,6 +96,12 @@ class BundleSchema(Schema):
     tlp = fields.String(
         validate=partial(validate_string, choices=TLP_CHOICES),
     )
+    verdict_refs = fields.List(
+        EntityField(type=Verdict, ref=True)
+    )
+    verdicts = fields.List(
+        EntityField(type=Verdict)
+    )
 
     external_id_salt_values = fields.List(
         fields.String(
@@ -113,9 +120,8 @@ class Bundle(Entity):
         )
 
     def _add(self, entity, type_, ref):
-        field = EntityField(type=type_, ref=ref)
-
         try:
+            field = EntityField(type=type_, ref=ref)
             data = field.deserialize(entity)
         except MarshmallowValidationError as error:
             raise BundleBuilderValidationError(*error.args) from error
@@ -134,3 +140,6 @@ class Bundle(Entity):
 
     def add_sighting(self, sighting: Sighting, ref: bool = False):
         self._add(sighting, Sighting, ref)
+
+    def add_verdict(self, verdict: Verdict, ref: bool = False):
+        self._add(verdict, Verdict, ref)
