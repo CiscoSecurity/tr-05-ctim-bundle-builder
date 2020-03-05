@@ -97,7 +97,7 @@ class Entity(metaclass=EntityMeta):
         return self.json.get(field)
 
     def __str__(self):
-        return f'<{self.__class__.__name__}: id={self.id}>'
+        return f'<{self.__class__.__name__}: ID={self.id}>'
 
     def generate_transient_id(self) -> str:
         return 'transient:{prefix}-{type}-{uuid}'.format(

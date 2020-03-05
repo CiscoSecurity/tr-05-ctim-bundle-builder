@@ -39,4 +39,118 @@ pip show bundlebuilder
 
 ## Usage
 
-TBD...
+A bit extended version of the adapted
+[example](https://github.com/threatgrid/ctim/blob/master/doc/tutorials/modeling-threat-intel-ctim.md#173-example-bundle)
+showing how to properly use BB along with its available models and their APIs.
+
+```python
+import json
+
+from bundlebuilder.models import (
+    Entity,
+    Bundle,
+    Sighting,
+    Judgement,
+    Indicator,
+    Relationship,
+    Verdict,
+)
+from bundlebuilder.session import Session
+
+
+def print_json(entity: Entity):
+    print(json.dumps(entity.json, indent=2))
+
+
+def main():
+    session = Session(
+        external_id_prefix='ctim-tutorial',
+        source='Modeling Threat Intelligence in CTIM Tutorial',
+        source_uri=(
+            'https://github.com/threatgrid/ctim/blob/master/'
+            'doc/tutorials/modeling-threat-intel-ctim.md'
+        ),
+    )
+
+    with session.set():
+        bundle = Bundle()
+
+        sighting = Sighting(
+            confidence='High',
+            count=1,
+            observed_time={'start_time': '2019-03-01T22:26:29.229Z'},
+            observables=[{'type': 'ip', 'value': '187.75.16.75'}],
+            severity='High',
+            timestamp='2019-03-01T22:26:29.229Z',
+            tlp='green',
+        )
+
+        bundle.add_sighting(sighting)
+
+        judgement = Judgement(
+            confidence='High',
+            disposition=2,
+            disposition_name='Malicious',
+            observable={'type': 'ip', 'value': '187.75.16.75'},
+            priority=95,
+            severity='High',
+            valid_time={
+                'start_time': '2019-03-01T22:26:29.229Z',
+                'end_time': '2019-03-31T22:26:29.229Z',
+            },
+            timestamp='2019-03-01T22:26:29.229Z',
+            tlp='green',
+        )
+
+        bundle.add_judgement(judgement)
+
+        indicator = Indicator(
+            producer='Cisco TALOS',
+            valid_time={
+                'start_time': '2019-03-01T22:26:29.229Z',
+                'end_time': '2525-01-01T00:00:00.000Z',
+            },
+            description=(
+                'The IP Blacklist is automatically updated every 15 minutes '
+                'and contains a list of known malicious network threats that '
+                'are flagged on all Cisco Security Products. This list is '
+                'estimated to be 1% of the total Talos IP Reputation System.'
+            ),
+            short_description=(
+                'The TALOS IP Blacklist lists all known malicious IPs in the '
+                'TALOS IP Reputation System.'
+            ),
+            title='TALOS IP Blacklist Feed',
+            tlp='green',
+        )
+
+        bundle.add_indicator(indicator)
+
+        relationship_from_judgement_to_indicator = Relationship(
+            relationship_type='based-on',
+            source_ref=judgement,
+            target_ref=indicator,
+            short_description=f'{judgement} is based-on {indicator}',
+        )
+
+        bundle.add_relationship(relationship_from_judgement_to_indicator)
+
+        relationship_from_sighting_to_indicator = Relationship(
+            relationship_type='sighting-of',
+            source_ref=sighting,
+            target_ref=indicator,
+            short_description=f'{sighting} is sighting-of {indicator}',
+        )
+
+        bundle.add_relationship(relationship_from_sighting_to_indicator)
+
+        verdict = Verdict.from_judgement(judgement)
+
+        bundle.add_verdict(verdict)
+
+    print_json(bundle)
+
+
+if __name__ == '__main__':
+    main()
+```

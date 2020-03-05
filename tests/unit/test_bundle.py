@@ -95,7 +95,7 @@ def test_bundle_validation_fails():
 
 
 def test_bundle_validation_succeeds():
-    # https://github.com/threatgrid/ctim/blob/master/doc/tutorials/modeling-threat-intel-ctim.md#173-example-bundle
+    # Make sure to keep README up-to-date.
 
     session = Session(
         external_id_prefix='ctim-tutorial',
