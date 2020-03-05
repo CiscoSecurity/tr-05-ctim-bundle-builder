@@ -36,8 +36,8 @@ def test_judgement_validation_fails():
         'priority': PRIORITY_MAX_VALUE + 1,
         'severity': 'Insignificant',
         'valid_time': {
+            'start_time': '1970-01-01T00:00:00Z',
             'middle_time': 'This value will be ignored anyway, right?',
-            'end_time': '1970-01-01T00:00:00Z',
         },
         'external_references': [{
             'description': '',

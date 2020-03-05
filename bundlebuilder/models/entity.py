@@ -97,7 +97,7 @@ class Entity(metaclass=EntityMeta):
         return self.json.get(field)
 
     def __str__(self):
-        return self.id
+        return f'<{self.__class__.__name__}: ID={self.id}>'
 
     def generate_transient_id(self) -> str:
         return 'transient:{prefix}-{type}-{uuid}'.format(
@@ -116,10 +116,10 @@ class Entity(metaclass=EntityMeta):
                 ).hexdigest(),
             )
             for external_id_deterministic_value
-            in self.generate_external_id_deterministic_value()
+            in self.generate_external_id_deterministic_values()
         ]
 
-    def generate_external_id_deterministic_value(self) -> Iterator[str]:
+    def generate_external_id_deterministic_values(self) -> Iterator[str]:
         for external_id_seed_values in self.generate_external_id_seed_values():
             # Chain together all the values available.
             # Filter out any empty values.
