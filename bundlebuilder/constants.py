@@ -81,6 +81,9 @@ LIKELY_IMPACT_MAX_LENGTH = 5000
 
 OBSERVABLE_TYPE_CHOICES = (
     'amp_computer_guid',
+    'certificate_common_name',
+    'certificate_issuer',
+    'certificate_serial',
     'cisco_mid',
     'device',
     'domain',
@@ -101,11 +104,17 @@ OBSERVABLE_TYPE_CHOICES = (
     'ngfw_name',
     'odns_identity',
     'odns_identity_label',
+    'orbital_node_id',
     'pki_serial',
+    'process_name',
+    'registry_key',
+    'registry_name',
+    'registry_path',
     'sha1',
     'sha256',
     'url',
     'user',
+    'user_agent',
 )
 
 OBSERVABLE_RELATION_CHOICES = (
