@@ -1,10 +1,11 @@
+[![Gitter Chat](https://img.shields.io/badge/gitter-join%20chat-brightgreen.svg)](https://gitter.im/CiscoSecurity/Threat-Response "Gitter Chat")
 [![Travis CI Build Status](https://travis-ci.com/CiscoSecurity/tr-05-ctim-bundle-builder.svg?branch=develop)](https://travis-ci.com/CiscoSecurity/tr-05-ctim-bundle-builder)
 [![PyPi Version](https://img.shields.io/pypi/v/bundlebuilder.svg)](https://pypi.python.org/pypi/bundlebuilder)
 [![Python Versions](https://img.shields.io/pypi/pyversions/bundlebuilder.svg)](https://pypi.python.org/pypi/bundlebuilder)
 
-# CTIM Bundle Builder
+# Threat Response CTIM Bundle Builder
 
-A Python tool for building CTIM entities, relationships between them, and
+Python library for building CTIM entities, relationships between them, and
 finally packaging everything up into so-called bundles.
 
 Features (more details later):
@@ -19,29 +20,29 @@ Features (more details later):
 * Local
 
 ```bash
-pip install -U .
+pip install --upgrade .
 pip show bundlebuilder
 ```
 
 * GitHub
 
 ```bash
-pip install -U git+https://github.com/CiscoSecurity/tr-05-ctim-bundle-builder.git[@branch_name_or_release_version]
+pip install --upgrade git+https://github.com/CiscoSecurity/tr-05-ctim-bundle-builder.git[@branch_name_or_release_version]
 pip show bundlebuilder
 ```
 
 * PyPi
 
 ```bash
-pip install -U bundlebuilder[==release_version]
+pip install --upgrade bundlebuilder[==release_version]
 pip show bundlebuilder
 ```
 
 ## Usage
 
-A bit extended version of the adapted
+Here is a bit extended version of the adapted
 [example](https://github.com/threatgrid/ctim/blob/master/doc/tutorials/modeling-threat-intel-ctim.md#173-example-bundle)
-showing how to properly use BB along with its available models and their APIs.
+showing how to properly use BB along with its available models and their APIs:
 
 ```python
 import json
