@@ -1,12 +1,14 @@
-dist: xenial
 language: python
+
 python:
 - '3.6'
 - '3.7'
 - '3.8'
+
 install:
-- pip install -U .
-- pip install -U -r test-requirements.txt
+- pip install --upgrade .
+- pip install --upgrade --requirement test-requirements.txt
+
 script:
 - flake8 bundlebuilder/
-- pytest -v tests/unit/
+- pytest --verbose tests/unit/
