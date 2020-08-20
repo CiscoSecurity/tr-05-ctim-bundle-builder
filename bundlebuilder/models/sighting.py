@@ -43,9 +43,6 @@ class SightingSchema(Schema):
     https://github.com/threatgrid/ctim/blob/master/doc/structures/sighting.md
     """
 
-    class Meta:
-        ordered = True
-
     confidence = fields.String(
         validate=partial(validate_string, choices=CONFIDENCE_CHOICES),
         required=True,
@@ -93,12 +90,6 @@ class SightingSchema(Schema):
     short_description = fields.String(
         validate=partial(validate_string, max_length=SHORT_DESCRIPTION_LENGTH),
     )
-    source = fields.String(
-        validate=partial(validate_string, max_length=SOURCE_MAX_LENGTH),
-    )
-    source_uri = fields.String(
-        validate=validate_string,
-    )
     targets = fields.List(
         fields.Nested(IdentitySpecificationSchema)
     )
@@ -108,6 +99,13 @@ class SightingSchema(Schema):
     )
     tlp = fields.String(
         validate=partial(validate_string, choices=TLP_CHOICES),
+    )
+
+    source = fields.String(
+        validate=partial(validate_string, max_length=SOURCE_MAX_LENGTH),
+    )
+    source_uri = fields.String(
+        validate=validate_string,
     )
 
     external_id_salt_values = fields.List(

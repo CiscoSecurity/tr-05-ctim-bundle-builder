@@ -39,9 +39,6 @@ class JudgementSchema(Schema):
     https://github.com/threatgrid/ctim/blob/master/doc/structures/judgement.md
     """
 
-    class Meta:
-        ordered = True
-
     confidence = fields.String(
         validate=partial(validate_string, choices=CONFIDENCE_CHOICES),
         required=True,
@@ -70,9 +67,6 @@ class JudgementSchema(Schema):
         validate=partial(validate_string, choices=SEVERITY_CHOICES),
         required=True,
     )
-    source = fields.String(
-        validate=partial(validate_string, max_length=SOURCE_MAX_LENGTH),
-    )
     valid_time = fields.Nested(
         ValidTimeSchema,
         required=True,
@@ -93,11 +87,15 @@ class JudgementSchema(Schema):
         validate=partial(validate_integer, min_value=REVISION_MIN_VALUE),
     )
     timestamp = DateTimeField()
-    source_uri = fields.String(
-        validate=validate_string,
-    )
     tlp = fields.String(
         validate=partial(validate_string, choices=TLP_CHOICES),
+    )
+
+    source = fields.String(
+        validate=partial(validate_string, max_length=SOURCE_MAX_LENGTH),
+    )
+    source_uri = fields.String(
+        validate=validate_string,
     )
 
     external_id_salt_values = fields.List(

@@ -33,9 +33,6 @@ class VerdictSchema(Schema):
     https://github.com/threatgrid/ctim/blob/master/doc/structures/verdict.md
     """
 
-    class Meta:
-        ordered = True
-
     disposition = fields.Integer(
         validate=partial(validate_integer, choices=DISPOSITION_MAP.keys()),
         required=True,

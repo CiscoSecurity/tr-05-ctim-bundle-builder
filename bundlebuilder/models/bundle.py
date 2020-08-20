@@ -47,12 +47,6 @@ class BundleSchema(Schema):
     https://github.com/threatgrid/ctim/blob/master/doc/structures/bundle.md
     """
 
-    class Meta:
-        ordered = True
-
-    source = fields.String(
-        validate=partial(validate_string, max_length=SOURCE_MAX_LENGTH),
-    )
     valid_time = fields.Nested(ValidTimeSchema)
     description = fields.String(
         validate=partial(validate_string, max_length=DESCRIPTION_MAX_LENGTH),
@@ -93,9 +87,6 @@ class BundleSchema(Schema):
     sightings = fields.List(
         EntityField(type=Sighting)
     )
-    source_uri = fields.String(
-        validate=validate_string,
-    )
     timestamp = DateTimeField()
     title = fields.String(
         validate=partial(validate_string, max_length=TITLE_MAX_LENGTH),
@@ -108,6 +99,13 @@ class BundleSchema(Schema):
     )
     verdicts = fields.List(
         EntityField(type=Verdict)
+    )
+
+    source = fields.String(
+        validate=partial(validate_string, max_length=SOURCE_MAX_LENGTH),
+    )
+    source_uri = fields.String(
+        validate=validate_string,
     )
 
     external_id_salt_values = fields.List(

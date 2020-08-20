@@ -43,9 +43,6 @@ class IndicatorSchema(Schema):
     https://github.com/threatgrid/ctim/blob/master/doc/structures/indicator.md
     """
 
-    class Meta:
-        ordered = True
-
     producer = fields.String(
         validate=partial(validate_string, max_length=PRODUCER_MAX_LENGTH),
         required=True,
@@ -90,12 +87,6 @@ class IndicatorSchema(Schema):
     short_description = fields.String(
         validate=partial(validate_string, max_length=SHORT_DESCRIPTION_LENGTH),
     )
-    source = fields.String(
-        validate=partial(validate_string, max_length=SOURCE_MAX_LENGTH),
-    )
-    source_uri = fields.String(
-        validate=validate_string,
-    )
     specification = fields.Nested(SpecificationSchema)
     tags = fields.List(
         fields.String(
@@ -116,6 +107,13 @@ class IndicatorSchema(Schema):
     )
     tlp = fields.String(
         validate=partial(validate_string, choices=TLP_CHOICES),
+    )
+
+    source = fields.String(
+        validate=partial(validate_string, max_length=SOURCE_MAX_LENGTH),
+    )
+    source_uri = fields.String(
+        validate=validate_string,
     )
 
     external_id_salt_values = fields.List(

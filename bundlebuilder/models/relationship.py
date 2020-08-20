@@ -36,9 +36,6 @@ class RelationshipSchema(Schema):
     https://github.com/threatgrid/ctim/blob/master/doc/structures/relationship.md
     """
 
-    class Meta:
-        ordered = True
-
     relationship_type = fields.String(
         validate=partial(validate_string, choices=RELATIONSHIP_TYPE_CHOICES),
         required=True,
@@ -68,18 +65,19 @@ class RelationshipSchema(Schema):
     short_description = fields.String(
         validate=partial(validate_string, max_length=SHORT_DESCRIPTION_LENGTH),
     )
-    source = fields.String(
-        validate=partial(validate_string, max_length=SOURCE_MAX_LENGTH),
-    )
-    source_uri = fields.String(
-        validate=validate_string,
-    )
     timestamp = DateTimeField()
     title = fields.String(
         validate=partial(validate_string, max_length=TITLE_MAX_LENGTH),
     )
     tlp = fields.String(
         validate=partial(validate_string, choices=TLP_CHOICES),
+    )
+
+    source = fields.String(
+        validate=partial(validate_string, max_length=SOURCE_MAX_LENGTH),
+    )
+    source_uri = fields.String(
+        validate=validate_string,
     )
 
     external_id_salt_values = fields.List(
