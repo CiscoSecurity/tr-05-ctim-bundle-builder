@@ -1,4 +1,4 @@
-SCHEMA_VERSION = '1.0.14'
+SCHEMA_VERSION = '1.0.17'
 
 # Default session configuration.
 
