@@ -6,10 +6,7 @@ from bundlebuilder.constants import (
     COLUMN_TYPE_CHOICES,
     COUNT_MIN_VALUE,
     OBSERVABLE_TYPE_CHOICES,
-    OBSERVABLE_RELATION_CHOICES,
-    RESOLUTION_CHOICES,
     REVISION_MIN_VALUE,
-    SENSOR_CHOICES,
     SEVERITY_CHOICES,
     SHORT_DESCRIPTION_LENGTH,
     TLP_CHOICES,
@@ -65,13 +62,13 @@ def test_sighting_validation_fails():
         'sensor_coordinates':  [{
             'location': 'Europe',
             'observables': [{'type': 'ip', 'value': '127.0.0.1'}],
-            'type': 'actuator',
         }],
         'severity': 'Insignificant',
         'short_description': '\U0001f4a9' * DESCRIPTION_MAX_LENGTH,
         'targets': [{
+            'local': True,
             'observed_time': {'start_time': '1970-01-01T00:00:00Z'},
-            'type': 'actuator',
+            'type': 'thread.daemon',
         }],
         'timestamp': '4:20',
         'title': 'OMG! The Best CTIM Bundle Builder Ever!',
@@ -133,27 +130,15 @@ def test_sighting_validation_fails():
             0: {
                 'score': ['Unknown field.'],
                 'origin': ['Missing data for required field.'],
-                'relation': [
-                    'Must be one of: '
-                    f'{", ".join(map(repr, OBSERVABLE_RELATION_CHOICES))}.'
-                ],
             }
         },
-        'resolution': [
-            f'Must be one of: {", ".join(map(repr, RESOLUTION_CHOICES))}.'
-        ],
         'revision': [
             f'Must be greater than or equal to {REVISION_MIN_VALUE}.'
-        ],
-        'sensor': [
-            f'Must be one of: {", ".join(map(repr, SENSOR_CHOICES))}.'
         ],
         'sensor_coordinates': {
             0: {
                 'location': ['Unknown field.'],
-                'type': [
-                    f'Must be one of: {", ".join(map(repr, SENSOR_CHOICES))}.'
-                ],
+                'type': ['Missing data for required field.'],
             },
         },
         'severity':  [
@@ -164,10 +149,8 @@ def test_sighting_validation_fails():
         ],
         'targets': {
             0: {
+                'local': ['Unknown field.'],
                 'observables': ['Missing data for required field.'],
-                'type': [
-                    f'Must be one of: {", ".join(map(repr, SENSOR_CHOICES))}.'
-                ],
             },
         },
         'timestamp': ['Not a valid datetime.'],

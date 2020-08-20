@@ -2,7 +2,6 @@ from pytest import raises as assert_raises
 
 from bundlebuilder.constants import (
     DESCRIPTION_MAX_LENGTH,
-    RELATIONSHIP_TYPE_CHOICES,
     REVISION_MIN_VALUE,
     SHORT_DESCRIPTION_LENGTH,
     TLP_CHOICES,
@@ -50,10 +49,6 @@ def test_relationship_validation_fails():
 
     assert error.args == ({
         'greeting': ['Unknown field.'],
-        'relationship_type': [
-            'Must be one of: '
-            f'{", ".join(map(repr, RELATIONSHIP_TYPE_CHOICES))}.'
-        ],
         'source_ref': ['Missing data for required field.'],
         'target_ref': ['Not a valid CTIM Entity.'],
         'external_references': {
