@@ -10,5 +10,6 @@ install:
 - pip install --upgrade --requirement test-requirements.txt
 
 script:
-- flake8 bundlebuilder/
+- pip show bundlebuilder
+- flake8 .
 - pytest --verbose tests/unit/
