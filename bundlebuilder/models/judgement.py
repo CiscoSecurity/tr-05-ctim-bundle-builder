@@ -26,6 +26,7 @@ from ..constants import (
     PRIORITY_MIN_VALUE,
     PRIORITY_MAX_VALUE,
     SEVERITY_CHOICES,
+    SOURCE_MAX_LENGTH,
     LANGUAGE_MAX_LENGTH,
     REASON_MAX_LENGTH,
     REVISION_MIN_VALUE,
@@ -69,6 +70,9 @@ class JudgementSchema(Schema):
         validate=partial(validate_string, choices=SEVERITY_CHOICES),
         required=True,
     )
+    source = fields.String(
+        validate=partial(validate_string, max_length=SOURCE_MAX_LENGTH),
+    )
     valid_time = fields.Nested(
         ValidTimeSchema,
         required=True,
@@ -89,6 +93,9 @@ class JudgementSchema(Schema):
         validate=partial(validate_integer, min_value=REVISION_MIN_VALUE),
     )
     timestamp = DateTimeField()
+    source_uri = fields.String(
+        validate=validate_string,
+    )
     tlp = fields.String(
         validate=partial(validate_string, choices=TLP_CHOICES),
     )

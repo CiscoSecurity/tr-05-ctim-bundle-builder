@@ -29,6 +29,7 @@ from .utils.validators import (
     validate_integer,
 )
 from ..constants import (
+    SOURCE_MAX_LENGTH,
     DESCRIPTION_MAX_LENGTH,
     LANGUAGE_MAX_LENGTH,
     REVISION_MIN_VALUE,
@@ -49,6 +50,9 @@ class BundleSchema(Schema):
     class Meta:
         ordered = True
 
+    source = fields.String(
+        validate=partial(validate_string, max_length=SOURCE_MAX_LENGTH),
+    )
     valid_time = fields.Nested(ValidTimeSchema)
     description = fields.String(
         validate=partial(validate_string, max_length=DESCRIPTION_MAX_LENGTH),
@@ -88,6 +92,9 @@ class BundleSchema(Schema):
     )
     sightings = fields.List(
         EntityField(type=Sighting)
+    )
+    source_uri = fields.String(
+        validate=validate_string,
     )
     timestamp = DateTimeField()
     title = fields.String(

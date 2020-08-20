@@ -30,6 +30,7 @@ from ..constants import (
     REVISION_MIN_VALUE,
     SEVERITY_CHOICES,
     SHORT_DESCRIPTION_LENGTH,
+    SOURCE_MAX_LENGTH,
     TAG_MAX_LENGTH,
     TEST_MECHANISM_MAX_LENGTH,
     TITLE_MAX_LENGTH,
@@ -88,6 +89,12 @@ class IndicatorSchema(Schema):
     )
     short_description = fields.String(
         validate=partial(validate_string, max_length=SHORT_DESCRIPTION_LENGTH),
+    )
+    source = fields.String(
+        validate=partial(validate_string, max_length=SOURCE_MAX_LENGTH),
+    )
+    source_uri = fields.String(
+        validate=validate_string,
     )
     specification = fields.Nested(SpecificationSchema)
     tags = fields.List(

@@ -32,6 +32,7 @@ from ..constants import (
     SENSOR_CHOICES,
     SEVERITY_CHOICES,
     SHORT_DESCRIPTION_LENGTH,
+    SOURCE_MAX_LENGTH,
     TITLE_MAX_LENGTH,
     TLP_CHOICES,
 )
@@ -91,6 +92,12 @@ class SightingSchema(Schema):
     )
     short_description = fields.String(
         validate=partial(validate_string, max_length=SHORT_DESCRIPTION_LENGTH),
+    )
+    source = fields.String(
+        validate=partial(validate_string, max_length=SOURCE_MAX_LENGTH),
+    )
+    source_uri = fields.String(
+        validate=validate_string,
     )
     targets = fields.List(
         fields.Nested(IdentitySpecificationSchema)

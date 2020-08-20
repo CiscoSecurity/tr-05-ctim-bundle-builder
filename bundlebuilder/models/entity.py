@@ -74,24 +74,16 @@ class Entity(metaclass=EntityMeta):
             self.json.pop('external_id_salt_values', [])
         )
 
-        self.json['source'] = session.source
-        self.json['source_uri'] = session.source_uri
+        self.json.setdefault('source', session.source)
+        self.json.setdefault('source_uri', session.source_uri)
 
         # Generate and set a transient ID and a list of XIDs only after all the
         # other attributes are already set properly.
         self.json['id'] = self.generate_transient_id()
         self.json['external_ids'] = self.generate_external_ids()
 
-        # Make the auto-filled fields be always listed first.
-        self.json = {
-            'type': self.json.pop('type'),
-            'schema_version': self.json.pop('schema_version'),
-            'source': self.json.pop('source'),
-            'source_uri': self.json.pop('source_uri'),
-            'id': self.json.pop('id'),
-            'external_ids': self.json.pop('external_ids'),
-            **self.json
-        }
+        # Sort the fields in alphabetical order.
+        self.json = dict(sorted(self.json.items()))
 
     def __getattr__(self, field):
         return self.json.get(field)
