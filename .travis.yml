@@ -12,4 +12,4 @@ install:
 script:
 - pip show bundlebuilder
 - flake8 .
-- pytest --verbose tests/unit/
+- coverage run --source bundlebuilder/ -m pytest --verbose tests/unit/ && coverage report
