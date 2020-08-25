@@ -69,20 +69,21 @@ class Entity(metaclass=EntityMeta):
 
         self.external_id_prefix = session.external_id_prefix
 
+        self.json.setdefault('source', session.source)
+        self.json.setdefault('source_uri', session.source_uri)
+
         # This isn't really a part of the CTIM JSON payload, so extract it out.
         self.external_id_salt_values: List[str] = sorted(
             self.json.pop('external_id_salt_values', [])
         )
-
-        self.json['source'] = session.source
-        self.json['source_uri'] = session.source_uri
 
         # Generate and set a transient ID and a list of XIDs only after all the
         # other attributes are already set properly.
         self.json['id'] = self.generate_transient_id()
         self.json['external_ids'] = self.generate_external_ids()
 
-        # Make the auto-filled fields be always listed first.
+        # Make the automatically populated fields be listed before the ones
+        # manually specified by the user.
         self.json = {
             'type': self.json.pop('type'),
             'schema_version': self.json.pop('schema_version'),

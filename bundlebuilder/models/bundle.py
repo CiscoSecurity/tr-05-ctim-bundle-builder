@@ -29,6 +29,7 @@ from .utils.validators import (
     validate_integer,
 )
 from ..constants import (
+    SOURCE_MAX_LENGTH,
     DESCRIPTION_MAX_LENGTH,
     LANGUAGE_MAX_LENGTH,
     REVISION_MIN_VALUE,
@@ -45,9 +46,6 @@ class BundleSchema(Schema):
     """
     https://github.com/threatgrid/ctim/blob/master/doc/structures/bundle.md
     """
-
-    class Meta:
-        ordered = True
 
     valid_time = fields.Nested(ValidTimeSchema)
     description = fields.String(
@@ -101,6 +99,13 @@ class BundleSchema(Schema):
     )
     verdicts = fields.List(
         EntityField(type=Verdict)
+    )
+
+    source = fields.String(
+        validate=partial(validate_string, max_length=SOURCE_MAX_LENGTH),
+    )
+    source_uri = fields.String(
+        validate=validate_string,
     )
 
     external_id_salt_values = fields.List(

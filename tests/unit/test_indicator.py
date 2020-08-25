@@ -5,7 +5,6 @@ from bundlebuilder.constants import (
     CONFIDENCE_CHOICES,
     DESCRIPTION_MAX_LENGTH,
     INDICATOR_TYPE_CHOICES,
-    KILL_CHAIN_PHASE_NAME_CHOICES,
     LIKELY_IMPACT_MAX_LENGTH,
     TEST_MECHANISM_MAX_LENGTH,
     REVISION_MIN_VALUE,
@@ -45,7 +44,7 @@ def test_indicator_validation_fails():
             'hashes': ['alpha', 'beta', 'gamma'],
         }],
         'indicator_type': ['Californication', 'Anonymization', 'Exfiltration'],
-        'kill_chain_phases': [{'phase_name': 'divide-and-conquer'}],
+        'kill_chain_phases': [{'algorithm_name': 'divide-and-conquer'}],
         'language': 'Python',
         'likely_impact': '\U0001f4a9' * (LIKELY_IMPACT_MAX_LENGTH + 1),
         'negate': 69,
@@ -94,11 +93,9 @@ def test_indicator_validation_fails():
         },
         'kill_chain_phases': {
             0: {
+                'algorithm_name': ['Unknown field.'],
                 'kill_chain_name': ['Missing data for required field.'],
-                'phase_name': [
-                    'Must be one of: '
-                    f'{", ".join(map(repr, KILL_CHAIN_PHASE_NAME_CHOICES))}.'
-                ],
+                'phase_name': ['Missing data for required field.'],
             },
         },
         'likely_impact': [
@@ -141,8 +138,8 @@ def test_indicator_validation_succeeds():
         'valid_time': {'start_time': utc_now_iso()},
         'indicator_type': ['File Hash Watchlist'],
         'kill_chain_phases': [{
-            'kill_chain_name': 'kill chain name',
-            'phase_name': 'command-and-control',
+            'kill_chain_name': 'Kill_Chain_Name',
+            'phase_name': 'Phase Name',
         }],
         'negate': True,
         'revision': 0,
@@ -159,9 +156,10 @@ def test_indicator_validation_succeeds():
 
     indicator = Indicator(**indicator_data)
 
-    indicator_data['kill_chain_phases'][0].update(
-        {'kill_chain_name': 'kill-chain-name'}
-    )
+    indicator_data['kill_chain_phases'][0].update({
+        'kill_chain_name': 'kill-chain-name',
+        'phase_name': 'phase-name',
+    })
 
     type_ = 'indicator'
 

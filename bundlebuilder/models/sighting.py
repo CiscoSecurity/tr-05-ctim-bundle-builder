@@ -27,11 +27,10 @@ from ..constants import (
     COUNT_MIN_VALUE,
     DESCRIPTION_MAX_LENGTH,
     LANGUAGE_MAX_LENGTH,
-    RESOLUTION_CHOICES,
     REVISION_MIN_VALUE,
-    SENSOR_CHOICES,
     SEVERITY_CHOICES,
     SHORT_DESCRIPTION_LENGTH,
+    SOURCE_MAX_LENGTH,
     TITLE_MAX_LENGTH,
     TLP_CHOICES,
 )
@@ -41,9 +40,6 @@ class SightingSchema(Schema):
     """
     https://github.com/threatgrid/ctim/blob/master/doc/structures/sighting.md
     """
-
-    class Meta:
-        ordered = True
 
     confidence = fields.String(
         validate=partial(validate_string, choices=CONFIDENCE_CHOICES),
@@ -75,13 +71,13 @@ class SightingSchema(Schema):
         fields.Nested(ObservedRelationSchema)
     )
     resolution = fields.String(
-        validate=partial(validate_string, choices=RESOLUTION_CHOICES),
+        validate=validate_string,
     )
     revision = fields.Integer(
         validate=partial(validate_integer, min_value=REVISION_MIN_VALUE),
     )
     sensor = fields.String(
-        validate=partial(validate_string, choices=SENSOR_CHOICES),
+        validate=validate_string,
     )
     sensor_coordinates = fields.List(
         fields.Nested(SensorCoordinatesSchema)
@@ -101,6 +97,13 @@ class SightingSchema(Schema):
     )
     tlp = fields.String(
         validate=partial(validate_string, choices=TLP_CHOICES),
+    )
+
+    source = fields.String(
+        validate=partial(validate_string, max_length=SOURCE_MAX_LENGTH),
+    )
+    source_uri = fields.String(
+        validate=validate_string,
     )
 
     external_id_salt_values = fields.List(

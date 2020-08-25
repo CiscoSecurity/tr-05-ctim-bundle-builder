@@ -10,5 +10,6 @@ install:
 - pip install --upgrade --requirement test-requirements.txt
 
 script:
-- flake8 bundlebuilder/
-- pytest --verbose tests/unit/
+- pip show bundlebuilder
+- flake8 .
+- coverage run --source bundlebuilder/ -m pytest --verbose tests/unit/ && coverage report

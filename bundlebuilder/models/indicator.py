@@ -30,6 +30,7 @@ from ..constants import (
     REVISION_MIN_VALUE,
     SEVERITY_CHOICES,
     SHORT_DESCRIPTION_LENGTH,
+    SOURCE_MAX_LENGTH,
     TAG_MAX_LENGTH,
     TEST_MECHANISM_MAX_LENGTH,
     TITLE_MAX_LENGTH,
@@ -41,9 +42,6 @@ class IndicatorSchema(Schema):
     """
     https://github.com/threatgrid/ctim/blob/master/doc/structures/indicator.md
     """
-
-    class Meta:
-        ordered = True
 
     producer = fields.String(
         validate=partial(validate_string, max_length=PRODUCER_MAX_LENGTH),
@@ -109,6 +107,13 @@ class IndicatorSchema(Schema):
     )
     tlp = fields.String(
         validate=partial(validate_string, choices=TLP_CHOICES),
+    )
+
+    source = fields.String(
+        validate=partial(validate_string, max_length=SOURCE_MAX_LENGTH),
+    )
+    source_uri = fields.String(
+        validate=validate_string,
     )
 
     external_id_salt_values = fields.List(

@@ -24,10 +24,7 @@ from ...constants import (
     SHORT_DESCRIPTION_LENGTH,
     COUNT_MIN_VALUE,
     OBSERVABLE_TYPE_CHOICES,
-    OBSERVABLE_RELATION_CHOICES,
-    SENSOR_CHOICES,
     BOOLEAN_OPERATOR_CHOICES,
-    KILL_CHAIN_PHASE_NAME_CHOICES,
     CONFIDENCE_CHOICES,
     SPECIFICATION_TYPE_CHOICES,
 )
@@ -121,7 +118,7 @@ class ObservedRelationSchema(Schema):
         required=True,
     )
     relation = fields.String(
-        validate=partial(validate_string, choices=OBSERVABLE_RELATION_CHOICES),
+        validate=validate_string,
         required=True,
     )
     source = fields.Nested(
@@ -143,7 +140,7 @@ class SensorCoordinatesSchema(Schema):
         required=True,
     )
     type = fields.String(
-        validate=partial(validate_string, choices=SENSOR_CHOICES),
+        validate=validate_string,
         required=True,
     )
     os = fields.String(
@@ -161,7 +158,7 @@ class IdentitySpecificationSchema(Schema):
         required=True,
     )
     type = fields.String(
-        validate=partial(validate_string, choices=SENSOR_CHOICES),
+        validate=validate_string,
         required=True,
     )
     os = fields.String(
@@ -202,21 +199,19 @@ class KillChainPhaseSchema(Schema):
         required=True,
     )
     phase_name = fields.String(
-        validate=partial(
-            validate_string,
-            choices=KILL_CHAIN_PHASE_NAME_CHOICES,
-        ),
+        validate=validate_string,
         required=True,
     )
 
     @post_load
-    def normalize_kill_chain_name(self, data, **kwargs):
-        if 'kill_chain_name' in data:
-            value = data['kill_chain_name']
-            value = value.lower().strip().split()
-            value = ' '.join(value)
-            value = value.replace(' ', '_').replace('_', '-')
-            data['kill_chain_name'] = value
+    def normalize_names(self, data, **kwargs):
+        for field in ('kill_chain_name', 'phase_name'):
+            if field in data:
+                value = data[field]
+                value = value.lower().strip().split()
+                value = ' '.join(value)
+                value = value.replace(' ', '_').replace('_', '-')
+                data[field] = value
         return data
 
 

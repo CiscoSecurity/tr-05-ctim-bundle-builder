@@ -26,6 +26,7 @@ from ..constants import (
     PRIORITY_MIN_VALUE,
     PRIORITY_MAX_VALUE,
     SEVERITY_CHOICES,
+    SOURCE_MAX_LENGTH,
     LANGUAGE_MAX_LENGTH,
     REASON_MAX_LENGTH,
     REVISION_MIN_VALUE,
@@ -37,9 +38,6 @@ class JudgementSchema(Schema):
     """
     https://github.com/threatgrid/ctim/blob/master/doc/structures/judgement.md
     """
-
-    class Meta:
-        ordered = True
 
     confidence = fields.String(
         validate=partial(validate_string, choices=CONFIDENCE_CHOICES),
@@ -91,6 +89,13 @@ class JudgementSchema(Schema):
     timestamp = DateTimeField()
     tlp = fields.String(
         validate=partial(validate_string, choices=TLP_CHOICES),
+    )
+
+    source = fields.String(
+        validate=partial(validate_string, max_length=SOURCE_MAX_LENGTH),
+    )
+    source_uri = fields.String(
+        validate=validate_string,
     )
 
     external_id_salt_values = fields.List(
