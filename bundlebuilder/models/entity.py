@@ -118,7 +118,9 @@ class PrimaryEntity(BaseEntity):
         # Generate and set a transient ID and a list of XIDs only after all the
         # other attributes are already set properly.
         self.json['id'] = self.generate_transient_id()
-        self.json['external_ids'] = self.generate_external_ids()
+        self.json['external_ids'] = (
+            self.generate_external_ids() + self.json.get('external_ids', [])
+        )
 
         # Make the automatically populated fields be listed before the ones
         # manually specified by the user.

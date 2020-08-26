@@ -115,6 +115,11 @@ class BundleSchema(EntitySchema):
             validate=validate_string,
         )
     )
+    external_ids = fields.List(
+        fields.String(
+            validate=validate_string,
+        )
+    )
 
 
 class Bundle(PrimaryEntity):

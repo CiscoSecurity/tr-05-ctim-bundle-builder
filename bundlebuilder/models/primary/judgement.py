@@ -105,6 +105,11 @@ class JudgementSchema(EntitySchema):
             validate=validate_string,
         )
     )
+    external_ids = fields.List(
+        fields.String(
+            validate=validate_string,
+        )
+    )
 
     @validates_schema
     def validate_disposition_consistency(self, data, **kwargs):
