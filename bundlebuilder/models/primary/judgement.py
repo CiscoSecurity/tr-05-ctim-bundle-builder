@@ -128,9 +128,8 @@ class JudgementSchema(EntitySchema):
 class Judgement(PrimaryEntity):
     schema = JudgementSchema
 
-    def generate_external_id_seed_values(self) -> Iterator[Tuple[str]]:
+    def _generate_external_id_seed_values(self) -> Iterator[Tuple[str]]:
         yield (
-            self.external_id_prefix,
             self.type,
             self.source,
             self.observable['value'],

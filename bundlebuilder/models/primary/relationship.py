@@ -98,8 +98,7 @@ class RelationshipSchema(EntitySchema):
 class Relationship(PrimaryEntity):
     schema = RelationshipSchema
 
-    def generate_external_id_seed_values(self) -> Iterator[Tuple[str]]:
+    def _generate_external_id_seed_values(self) -> Iterator[Tuple[str]]:
         yield (
-            self.external_id_prefix,
             self.type,
         )

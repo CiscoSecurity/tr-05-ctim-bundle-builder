@@ -133,9 +133,8 @@ class IndicatorSchema(EntitySchema):
 class Indicator(PrimaryEntity):
     schema = IndicatorSchema
 
-    def generate_external_id_seed_values(self) -> Iterator[Tuple[str]]:
+    def _generate_external_id_seed_values(self) -> Iterator[Tuple[str]]:
         yield (
-            self.external_id_prefix,
             self.type,
             self.title or '',
             self.producer,

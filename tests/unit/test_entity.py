@@ -76,8 +76,8 @@ def test_primary_entity_subclass_validation_with_empty_schema_succeeds():
     class Good(PrimaryEntity):
         schema = GoodSchema
 
-        def generate_external_id_seed_values(self):
-            yield ()
+        def _generate_external_id_seed_values(self):
+            yield ('alpha', 'beta', 'gamma')
 
     type_ = 'good'
 

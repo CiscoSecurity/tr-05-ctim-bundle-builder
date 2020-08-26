@@ -123,13 +123,12 @@ class SightingSchema(EntitySchema):
 class Sighting(PrimaryEntity):
     schema = SightingSchema
 
-    def generate_external_id_seed_values(self) -> Iterator[Tuple[str]]:
+    def _generate_external_id_seed_values(self) -> Iterator[Tuple[str]]:
         observables = self.observables or []
 
         if observables:
             for observable in observables:
                 yield (
-                    self.external_id_prefix,
                     self.type,
                     self.title or '',
                     (self.timestamp or '').split('T', 1)[0],
@@ -138,7 +137,6 @@ class Sighting(PrimaryEntity):
 
         else:
             yield (
-                self.external_id_prefix,
                 self.type,
                 self.title or '',
                 (self.timestamp or '').split('T', 1)[0],

@@ -105,21 +105,24 @@ class PrimaryEntity(BaseEntity):
 
         session = get_session()
 
-        self.external_id_prefix = session.external_id_prefix
+        external_id_prefix = session.external_id_prefix
 
         self.json.setdefault('source', session.source)
         self.json.setdefault('source_uri', session.source_uri)
 
         # This isn't really a part of the CTIM JSON payload, so extract it out.
-        self.external_id_salt_values: List[str] = sorted(
+        external_id_salt_values: List[str] = sorted(
             self.json.pop('external_id_salt_values', [])
         )
 
         # Generate and set a transient ID and a list of XIDs only after all the
         # other attributes are already set properly.
-        self.json['id'] = self.generate_transient_id()
+        self.json['id'] = self._generate_transient_id(external_id_prefix)
         self.json['external_ids'] = (
-            self.generate_external_ids() + self.json.get('external_ids', [])
+            self._generate_external_ids(
+                external_id_prefix,
+                external_id_salt_values,
+            ) + self.json.get('external_ids', [])
         )
 
         # Make the automatically populated fields be listed before the ones
@@ -134,28 +137,41 @@ class PrimaryEntity(BaseEntity):
             **self.json
         }
 
-    def generate_transient_id(self) -> str:
+    def _generate_transient_id(self, external_id_prefix: str) -> str:
         return 'transient:{prefix}-{type}-{uuid}'.format(
-            prefix=self.external_id_prefix,
+            prefix=external_id_prefix,
             type=self.type,
             uuid=uuid4().hex,
         )
 
-    def generate_external_ids(self) -> List[str]:
+    def _generate_external_ids(
+        self,
+        external_id_prefix: str,
+        external_id_salt_values: List[str],
+    ) -> List[str]:
         return [
             '{prefix}-{type}-{sha256}'.format(
-                prefix=self.external_id_prefix,
+                prefix=external_id_prefix,
                 type=self.type,
                 sha256=sha256(
                     bytes(external_id_deterministic_value, 'utf-8')
                 ).hexdigest(),
             )
             for external_id_deterministic_value
-            in self.generate_external_id_deterministic_values()
+            in self._generate_external_id_deterministic_values(
+                external_id_prefix,
+                external_id_salt_values,
+            )
         ]
 
-    def generate_external_id_deterministic_values(self) -> Iterator[str]:
-        for external_id_seed_values in self.generate_external_id_seed_values():
+    def _generate_external_id_deterministic_values(
+        self,
+        external_id_prefix: str,
+        external_id_salt_values: List[str],
+    ) -> Iterator[str]:
+        for external_id_seed_values in (
+            self._generate_external_id_seed_values()
+        ):
             # Chain together all the values available.
             # Filter out any empty values.
             # Join up all the values left.
@@ -163,14 +179,14 @@ class PrimaryEntity(BaseEntity):
                 filter(
                     bool,
                     chain(
-                        external_id_seed_values,
-                        self.external_id_salt_values,
+                        (external_id_prefix,) + external_id_seed_values,
+                        external_id_salt_values,
                     )
                 )
             )
 
     @abstractmethod
-    def generate_external_id_seed_values(self) -> Iterator[Tuple[str]]:
+    def _generate_external_id_seed_values(self) -> Iterator[Tuple[str]]:
         pass
 
 

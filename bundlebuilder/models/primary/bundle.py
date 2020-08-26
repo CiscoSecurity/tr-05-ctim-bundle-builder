@@ -125,12 +125,6 @@ class BundleSchema(EntitySchema):
 class Bundle(PrimaryEntity):
     schema = BundleSchema
 
-    def generate_external_id_seed_values(self) -> Iterator[Tuple[str]]:
-        yield (
-            self.external_id_prefix,
-            self.type,
-        )
-
     def add_indicator(self, indicator: Indicator, ref: bool = False) -> None:
         self._add(indicator, Indicator, ref)
 
@@ -155,3 +149,8 @@ class Bundle(PrimaryEntity):
         else:
             key = type_.type + ('_refs' if ref else 's')
             self.json.setdefault(key, []).append(data)
+
+    def _generate_external_id_seed_values(self) -> Iterator[Tuple[str]]:
+        yield (
+            self.type,
+        )
