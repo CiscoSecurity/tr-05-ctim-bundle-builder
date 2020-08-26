@@ -7,20 +7,22 @@ from typing import (
 from marshmallow import fields
 from marshmallow.decorators import validates_schema
 from marshmallow.exceptions import ValidationError
-from marshmallow.schema import Schema
 
-from .entity import Entity
-from .utils.fields import DateTimeField
-from .utils.schemas import (
+from ..fields import DateTimeField
+from ..entity import (
+    EntitySchema,
+    PrimaryEntity,
+)
+from ..schemas import (
     ObservableSchema,
     ValidTimeSchema,
     ExternalReferenceSchema,
 )
-from .utils.validators import (
+from ..validators import (
     validate_string,
     validate_integer,
 )
-from ..constants import (
+from ...constants import (
     CONFIDENCE_CHOICES,
     DISPOSITION_MAP,
     PRIORITY_MIN_VALUE,
@@ -34,7 +36,7 @@ from ..constants import (
 )
 
 
-class JudgementSchema(Schema):
+class JudgementSchema(EntitySchema):
     """
     https://github.com/threatgrid/ctim/blob/master/doc/structures/judgement.md
     """
@@ -118,7 +120,7 @@ class JudgementSchema(Schema):
             raise ValidationError(message)
 
 
-class Judgement(Entity):
+class Judgement(PrimaryEntity):
     schema = JudgementSchema
 
     def generate_external_id_seed_values(self) -> Iterator[Tuple[str]]:

@@ -1,4 +1,3 @@
-from marshmallow.schema import Schema
 from pytest import raises as assert_raises
 
 from bundlebuilder.constants import (
@@ -8,7 +7,12 @@ from bundlebuilder.constants import (
     DEFAULT_SESSION_EXTERNAL_ID_PREFIX,
 )
 from bundlebuilder.exceptions import SchemaError
-from bundlebuilder.models import Entity
+from bundlebuilder.models.entity import (
+    EntitySchema,
+    BaseEntity,
+    PrimaryEntity,
+    SecondaryEntity,
+)
 from bundlebuilder.session import (
     get_session,
     get_default_session,
@@ -20,31 +24,56 @@ from .utils import (
 )
 
 
-def test_subclassing_without_marshmallow_schema_fails():
+def test_base_entity_subclassing_with_invalid_schema_fails():
     class BadSchema:
         pass
 
     with assert_raises(SchemaError):
-        class Bad(Entity):
+        class Bad(BaseEntity):
             schema = BadSchema
 
 
-def test_abstract_subclass_instantiation_fails():
-    class AlmostGoodSchema(Schema):
+def test_base_entity_abstract_subclass_instantiation_without_schema_fails():
+    class AlmostGood(BaseEntity):
+        def _initialize_missing_fields(self):
+            pass
+
+    with assert_raises(SchemaError):
+        AlmostGood()
+
+
+def test_base_entity_abstract_subclass_instantiation_without_method_fails():
+    class GoodSchema(EntitySchema):
         pass
 
-    class AlmostGood(Entity):
-        schema = AlmostGoodSchema
+    class AlmostGood(BaseEntity):
+        schema = GoodSchema
 
     with assert_raises(TypeError):
         AlmostGood()
 
 
-def test_empty_schema_validation_succeeds():
-    class GoodSchema(Schema):
+def test_base_entity_subclass_validation_with_empty_schema_succeeds():
+    class AlmostGood(BaseEntity):
+        def _initialize_missing_fields(self):
+            self.json['foo'] = 'bar'
+
+    class GoodSchema(EntitySchema):
         pass
 
-    class Good(Entity):
+    class Good(AlmostGood):
+        schema = GoodSchema
+
+    good = Good()
+
+    assert good.json == {'foo': 'bar'}
+
+
+def test_primary_entity_subclass_validation_with_empty_schema_succeeds():
+    class GoodSchema(EntitySchema):
+        pass
+
+    class Good(PrimaryEntity):
         schema = GoodSchema
 
         def generate_external_id_seed_values(self):
@@ -97,3 +126,15 @@ def test_empty_schema_validation_succeeds():
                 mock_external_id(session.external_id_prefix, type_)
             ],
         }
+
+
+def test_secondary_entity_subclass_validation_with_empty_schema_succeeds():
+    class GoodSchema(EntitySchema):
+        pass
+
+    class Good(SecondaryEntity):
+        schema = GoodSchema
+
+    good = Good()
+
+    assert good.json == {}

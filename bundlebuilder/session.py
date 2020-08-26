@@ -17,7 +17,7 @@ from .constants import (
 from .exceptions import (
     ValidationError as BundleBuilderValidationError
 )
-from .models.utils.validators import validate_string
+from .models.validators import validate_string
 
 
 class SessionSchema(Schema):

@@ -17,7 +17,7 @@ from .validators import (
     validate_string,
     validate_integer,
 )
-from ...constants import (
+from ..constants import (
     SOURCE_NAME_MAX_LENGTH,
     DESCRIPTION_MAX_LENGTH,
     COLUMN_TYPE_CHOICES,

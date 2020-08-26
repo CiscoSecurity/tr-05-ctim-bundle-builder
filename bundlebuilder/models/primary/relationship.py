@@ -5,21 +5,23 @@ from typing import (
 )
 
 from marshmallow import fields
-from marshmallow.schema import Schema
 
-from .entity import Entity
-from .utils.fields import (
+from ..fields import (
     EntityField,
     DateTimeField,
 )
-from .utils.schemas import (
+from ..entity import (
+    EntitySchema,
+    PrimaryEntity,
+)
+from ..schemas import (
     ExternalReferenceSchema,
 )
-from .utils.validators import (
+from ..validators import (
     validate_string,
     validate_integer,
 )
-from ..constants import (
+from ...constants import (
     DESCRIPTION_MAX_LENGTH,
     LANGUAGE_MAX_LENGTH,
     REVISION_MIN_VALUE,
@@ -30,7 +32,7 @@ from ..constants import (
 )
 
 
-class RelationshipSchema(Schema):
+class RelationshipSchema(EntitySchema):
     """
     https://github.com/threatgrid/ctim/blob/master/doc/structures/relationship.md
     """
@@ -40,11 +42,13 @@ class RelationshipSchema(Schema):
         required=True,
     )
     source_ref = EntityField(
+        type=PrimaryEntity,
         ref=True,
         validate=validate_string,
         required=True,
     )
     target_ref = EntityField(
+        type=PrimaryEntity,
         ref=True,
         validate=validate_string,
         required=True,
@@ -86,7 +90,7 @@ class RelationshipSchema(Schema):
     )
 
 
-class Relationship(Entity):
+class Relationship(PrimaryEntity):
     schema = RelationshipSchema
 
     def generate_external_id_seed_values(self) -> Iterator[Tuple[str]]:

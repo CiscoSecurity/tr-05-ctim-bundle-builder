@@ -8,27 +8,29 @@ from marshmallow import fields
 from marshmallow.exceptions import (
     ValidationError as MarshmallowValidationError
 )
-from marshmallow.schema import Schema
 
-from .entity import Entity
-from .indicator import Indicator
-from .judgement import Judgement
-from .relationship import Relationship
-from .sighting import Sighting
-from .verdict import Verdict
-from .utils.fields import (
+from ..fields import (
     EntityField,
     DateTimeField,
 )
-from .utils.schemas import (
+from ..entity import (
+    EntitySchema,
+    PrimaryEntity,
+)
+from ..primary.indicator import Indicator
+from ..primary.judgement import Judgement
+from ..primary.relationship import Relationship
+from ..primary.sighting import Sighting
+from ..secondary.verdict import Verdict
+from ..schemas import (
     ValidTimeSchema,
     ExternalReferenceSchema,
 )
-from .utils.validators import (
+from ..validators import (
     validate_string,
     validate_integer,
 )
-from ..constants import (
+from ...constants import (
     SOURCE_MAX_LENGTH,
     DESCRIPTION_MAX_LENGTH,
     LANGUAGE_MAX_LENGTH,
@@ -37,12 +39,12 @@ from ..constants import (
     TITLE_MAX_LENGTH,
     TLP_CHOICES,
 )
-from ..exceptions import (
+from ...exceptions import (
     ValidationError as BundleBuilderValidationError
 )
 
 
-class BundleSchema(Schema):
+class BundleSchema(EntitySchema):
     """
     https://github.com/threatgrid/ctim/blob/master/doc/structures/bundle.md
     """
@@ -115,7 +117,7 @@ class BundleSchema(Schema):
     )
 
 
-class Bundle(Entity):
+class Bundle(PrimaryEntity):
     schema = BundleSchema
 
     def generate_external_id_seed_values(self) -> Iterator[Tuple[str]]:
@@ -123,6 +125,21 @@ class Bundle(Entity):
             self.external_id_prefix,
             self.type,
         )
+
+    def add_indicator(self, indicator: Indicator, ref: bool = False) -> None:
+        self._add(indicator, Indicator, ref)
+
+    def add_judgement(self, judgement: Judgement, ref: bool = False) -> None:
+        self._add(judgement, Judgement, ref)
+
+    def add_relationship(self, relationship: Relationship, ref: bool = False) -> None:  # noqa: E501
+        self._add(relationship, Relationship, ref)
+
+    def add_sighting(self, sighting: Sighting, ref: bool = False) -> None:
+        self._add(sighting, Sighting, ref)
+
+    def add_verdict(self, verdict: Verdict, ref: bool = False) -> None:
+        self._add(verdict, Verdict, ref)
 
     def _add(self, entity, type_, ref):
         try:
@@ -133,18 +150,3 @@ class Bundle(Entity):
         else:
             key = type_.type + ('_refs' if ref else 's')
             self.json.setdefault(key, []).append(data)
-
-    def add_indicator(self, indicator: Indicator, ref: bool = False):
-        self._add(indicator, Indicator, ref)
-
-    def add_judgement(self, judgement: Judgement, ref: bool = False):
-        self._add(judgement, Judgement, ref)
-
-    def add_relationship(self, relationship: Relationship, ref: bool = False):
-        self._add(relationship, Relationship, ref)
-
-    def add_sighting(self, sighting: Sighting, ref: bool = False):
-        self._add(sighting, Sighting, ref)
-
-    def add_verdict(self, verdict: Verdict, ref: bool = False):
-        self._add(verdict, Verdict, ref)

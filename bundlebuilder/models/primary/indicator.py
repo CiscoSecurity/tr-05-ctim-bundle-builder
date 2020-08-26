@@ -5,22 +5,24 @@ from typing import (
 )
 
 from marshmallow import fields
-from marshmallow.schema import Schema
 
-from .entity import Entity
-from .utils.fields import DateTimeField
-from .utils.schemas import (
+from ..fields import DateTimeField
+from ..entity import (
+    EntitySchema,
+    PrimaryEntity,
+)
+from ..schemas import (
     ValidTimeSchema,
     CompositeIndicatorExpressionSchema,
     ExternalReferenceSchema,
     KillChainPhaseSchema,
     SpecificationSchema,
 )
-from .utils.validators import (
+from ..validators import (
     validate_string,
     validate_integer,
 )
-from ..constants import (
+from ...constants import (
     PRODUCER_MAX_LENGTH,
     CONFIDENCE_CHOICES,
     DESCRIPTION_MAX_LENGTH,
@@ -38,7 +40,7 @@ from ..constants import (
 )
 
 
-class IndicatorSchema(Schema):
+class IndicatorSchema(EntitySchema):
     """
     https://github.com/threatgrid/ctim/blob/master/doc/structures/indicator.md
     """
@@ -123,7 +125,7 @@ class IndicatorSchema(Schema):
     )
 
 
-class Indicator(Entity):
+class Indicator(PrimaryEntity):
     schema = IndicatorSchema
 
     def generate_external_id_seed_values(self) -> Iterator[Tuple[str]]:

@@ -5,11 +5,13 @@ from typing import (
 )
 
 from marshmallow import fields
-from marshmallow.schema import Schema
 
-from .entity import Entity
-from .utils.fields import DateTimeField
-from .utils.schemas import (
+from ..fields import DateTimeField
+from ..entity import (
+    EntitySchema,
+    PrimaryEntity,
+)
+from ..schemas import (
     ObservedTimeSchema,
     SightingDataTableSchema,
     ExternalReferenceSchema,
@@ -18,11 +20,11 @@ from .utils.schemas import (
     SensorCoordinatesSchema,
     IdentitySpecificationSchema,
 )
-from .utils.validators import (
+from ..validators import (
     validate_string,
     validate_integer,
 )
-from ..constants import (
+from ...constants import (
     CONFIDENCE_CHOICES,
     COUNT_MIN_VALUE,
     DESCRIPTION_MAX_LENGTH,
@@ -36,7 +38,7 @@ from ..constants import (
 )
 
 
-class SightingSchema(Schema):
+class SightingSchema(EntitySchema):
     """
     https://github.com/threatgrid/ctim/blob/master/doc/structures/sighting.md
     """
@@ -113,7 +115,7 @@ class SightingSchema(Schema):
     )
 
 
-class Sighting(Entity):
+class Sighting(PrimaryEntity):
     schema = SightingSchema
 
     def generate_external_id_seed_values(self) -> Iterator[Tuple[str]]:

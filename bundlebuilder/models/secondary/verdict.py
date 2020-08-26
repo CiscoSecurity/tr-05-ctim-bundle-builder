@@ -1,34 +1,32 @@
 from functools import partial
-from typing import (
-    Iterator,
-    Tuple,
-)
 
 from marshmallow import fields
 from marshmallow.decorators import validates_schema
 from marshmallow.exceptions import (
     ValidationError as MarshmallowValidationError
 )
-from marshmallow.schema import Schema
 
-from .entity import Entity
-from .judgement import Judgement
-from .utils.fields import EntityField
-from .utils.schemas import (
+from ..fields import EntityField
+from ..entity import (
+    EntitySchema,
+    SecondaryEntity,
+)
+from ..primary.judgement import Judgement
+from ..schemas import (
     ObservableSchema,
     ValidTimeSchema,
 )
-from .utils.validators import (
+from ..validators import (
     validate_integer,
     validate_string,
 )
-from ..constants import DISPOSITION_MAP
-from ..exceptions import (
+from ...constants import DISPOSITION_MAP
+from ...exceptions import (
     ValidationError as BundleBuilderValidationError
 )
 
 
-class VerdictSchema(Schema):
+class VerdictSchema(EntitySchema):
     """
     https://github.com/threatgrid/ctim/blob/master/doc/structures/verdict.md
     """
@@ -63,30 +61,14 @@ class VerdictSchema(Schema):
             raise MarshmallowValidationError(message)
 
 
-class Verdict(Entity):
+class Verdict(SecondaryEntity):
     schema = VerdictSchema
 
-    def __init__(self, **data):
-        super().__init__(**data)
-
-        # Some of the default fields for CTIM don't make sense here (since
-        # verdicts can't be pushed to CTIA), so just get rid of them.
-        for field in (
-            'schema_version',
-            'source',
-            'source_uri',
-            'id',
-            'external_ids',
-        ):
-            del self.json[field]
-
-    def __str__(self):
-        return f'<{self.__class__.__name__}>'
-
-    def generate_external_id_seed_values(self) -> Iterator[Tuple[str]]:
-        # Implement the abstract method somehow in order to simply make the
-        # class concrete and thus instantiable.
-        yield ()
+    def _initialize_missing_fields(self) -> None:
+        self.json = {
+            'type': self.type,
+            **self.json
+        }
 
     @classmethod
     def from_judgement(cls, judgement: Judgement) -> 'Verdict':
