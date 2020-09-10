@@ -1,7 +1,6 @@
 from functools import partial
 
 from marshmallow import fields
-from marshmallow.decorators import post_load
 from marshmallow.exceptions import ValidationError
 from marshmallow.schema import Schema
 from marshmallow.utils import (
@@ -14,28 +13,6 @@ from ..constants import (
     CONFIDENCE_CHOICES,
     SPECIFICATION_TYPE_CHOICES,
 )
-
-
-class KillChainPhaseSchema(Schema):
-    kill_chain_name = fields.String(
-        validate=validate_string,
-        required=True,
-    )
-    phase_name = fields.String(
-        validate=validate_string,
-        required=True,
-    )
-
-    @post_load
-    def normalize_names(self, data, **kwargs):
-        for field in ('kill_chain_name', 'phase_name'):
-            if field in data:
-                value = data[field]
-                value = value.lower().strip().split()
-                value = ' '.join(value)
-                value = value.replace(' ', '_').replace('_', '-')
-                data[field] = value
-        return data
 
 
 class BaseSpecificationSchema(Schema):

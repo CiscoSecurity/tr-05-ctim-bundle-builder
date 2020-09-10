@@ -20,6 +20,7 @@ from bundlebuilder.models import (
     Indicator,
     ValidTime,
     CompositeIndicatorExpression,
+    KillChainPhase,
 )
 from tests.unit.utils import (
     mock_transient_id,
@@ -37,7 +38,7 @@ def test_indicator_validation_fails():
         'description': '\U0001f4a9' * DESCRIPTION_MAX_LENGTH,
         'external_references': [object()],
         'indicator_type': ['Californication', 'Anonymization', 'Exfiltration'],
-        'kill_chain_phases': [{'algorithm_name': 'divide-and-conquer'}],
+        'kill_chain_phases': [object()],
         'language': 'Python',
         'likely_impact': '\U0001f4a9' * (LIKELY_IMPACT_MAX_LENGTH + 1),
         'negate': 69,
@@ -76,11 +77,7 @@ def test_indicator_validation_fails():
             ],
         },
         'kill_chain_phases': {
-            0: {
-                'algorithm_name': ['Unknown field.'],
-                'kill_chain_name': ['Missing data for required field.'],
-                'phase_name': ['Missing data for required field.'],
-            },
+            0: ['Not a valid CTIM KillChainPhase.'],
         },
         'likely_impact': [
             f'Must be at most {LIKELY_IMPACT_MAX_LENGTH} characters long.'
@@ -121,6 +118,11 @@ def test_indicator_validation_succeeds():
         operator='and',
     )
 
+    kill_chain_phase = KillChainPhase(
+        kill_chain_name=' - Kill - Chain - Name - ',
+        phase_name=' _ Phase _ Name _ ',
+    )
+
     judgement_id = 'transient:prefix-judgement-sha256'
     judgement_uri = (
         f'https://private.intel.amp.cisco.com/ctia/judgement/{judgement_id}'
@@ -132,10 +134,7 @@ def test_indicator_validation_succeeds():
         'valid_time': valid_time,
         'composite_indicator_expression': composite_indicator_expression,
         'indicator_type': ['File Hash Watchlist'],
-        'kill_chain_phases': [{
-            'kill_chain_name': 'Kill_Chain_Name',
-            'phase_name': 'Phase Name',
-        }],
+        'kill_chain_phases': [kill_chain_phase],
         'negate': True,
         'revision': 0,
         'severity': 'High',

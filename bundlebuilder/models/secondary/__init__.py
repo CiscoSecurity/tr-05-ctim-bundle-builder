@@ -3,6 +3,7 @@ from .column_definition import ColumnDefinition
 from .composite_indicator_expression import CompositeIndicatorExpression
 from .external_reference import ExternalReference
 from .identity_specification import IdentitySpecification
+from .kill_chain_phase import KillChainPhase
 from .observable import Observable
 from .observed_relation import ObservedRelation
 from .observed_time import ObservedTime

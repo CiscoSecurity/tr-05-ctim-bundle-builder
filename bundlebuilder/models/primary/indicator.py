@@ -18,11 +18,9 @@ from ..secondary.composite_indicator_expression import (
     CompositeIndicatorExpression
 )
 from ..secondary.external_reference import ExternalReference
+from ..secondary.kill_chain_phase import KillChainPhase
 from ..secondary.valid_time import ValidTime
-from ..schemas import (
-    KillChainPhaseSchema,
-    SpecificationSchema,
-)
+from ..schemas import SpecificationSchema
 from ..validators import (
     validate_string,
     validate_integer,
@@ -76,7 +74,7 @@ class IndicatorSchema(EntitySchema):
         )
     )
     kill_chain_phases = fields.List(
-        fields.Nested(KillChainPhaseSchema)
+        EntityField(type=KillChainPhase)
     )
     language = fields.String(
         validate=partial(validate_string, max_length=LANGUAGE_MAX_LENGTH),

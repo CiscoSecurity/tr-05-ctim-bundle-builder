@@ -7,7 +7,6 @@ from bundlebuilder.models import CompositeIndicatorExpression
 
 def test_composite_indicator_expression_validation_fails():
     composite_indicator_expression_data = {
-        'author': 'gdavoian',
         'operator': 'xor',
     }
 
@@ -17,7 +16,6 @@ def test_composite_indicator_expression_validation_fails():
     error = exc_info.value
 
     assert error.args == ({
-        'author': ['Unknown field.'],
         'indicator_ids': ['Missing data for required field.'],
         'operator': [
             'Must be one of: '

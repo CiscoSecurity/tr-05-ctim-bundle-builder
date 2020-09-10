@@ -12,6 +12,7 @@ from .secondary import (
     CompositeIndicatorExpression,
     ExternalReference,
     IdentitySpecification,
+    KillChainPhase,
     Observable,
     ObservedRelation,
     ObservedTime,
