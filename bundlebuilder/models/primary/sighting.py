@@ -17,8 +17,8 @@ from ..entity import (
 from ..secondary.external_reference import ExternalReference
 from ..secondary.observable import Observable
 from ..secondary.observed_relation import ObservedRelation
+from ..secondary.observed_time import ObservedTime
 from ..schemas import (
-    ObservedTimeSchema,
     SightingDataTableSchema,
     SensorCoordinatesSchema,
     IdentitySpecificationSchema,
@@ -54,8 +54,8 @@ class SightingSchema(EntitySchema):
         validate=partial(validate_integer, min_value=COUNT_MIN_VALUE),
         required=True,
     )
-    observed_time = fields.Nested(
-        ObservedTimeSchema,
+    observed_time = EntityField(
+        type=ObservedTime,
         required=True,
     )
     data = fields.Nested(SightingDataTableSchema)

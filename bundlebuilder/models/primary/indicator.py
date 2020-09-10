@@ -15,8 +15,8 @@ from ..entity import (
     PrimaryEntity,
 )
 from ..secondary.external_reference import ExternalReference
+from ..secondary.valid_time import ValidTime
 from ..schemas import (
-    ValidTimeSchema,
     CompositeIndicatorExpressionSchema,
     KillChainPhaseSchema,
     SpecificationSchema,
@@ -52,8 +52,8 @@ class IndicatorSchema(EntitySchema):
         validate=partial(validate_string, max_length=PRODUCER_MAX_LENGTH),
         required=True,
     )
-    valid_time = fields.Nested(
-        ValidTimeSchema,
+    valid_time = EntityField(
+        type=ValidTime,
         required=True,
     )
     composite_indicator_expression = fields.Nested(

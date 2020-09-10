@@ -11,4 +11,6 @@ from .secondary import (
     ExternalReference,
     Observable,
     ObservedRelation,
+    ObservedTime,
+    ValidTime,
 )

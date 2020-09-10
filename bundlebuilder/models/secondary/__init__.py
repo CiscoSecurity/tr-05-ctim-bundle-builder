@@ -2,3 +2,5 @@
 from .external_reference import ExternalReference
 from .observable import Observable
 from .observed_relation import ObservedRelation
+from .observed_time import ObservedTime
+from .valid_time import ValidTime

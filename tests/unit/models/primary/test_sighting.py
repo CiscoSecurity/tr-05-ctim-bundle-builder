@@ -17,6 +17,7 @@ from bundlebuilder.constants import (
 from bundlebuilder.exceptions import ValidationError
 from bundlebuilder.models import (
     Sighting,
+    ObservedTime,
     Observable,
     ObservedRelation,
 )
@@ -31,10 +32,7 @@ def test_sighting_validation_fails():
     sighting_data = {
         'greeting': '¡Hola!',
         'confidence': 'Unbelievable',
-        'observed_time': {
-            'middle_time': 'This value will be ignored anyway, right?',
-            'end_time': '1970-01-01T00:00:00Z',
-        },
+        'observed_time': object(),
         'data': {
             'column_count': +1,
             'columns': [{'type': 'anything'}],
@@ -77,10 +75,7 @@ def test_sighting_validation_fails():
             f'Must be one of: {", ".join(map(repr, CONFIDENCE_CHOICES))}.'
         ],
         'count': ['Missing data for required field.'],
-        'observed_time': {
-            'start_time': ['Missing data for required field.'],
-            'middle_time': ['Unknown field.'],
-        },
+        'observed_time': ['Not a valid CTIM ObservedTime.'],
         'data': {
             'column_count': ['Unknown field.'],
             'columns': {
@@ -138,6 +133,10 @@ def test_sighting_validation_fails():
 
 
 def test_sighting_validation_succeeds():
+    observed_time = ObservedTime(
+        start_time=utc_now_iso(),
+    )
+
     observable = Observable(
         type='domain',
         value='cisco.com',
@@ -159,7 +158,7 @@ def test_sighting_validation_succeeds():
     sighting_data = {
         'confidence': 'Medium',
         'count': 2,
-        'observed_time': {'start_time': utc_now_iso()},
+        'observed_time': observed_time,
         'data': {
             'columns': [
                 {'name': 'full_name', 'type': 'string', 'required': True},
@@ -193,6 +192,7 @@ def test_sighting_validation_succeeds():
 
     sighting = Sighting(**sighting_data)
 
+    sighting_data['observed_time'] = observed_time.json
     sighting_data['observables'] = [observable.json]
     sighting_data['relations'] = [relation.json]
 

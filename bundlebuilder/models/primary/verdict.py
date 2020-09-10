@@ -14,7 +14,7 @@ from ..entity import (
 )
 from ..primary.judgement import Judgement
 from ..secondary.observable import Observable
-from ..schemas import ValidTimeSchema
+from ..secondary.valid_time import ValidTime
 from ..validators import (
     validate_integer,
     validate_string,
@@ -38,8 +38,8 @@ class VerdictSchema(EntitySchema):
         type=Observable,
         required=True,
     )
-    valid_time = fields.Nested(
-        ValidTimeSchema,
+    valid_time = EntityField(
+        type=ValidTime,
         required=True,
     )
     disposition_name = fields.String(
@@ -76,7 +76,7 @@ class Verdict(PrimaryEntity):
             verdict = Verdict(
                 disposition=judgement.disposition,
                 observable=Observable(**judgement.observable),
-                valid_time=judgement.valid_time,
+                valid_time=ValidTime(**judgement.valid_time),
                 disposition_name=judgement.disposition_name,
             )
             verdict.json['judgement_id'] = judgement_id

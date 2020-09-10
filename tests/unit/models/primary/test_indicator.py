@@ -17,7 +17,10 @@ from bundlebuilder.constants import (
     DEFAULT_SESSION_EXTERNAL_ID_PREFIX,
 )
 from bundlebuilder.exceptions import ValidationError
-from bundlebuilder.models import Indicator
+from bundlebuilder.models import (
+    Indicator,
+    ValidTime,
+)
 from tests.unit.utils import (
     mock_transient_id,
     mock_external_id,
@@ -28,10 +31,7 @@ from tests.unit.utils import (
 def test_indicator_validation_fails():
     indicator_data = {
         'greeting': '¡Hola!',
-        'valid_time': {
-            'start_time': '1970-01-01T00:00:00Z',
-            'middle_time': 'This value will be ignored anyway, right?',
-        },
+        'valid_time': object(),
         'composite_indicator_expression': {
             'indicator_ids': ['x', 'y', 'z'],
             'operator': 'xor',
@@ -62,9 +62,7 @@ def test_indicator_validation_fails():
     assert error.args == ({
         'greeting': ['Unknown field.'],
         'producer': ['Missing data for required field.'],
-        'valid_time': {
-            'middle_time': ['Unknown field.'],
-        },
+        'valid_time': ['Not a valid CTIM ValidTime.'],
         'composite_indicator_expression': {
             'operator': [
                 'Must be one of: '
@@ -119,6 +117,11 @@ def test_indicator_validation_fails():
 
 
 def test_indicator_validation_succeeds():
+    valid_time = ValidTime(
+        start_time=utc_now_iso(),
+        end_time=utc_now_iso(),
+    )
+
     judgement_id = 'transient:prefix-judgement-sha256'
     judgement_uri = (
         f'https://private.intel.amp.cisco.com/ctia/judgement/{judgement_id}'
@@ -127,7 +130,7 @@ def test_indicator_validation_succeeds():
     indicator_data = {
         'producer': 'SoftServe',
         'confidence': 'High',
-        'valid_time': {'start_time': utc_now_iso()},
+        'valid_time': valid_time,
         'indicator_type': ['File Hash Watchlist'],
         'kill_chain_phases': [{
             'kill_chain_name': 'Kill_Chain_Name',
@@ -148,10 +151,11 @@ def test_indicator_validation_succeeds():
 
     indicator = Indicator(**indicator_data)
 
-    indicator_data['kill_chain_phases'][0].update({
+    indicator_data['valid_time'] = valid_time.json
+    indicator_data['kill_chain_phases'] = [{
         'kill_chain_name': 'kill-chain-name',
         'phase_name': 'phase-name',
-    })
+    }]
 
     type_ = 'indicator'
 

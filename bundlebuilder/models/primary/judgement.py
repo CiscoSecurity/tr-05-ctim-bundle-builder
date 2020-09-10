@@ -18,7 +18,7 @@ from ..entity import (
 )
 from ..secondary.external_reference import ExternalReference
 from ..secondary.observable import Observable
-from ..schemas import ValidTimeSchema
+from ..secondary.valid_time import ValidTime
 from ..validators import (
     validate_string,
     validate_integer,
@@ -70,8 +70,8 @@ class JudgementSchema(EntitySchema):
         validate=partial(validate_string, choices=SEVERITY_CHOICES),
         required=True,
     )
-    valid_time = fields.Nested(
-        ValidTimeSchema,
+    valid_time = EntityField(
+        type=ValidTime,
         required=True,
     )
     external_references = fields.List(

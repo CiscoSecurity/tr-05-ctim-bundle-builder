@@ -5,6 +5,7 @@ from bundlebuilder.exceptions import ValidationError
 from bundlebuilder.models import (
     Verdict,
     Observable,
+    ValidTime,
 )
 from tests.unit.utils import utc_now_iso
 
@@ -14,10 +15,7 @@ def test_verdict_validation_fails():
         'greeting': '¡Hola!',
         'disposition': 0,
         'observable': object(),
-        'valid_time': {
-            'middle_time': 'This value will be ignored anyway, right?',
-            'end_time': '1970-01-01T00:00:00Z',
-        },
+        'valid_time': object(),
         'disposition_name': 'Pristine',
     }
 
@@ -32,9 +30,7 @@ def test_verdict_validation_fails():
             f'Must be one of: {", ".join(map(repr, DISPOSITION_MAP.keys()))}.'
         ],
         'observable': ['Not a valid CTIM Observable.'],
-        'valid_time': {
-            'middle_time': ['Unknown field.'],
-        },
+        'valid_time': ['Not a valid CTIM ValidTime.'],
         'disposition_name': [
             'Must be one of: '
             f'{", ".join(map(repr, DISPOSITION_MAP.values()))}.'
@@ -48,16 +44,22 @@ def test_verdict_validation_succeeds():
         value='cisco.com',
     )
 
+    valid_time = ValidTime(
+        start_time=utc_now_iso(),
+        end_time=utc_now_iso(),
+    )
+
     verdict_data = {
         'disposition': 1,
         'observable': observable,
-        'valid_time': {'start_time': utc_now_iso()},
+        'valid_time': valid_time,
         'disposition_name': 'Clean',
     }
 
     verdict = Verdict(**verdict_data)
 
     verdict_data['observable'] = observable.json
+    verdict_data['valid_time'] = valid_time.json
 
     type_ = 'verdict'
 

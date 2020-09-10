@@ -14,6 +14,7 @@ from bundlebuilder.exceptions import ValidationError
 from bundlebuilder.models import (
     Relationship,
     Observable,
+    ValidTime,
     Judgement,
     Indicator,
 )
@@ -65,22 +66,20 @@ def test_relationship_validation_fails():
 
 
 def test_relationship_validation_succeeds():
-    observable = Observable(
-        type='domain',
-        value='cisco.com',
-    )
-
     judgement = Judgement(
         confidence='Low',
         disposition=4,
         disposition_name='Common',
-        observable=observable,
+        observable=Observable(
+            type='domain',
+            value='cisco.com',
+        ),
         priority=25,
         severity='Low',
-        valid_time={
-            'start_time': utc_now_iso(),
-            'end_time': utc_now_iso(),
-        },
+        valid_time=ValidTime(
+            start_time=utc_now_iso(),
+            end_time=utc_now_iso(),
+        ),
         revision=1,
         timestamp=utc_now_iso(),
         tlp='white',
@@ -88,10 +87,10 @@ def test_relationship_validation_succeeds():
 
     indicator = Indicator(
         producer='SoftServe',
-        valid_time={
-            'start_time': utc_now_iso(),
-            'end_time': utc_now_iso(),
-        },
+        valid_time=ValidTime(
+            start_time=utc_now_iso(),
+            end_time=utc_now_iso(),
+        ),
         revision=2,
         timestamp=utc_now_iso(),
         tlp='green',

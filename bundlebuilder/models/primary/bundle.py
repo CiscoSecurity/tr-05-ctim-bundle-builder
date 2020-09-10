@@ -23,7 +23,7 @@ from ..primary.relationship import Relationship
 from ..primary.sighting import Sighting
 from ..primary.verdict import Verdict
 from ..secondary.external_reference import ExternalReference
-from ..schemas import ValidTimeSchema
+from ..secondary.valid_time import ValidTime
 from ..validators import (
     validate_string,
     validate_integer,
@@ -47,7 +47,7 @@ class BundleSchema(EntitySchema):
     https://github.com/threatgrid/ctim/blob/master/doc/structures/bundle.md
     """
 
-    valid_time = fields.Nested(ValidTimeSchema)
+    valid_time = EntityField(type=ValidTime)
     description = fields.String(
         validate=partial(validate_string, max_length=DESCRIPTION_MAX_LENGTH),
     )

@@ -10,9 +10,11 @@ from bundlebuilder.constants import (
 from bundlebuilder.exceptions import ValidationError
 from bundlebuilder.models import (
     Bundle,
-    Observable,
     Sighting,
+    ObservedTime,
+    Observable,
     Judgement,
+    ValidTime,
     Indicator,
     Relationship,
     Verdict,
@@ -27,10 +29,7 @@ from tests.unit.utils import (
 def test_bundle_validation_fails():
     bundle_data = {
         'greeting': '¡Hola!',
-        'valid_time': {
-            'middle_time': 'This value will be ignored anyway, right?',
-            'end_time': '1970-01-01T00:00:00Z',
-        },
+        'valid_time': object(),
         'description': '\U0001f4a9' * DESCRIPTION_MAX_LENGTH,
         'external_references': [object()],
         'indicators': [object()],
@@ -53,9 +52,7 @@ def test_bundle_validation_fails():
 
     assert error.args == ({
         'greeting': ['Unknown field.'],
-        'valid_time': {
-            'middle_time': ['Unknown field.'],
-        },
+        'valid_time': ['Not a valid CTIM ValidTime.'],
         'external_references': {
             0: ['Not a valid CTIM ExternalReference.'],
         },
@@ -105,7 +102,9 @@ def test_bundle_validation_succeeds():
         sighting = Sighting(
             confidence='High',
             count=1,
-            observed_time={'start_time': '2019-03-01T22:26:29.229Z'},
+            observed_time=ObservedTime(
+                start_time='2019-03-01T22:26:29.229Z',
+            ),
             observables=[
                 Observable(
                     type='ip',
@@ -129,10 +128,10 @@ def test_bundle_validation_succeeds():
             ),
             priority=95,
             severity='High',
-            valid_time={
-                'start_time': '2019-03-01T22:26:29.229Z',
-                'end_time': '2019-03-31T22:26:29.229Z',
-            },
+            valid_time=ValidTime(
+                start_time='2019-03-01T22:26:29.229Z',
+                end_time='2019-03-31T22:26:29.229Z',
+            ),
             timestamp='2019-03-01T22:26:29.229Z',
             tlp='green',
         )
@@ -141,10 +140,10 @@ def test_bundle_validation_succeeds():
 
         indicator = Indicator(
             producer='Cisco TALOS',
-            valid_time={
-                'start_time': '2019-03-01T22:26:29.229Z',
-                'end_time': '2525-01-01T00:00:00.000Z',
-            },
+            valid_time=ValidTime(
+                start_time='2019-03-01T22:26:29.229Z',
+                end_time='2525-01-01T00:00:00.000Z',
+            ),
             description=(
                 'The IP Blacklist is automatically updated every 15 minutes '
                 'and contains a list of known malicious network threats that '

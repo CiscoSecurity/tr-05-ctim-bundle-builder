@@ -17,6 +17,7 @@ from bundlebuilder.exceptions import ValidationError
 from bundlebuilder.models import (
     Judgement,
     Observable,
+    ValidTime,
 )
 from tests.unit.utils import (
     mock_transient_id,
@@ -34,10 +35,7 @@ def test_judgement_validation_fails():
         'observable': object(),
         'priority': PRIORITY_MAX_VALUE + 1,
         'severity': 'Insignificant',
-        'valid_time': {
-            'start_time': '1970-01-01T00:00:00Z',
-            'middle_time': 'This value will be ignored anyway, right?',
-        },
+        'valid_time': object(),
         'external_references': [object()],
         'language': 'Python',
         'reason': '\U0001f4a9' * (REASON_MAX_LENGTH + 1),
@@ -70,9 +68,7 @@ def test_judgement_validation_fails():
         'severity': [
             f'Must be one of: {", ".join(map(repr, SEVERITY_CHOICES))}.'
         ],
-        'valid_time': {
-            'middle_time': ['Unknown field.'],
-        },
+        'valid_time': ['Not a valid CTIM ValidTime.'],
         'external_references': {
             0: ['Not a valid CTIM ExternalReference.'],
         },
@@ -95,6 +91,11 @@ def test_judgement_validation_succeeds():
         value='cisco.com',
     )
 
+    valid_time = ValidTime(
+        start_time=utc_now_iso(),
+        end_time=utc_now_iso(),
+    )
+
     judgement_data = {
         'confidence': 'Medium',
         'disposition': 3,
@@ -102,7 +103,7 @@ def test_judgement_validation_succeeds():
         'observable': observable,
         'priority': 50,
         'severity': 'Medium',
-        'valid_time': {'end_time': utc_now_iso()},
+        'valid_time': valid_time,
         'revision': 0,
         'timestamp': utc_now_iso(),
         'tlp': 'amber',
@@ -111,6 +112,7 @@ def test_judgement_validation_succeeds():
     judgement = Judgement(**judgement_data)
 
     judgement_data['observable'] = observable.json
+    judgement_data['valid_time'] = valid_time.json
 
     type_ = 'judgement'
 
