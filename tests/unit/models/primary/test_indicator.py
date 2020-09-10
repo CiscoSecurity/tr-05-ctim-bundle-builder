@@ -1,7 +1,6 @@
 from pytest import raises as assert_raises
 
 from bundlebuilder.constants import (
-    BOOLEAN_OPERATOR_CHOICES,
     CONFIDENCE_CHOICES,
     DESCRIPTION_MAX_LENGTH,
     INDICATOR_TYPE_CHOICES,
@@ -20,6 +19,7 @@ from bundlebuilder.exceptions import ValidationError
 from bundlebuilder.models import (
     Indicator,
     ValidTime,
+    CompositeIndicatorExpression,
 )
 from tests.unit.utils import (
     mock_transient_id,
@@ -32,10 +32,7 @@ def test_indicator_validation_fails():
     indicator_data = {
         'greeting': '¡Hola!',
         'valid_time': object(),
-        'composite_indicator_expression': {
-            'indicator_ids': ['x', 'y', 'z'],
-            'operator': 'xor',
-        },
+        'composite_indicator_expression': object(),
         'confidence': 'Unbelievable',
         'description': '\U0001f4a9' * DESCRIPTION_MAX_LENGTH,
         'external_references': [object()],
@@ -63,12 +60,9 @@ def test_indicator_validation_fails():
         'greeting': ['Unknown field.'],
         'producer': ['Missing data for required field.'],
         'valid_time': ['Not a valid CTIM ValidTime.'],
-        'composite_indicator_expression': {
-            'operator': [
-                'Must be one of: '
-                f'{", ".join(map(repr, BOOLEAN_OPERATOR_CHOICES))}.'
-            ],
-        },
+        'composite_indicator_expression': [
+            'Not a valid CTIM CompositeIndicatorExpression.'
+        ],
         'confidence': [
             f'Must be one of: {", ".join(map(repr, CONFIDENCE_CHOICES))}.'
         ],
@@ -122,6 +116,11 @@ def test_indicator_validation_succeeds():
         end_time=utc_now_iso(),
     )
 
+    composite_indicator_expression = CompositeIndicatorExpression(
+        indicator_ids=['123', '456', '789'],
+        operator='and',
+    )
+
     judgement_id = 'transient:prefix-judgement-sha256'
     judgement_uri = (
         f'https://private.intel.amp.cisco.com/ctia/judgement/{judgement_id}'
@@ -131,6 +130,7 @@ def test_indicator_validation_succeeds():
         'producer': 'SoftServe',
         'confidence': 'High',
         'valid_time': valid_time,
+        'composite_indicator_expression': composite_indicator_expression,
         'indicator_type': ['File Hash Watchlist'],
         'kill_chain_phases': [{
             'kill_chain_name': 'Kill_Chain_Name',
@@ -152,6 +152,9 @@ def test_indicator_validation_succeeds():
     indicator = Indicator(**indicator_data)
 
     indicator_data['valid_time'] = valid_time.json
+    indicator_data['composite_indicator_expression'] = (
+        composite_indicator_expression.json
+    )
     indicator_data['kill_chain_phases'] = [{
         'kill_chain_name': 'kill-chain-name',
         'phase_name': 'phase-name',

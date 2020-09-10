@@ -1,5 +1,6 @@
 # Make the classes below importable from the `.secondary` sub-package directly.
 from .column_definition import ColumnDefinition
+from .composite_indicator_expression import CompositeIndicatorExpression
 from .external_reference import ExternalReference
 from .identity_specification import IdentitySpecification
 from .observable import Observable

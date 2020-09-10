@@ -9,6 +9,7 @@ from .primary import (
 )
 from .secondary import (
     ColumnDefinition,
+    CompositeIndicatorExpression,
     ExternalReference,
     IdentitySpecification,
     Observable,

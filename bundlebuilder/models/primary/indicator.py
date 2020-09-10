@@ -14,10 +14,12 @@ from ..entity import (
     EntitySchema,
     PrimaryEntity,
 )
+from ..secondary.composite_indicator_expression import (
+    CompositeIndicatorExpression
+)
 from ..secondary.external_reference import ExternalReference
 from ..secondary.valid_time import ValidTime
 from ..schemas import (
-    CompositeIndicatorExpressionSchema,
     KillChainPhaseSchema,
     SpecificationSchema,
 )
@@ -56,8 +58,8 @@ class IndicatorSchema(EntitySchema):
         type=ValidTime,
         required=True,
     )
-    composite_indicator_expression = fields.Nested(
-        CompositeIndicatorExpressionSchema
+    composite_indicator_expression = EntityField(
+        type=CompositeIndicatorExpression,
     )
     confidence = fields.String(
         validate=partial(validate_string, choices=CONFIDENCE_CHOICES),
