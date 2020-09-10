@@ -38,11 +38,7 @@ def test_judgement_validation_fails():
             'start_time': '1970-01-01T00:00:00Z',
             'middle_time': 'This value will be ignored anyway, right?',
         },
-        'external_references': [{
-            'description': '',
-            'external_id': None,
-            'hashes': ['alpha', 'beta', 'gamma'],
-        }],
+        'external_references': [object()],
         'language': 'Python',
         'reason': '\U0001f4a9' * (REASON_MAX_LENGTH + 1),
         'revision': -273,
@@ -78,11 +74,7 @@ def test_judgement_validation_fails():
             'middle_time': ['Unknown field.'],
         },
         'external_references': {
-            0: {
-                'source_name': ['Missing data for required field.'],
-                'description': ['Field may not be blank.'],
-                'external_id': ['Field may not be null.'],
-            },
+            0: ['Not a valid CTIM ExternalReference.'],
         },
         'reason': [
             f'Must be at most {REASON_MAX_LENGTH} characters long.'

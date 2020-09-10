@@ -30,11 +30,7 @@ def test_relationship_validation_fails():
         'relationship_type': 'loved-by',
         'target_ref': 3.141592653589793,
         'description': '\U0001f4a9' * DESCRIPTION_MAX_LENGTH,
-        'external_references': [{
-            'description': '',
-            'external_id': None,
-            'hashes': ['alpha', 'beta', 'gamma'],
-        }],
+        'external_references': [object()],
         'language': 'Python',
         'revision': -273,
         'short_description': '\U0001f4a9' * DESCRIPTION_MAX_LENGTH,
@@ -53,11 +49,7 @@ def test_relationship_validation_fails():
         'source_ref': ['Missing data for required field.'],
         'target_ref': ['Not a valid CTIM Entity.'],
         'external_references': {
-            0: {
-                'source_name': ['Missing data for required field.'],
-                'description': ['Field may not be blank.'],
-                'external_id': ['Field may not be null.'],
-            },
+            0: ['Not a valid CTIM ExternalReference.'],
         },
         'revision': [
             f'Must be greater than or equal to {REVISION_MIN_VALUE}.'

@@ -6,15 +6,18 @@ from typing import (
 
 from marshmallow import fields
 
-from ..fields import DateTimeField
+from ..fields import (
+    EntityField,
+    DateTimeField,
+)
 from ..entity import (
     EntitySchema,
     PrimaryEntity,
 )
+from ..secondary.external_reference import ExternalReference
 from ..schemas import (
     ValidTimeSchema,
     CompositeIndicatorExpressionSchema,
-    ExternalReferenceSchema,
     KillChainPhaseSchema,
     SpecificationSchema,
 )
@@ -63,7 +66,7 @@ class IndicatorSchema(EntitySchema):
         validate=partial(validate_string, max_length=DESCRIPTION_MAX_LENGTH),
     )
     external_references = fields.List(
-        fields.Nested(ExternalReferenceSchema)
+        EntityField(type=ExternalReference)
     )
     indicator_type = fields.List(
         fields.String(

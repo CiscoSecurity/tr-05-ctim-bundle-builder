@@ -38,11 +38,7 @@ def test_indicator_validation_fails():
         },
         'confidence': 'Unbelievable',
         'description': '\U0001f4a9' * DESCRIPTION_MAX_LENGTH,
-        'external_references': [{
-            'description': '',
-            'external_id': None,
-            'hashes': ['alpha', 'beta', 'gamma'],
-        }],
+        'external_references': [object()],
         'indicator_type': ['Californication', 'Anonymization', 'Exfiltration'],
         'kill_chain_phases': [{'algorithm_name': 'divide-and-conquer'}],
         'language': 'Python',
@@ -79,11 +75,7 @@ def test_indicator_validation_fails():
             f'Must be one of: {", ".join(map(repr, CONFIDENCE_CHOICES))}.'
         ],
         'external_references': {
-            0: {
-                'source_name': ['Missing data for required field.'],
-                'description': ['Field may not be blank.'],
-                'external_id': ['Field may not be null.'],
-            },
+            0: ['Not a valid CTIM ExternalReference.'],
         },
         'indicator_type': {
             0: [

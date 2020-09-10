@@ -8,6 +8,7 @@ from .primary import (
     Verdict,
 )
 from .secondary import (
+    ExternalReference,
     Observable,
     ObservedRelation,
 )

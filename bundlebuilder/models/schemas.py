@@ -18,7 +18,6 @@ from .validators import (
     validate_integer,
 )
 from ..constants import (
-    SOURCE_NAME_MAX_LENGTH,
     DESCRIPTION_MAX_LENGTH,
     COLUMN_TYPE_CHOICES,
     SHORT_DESCRIPTION_LENGTH,
@@ -28,27 +27,6 @@ from ..constants import (
     CONFIDENCE_CHOICES,
     SPECIFICATION_TYPE_CHOICES,
 )
-
-
-class ExternalReferenceSchema(Schema):
-    source_name = fields.String(
-        validate=partial(validate_string, max_length=SOURCE_NAME_MAX_LENGTH),
-        required=True,
-    )
-    description = fields.String(
-        validate=partial(validate_string, max_length=DESCRIPTION_MAX_LENGTH),
-    )
-    external_id = fields.String(
-        validate=validate_string,
-    )
-    hashes = fields.List(
-        fields.String(
-            validate=validate_string,
-        )
-    )
-    url = fields.String(
-        validate=validate_string,
-    )
 
 
 class ObservedTimeSchema(Schema):
@@ -61,7 +39,7 @@ class ObservedTimeSchema(Schema):
             return
 
         if data['start_time'] > data['end_time']:
-            message = 'Not a valid period of time: start must be before end.'
+            message = 'Not a valid period of time: start must come before end.'
             raise ValidationError(message)
 
 
@@ -150,7 +128,7 @@ class ValidTimeSchema(Schema):
             return
 
         if data['start_time'] > data['end_time']:
-            message = 'Not a valid period of time: start must be before end.'
+            message = 'Not a valid period of time: start must come before end.'
             raise ValidationError(message)
 
 

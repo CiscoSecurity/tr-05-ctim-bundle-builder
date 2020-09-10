@@ -32,11 +32,7 @@ def test_bundle_validation_fails():
             'end_time': '1970-01-01T00:00:00Z',
         },
         'description': '\U0001f4a9' * DESCRIPTION_MAX_LENGTH,
-        'external_references': [{
-            'description': '',
-            'external_id': None,
-            'hashes': ['alpha', 'beta', 'gamma'],
-        }],
+        'external_references': [object()],
         'indicators': [object()],
         'judgements': [object()],
         'language': 'Python',
@@ -61,11 +57,7 @@ def test_bundle_validation_fails():
             'middle_time': ['Unknown field.'],
         },
         'external_references': {
-            0: {
-                'source_name': ['Missing data for required field.'],
-                'description': ['Field may not be blank.'],
-                'external_id': ['Field may not be null.'],
-            },
+            0: ['Not a valid CTIM ExternalReference.'],
         },
         'indicators': {
             0: ['Not a valid CTIM Indicator.'],

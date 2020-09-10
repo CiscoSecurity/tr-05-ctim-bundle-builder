@@ -22,7 +22,7 @@ class EntityField(fields.Field):
 
         ref = kwargs.pop('ref', False)
         if not isinstance(ref, bool):
-            raise ValueError(f"'ref' must be a boolean.")
+            raise ValueError("'ref' must be a boolean.")
 
         self.attr_name = 'id' if ref else 'json'
 
@@ -32,11 +32,11 @@ class EntityField(fields.Field):
         if not isinstance(value, self.type):
             raise self.make_error('type', type_name=self.type_name)
 
-        entity = getattr(value, self.attr_name)
-        if entity is None:
+        data = getattr(value, self.attr_name)
+        if data is None:
             raise self.make_error('attr', attr_name=self.attr_name)
 
-        return entity
+        return data
 
 
 class DateTimeField(fields.NaiveDateTime):

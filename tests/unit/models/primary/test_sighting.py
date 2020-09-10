@@ -42,11 +42,7 @@ def test_sighting_validation_fails():
             'row_count': -1,
         },
         'description': '\U0001f4a9' * DESCRIPTION_MAX_LENGTH,
-        'external_references': [{
-            'description': '',
-            'external_id': None,
-            'hashes': ['alpha', 'beta', 'gamma'],
-        }],
+        'external_references': [object()],
         'internal': 69,
         'language': 'Python',
         'observables': [object()],
@@ -104,11 +100,7 @@ def test_sighting_validation_fails():
             ],
         },
         'external_references': {
-            0: {
-                'source_name': ['Missing data for required field.'],
-                'description': ['Field may not be blank.'],
-                'external_id': ['Field may not be null.'],
-            },
+            0: ['Not a valid CTIM ExternalReference.'],
         },
         'internal': ['Not a valid boolean.'],
         'observables': {
@@ -150,6 +142,7 @@ def test_sighting_validation_succeeds():
         type='domain',
         value='cisco.com',
     )
+
     relation = ObservedRelation(
         origin='A bad URL redirecting to a good one.',
         related=Observable(

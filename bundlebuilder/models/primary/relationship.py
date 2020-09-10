@@ -14,9 +14,7 @@ from ..entity import (
     EntitySchema,
     PrimaryEntity,
 )
-from ..schemas import (
-    ExternalReferenceSchema,
-)
+from ..secondary.external_reference import ExternalReference
 from ..validators import (
     validate_string,
     validate_integer,
@@ -59,7 +57,7 @@ class RelationshipSchema(EntitySchema):
         validate=partial(validate_string, max_length=DESCRIPTION_MAX_LENGTH),
     )
     external_references = fields.List(
-        fields.Nested(ExternalReferenceSchema)
+        EntityField(type=ExternalReference)
     )
     language = fields.String(
         validate=partial(validate_string, max_length=LANGUAGE_MAX_LENGTH),

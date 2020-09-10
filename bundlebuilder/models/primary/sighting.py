@@ -14,12 +14,12 @@ from ..entity import (
     EntitySchema,
     PrimaryEntity,
 )
+from ..secondary.external_reference import ExternalReference
 from ..secondary.observable import Observable
 from ..secondary.observed_relation import ObservedRelation
 from ..schemas import (
     ObservedTimeSchema,
     SightingDataTableSchema,
-    ExternalReferenceSchema,
     SensorCoordinatesSchema,
     IdentitySpecificationSchema,
 )
@@ -63,7 +63,7 @@ class SightingSchema(EntitySchema):
         validate=partial(validate_string, max_length=DESCRIPTION_MAX_LENGTH),
     )
     external_references = fields.List(
-        fields.Nested(ExternalReferenceSchema)
+        EntityField(type=ExternalReference)
     )
     internal = fields.Boolean()
     language = fields.String(

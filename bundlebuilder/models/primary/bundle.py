@@ -22,10 +22,8 @@ from ..primary.judgement import Judgement
 from ..primary.relationship import Relationship
 from ..primary.sighting import Sighting
 from ..primary.verdict import Verdict
-from ..schemas import (
-    ValidTimeSchema,
-    ExternalReferenceSchema,
-)
+from ..secondary.external_reference import ExternalReference
+from ..schemas import ValidTimeSchema
 from ..validators import (
     validate_string,
     validate_integer,
@@ -54,7 +52,7 @@ class BundleSchema(EntitySchema):
         validate=partial(validate_string, max_length=DESCRIPTION_MAX_LENGTH),
     )
     external_references = fields.List(
-        fields.Nested(ExternalReferenceSchema)
+        EntityField(type=ExternalReference)
     )
     indicator_refs = fields.List(
         EntityField(type=Indicator, ref=True)
