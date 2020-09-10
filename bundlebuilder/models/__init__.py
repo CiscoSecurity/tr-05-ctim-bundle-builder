@@ -10,6 +10,7 @@ from .primary import (
 from .secondary import (
     ColumnDefinition,
     ExternalReference,
+    IdentitySpecification,
     Observable,
     ObservedRelation,
     ObservedTime,

@@ -15,14 +15,12 @@ from ..entity import (
     PrimaryEntity,
 )
 from ..secondary.external_reference import ExternalReference
+from ..secondary.identity_specification import IdentitySpecification
 from ..secondary.observable import Observable
 from ..secondary.observed_relation import ObservedRelation
 from ..secondary.observed_time import ObservedTime
 from ..secondary.sighting_data_table import SightingDataTable
-from ..schemas import (
-    SensorCoordinatesSchema,
-    IdentitySpecificationSchema,
-)
+from ..schemas import SensorCoordinatesSchema
 from ..validators import (
     validate_string,
     validate_integer,
@@ -94,7 +92,7 @@ class SightingSchema(EntitySchema):
         validate=partial(validate_string, max_length=SHORT_DESCRIPTION_LENGTH),
     )
     targets = fields.List(
-        fields.Nested(IdentitySpecificationSchema)
+        EntityField(type=IdentitySpecification)
     )
     timestamp = DateTimeField()
     title = fields.String(

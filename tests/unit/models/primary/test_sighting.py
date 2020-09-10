@@ -20,6 +20,7 @@ from bundlebuilder.models import (
     ColumnDefinition,
     Observable,
     ObservedRelation,
+    IdentitySpecification,
 )
 from tests.unit.utils import (
     mock_transient_id,
@@ -49,11 +50,7 @@ def test_sighting_validation_fails():
         }],
         'severity': 'Insignificant',
         'short_description': '\U0001f4a9' * DESCRIPTION_MAX_LENGTH,
-        'targets': [{
-            'local': True,
-            # 'observed_time': {'start_time': '1970-01-01T00:00:00Z'},
-            'type': 'thread.daemon',
-        }],
+        'targets': [object()],
         'timestamp': '4:20',
         'title': 'OMG! The Best CTIM Bundle Builder Ever!',
         'tlp': 'razzmatazz',
@@ -98,10 +95,7 @@ def test_sighting_validation_fails():
             f'Must be at most {SHORT_DESCRIPTION_LENGTH} characters long.'
         ],
         'targets': {
-            0: {
-                'local': ['Unknown field.'],
-                'observables': ['Missing data for required field.'],
-            },
+            0: ['Not a valid CTIM IdentitySpecification.'],
         },
         'timestamp': ['Not a valid datetime.'],
         'tlp': [
@@ -156,6 +150,18 @@ def test_sighting_validation_succeeds():
         ),
     )
 
+    target = IdentitySpecification(
+        observables=[
+            Observable(
+                type='hostname',
+                value='macbook6321',
+            )
+        ],
+        observed_time=observed_time,
+        type='endpoint.workstation',
+        os='darwin',
+    )
+
     sighting_data = {
         'confidence': 'Medium',
         'count': 2,
@@ -172,12 +178,7 @@ def test_sighting_validation_succeeds():
             'type': 'endpoint.laptop',
             'os': 'Linux',
         }],
-        'targets': [{
-            'observables': [{'type': 'sha256', 'value': '01' * 32}],
-            # 'observed_time': {'start_time': utc_now_iso()},
-            'type': 'process.anti-virus-scanner',
-            'os': 'Windows',
-        }],
+        'targets': [target],
         'timestamp': utc_now_iso(),
         'tlp': 'amber',
     }
@@ -188,6 +189,7 @@ def test_sighting_validation_succeeds():
     sighting_data['data'] = data.json
     sighting_data['observables'] = [observable.json]
     sighting_data['relations'] = [relation.json]
+    sighting_data['targets'] = [target.json]
 
     type_ = 'sighting'
 

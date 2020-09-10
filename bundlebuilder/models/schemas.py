@@ -43,24 +43,6 @@ class SensorCoordinatesSchema(Schema):
     )
 
 
-class IdentitySpecificationSchema(Schema):
-    observables = fields.List(
-        fields.Nested(ObservableSchema),
-        required=True,
-    )
-    # observed_time = fields.Nested(
-    #     ObservedTimeSchema,
-    #     required=True,
-    # )
-    type = fields.String(
-        validate=validate_string,
-        required=True,
-    )
-    os = fields.String(
-        validate=validate_string,
-    )
-
-
 class CompositeIndicatorExpressionSchema(Schema):
     indicator_ids = fields.List(
         fields.String(
