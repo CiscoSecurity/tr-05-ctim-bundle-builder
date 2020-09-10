@@ -11,36 +11,10 @@ from marshmallow.utils import (
 
 from .validators import validate_string
 from ..constants import (
-    OBSERVABLE_TYPE_CHOICES,
     BOOLEAN_OPERATOR_CHOICES,
     CONFIDENCE_CHOICES,
     SPECIFICATION_TYPE_CHOICES,
 )
-
-
-class ObservableSchema(Schema):
-    type = fields.String(
-        validate=partial(validate_string, choices=OBSERVABLE_TYPE_CHOICES),
-        required=True,
-    )
-    value = fields.String(
-        validate=validate_string,
-        required=True,
-    )
-
-
-class SensorCoordinatesSchema(Schema):
-    observables = fields.List(
-        fields.Nested(ObservableSchema),
-        required=True,
-    )
-    type = fields.String(
-        validate=validate_string,
-        required=True,
-    )
-    os = fields.String(
-        validate=validate_string,
-    )
 
 
 class CompositeIndicatorExpressionSchema(Schema):

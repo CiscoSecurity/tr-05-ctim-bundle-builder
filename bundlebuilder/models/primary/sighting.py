@@ -19,8 +19,8 @@ from ..secondary.identity_specification import IdentitySpecification
 from ..secondary.observable import Observable
 from ..secondary.observed_relation import ObservedRelation
 from ..secondary.observed_time import ObservedTime
+from ..secondary.sensor_coordinates import SensorCoordinates
 from ..secondary.sighting_data_table import SightingDataTable
-from ..schemas import SensorCoordinatesSchema
 from ..validators import (
     validate_string,
     validate_integer,
@@ -83,7 +83,7 @@ class SightingSchema(EntitySchema):
         validate=validate_string,
     )
     sensor_coordinates = fields.List(
-        fields.Nested(SensorCoordinatesSchema)
+        EntityField(type=SensorCoordinates)
     )
     severity = fields.String(
         validate=partial(validate_string, choices=SEVERITY_CHOICES),

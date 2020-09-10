@@ -33,8 +33,8 @@ def test_identity_specification_validation_fails():
 
 def test_identity_specification_validation_succeeds():
     observable = Observable(
-        type='hostname',
-        value='macbook6321',
+        type='device',
+        value='macos',
     )
 
     observed_time = ObservedTime(
@@ -45,7 +45,7 @@ def test_identity_specification_validation_succeeds():
         'observables': [observable],
         'observed_time': observed_time,
         'type': 'endpoint.workstation',
-        'os': 'Darwin',
+        'os': 'darwin',
     }
 
     identity_specification = IdentitySpecification(

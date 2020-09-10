@@ -20,6 +20,7 @@ from bundlebuilder.models import (
     ColumnDefinition,
     Observable,
     ObservedRelation,
+    SensorCoordinates,
     IdentitySpecification,
 )
 from tests.unit.utils import (
@@ -44,10 +45,7 @@ def test_sighting_validation_fails():
         'resolution': 'skipped',
         'revision': -273,
         'sensor': 'actuator',
-        'sensor_coordinates':  [{
-            'location': 'Europe',
-            'observables': [{'type': 'ip', 'value': '127.0.0.1'}],
-        }],
+        'sensor_coordinates':  [object()],
         'severity': 'Insignificant',
         'short_description': '\U0001f4a9' * DESCRIPTION_MAX_LENGTH,
         'targets': [object()],
@@ -83,10 +81,7 @@ def test_sighting_validation_fails():
             f'Must be greater than or equal to {REVISION_MIN_VALUE}.'
         ],
         'sensor_coordinates': {
-            0: {
-                'location': ['Unknown field.'],
-                'type': ['Missing data for required field.'],
-            },
+            0: ['Not a valid CTIM SensorCoordinates.'],
         },
         'severity':  [
             f'Must be one of: {", ".join(map(repr, SEVERITY_CHOICES))}.'
@@ -150,12 +145,23 @@ def test_sighting_validation_succeeds():
         ),
     )
 
-    target = IdentitySpecification(
+    sensor_coordinates = SensorCoordinates(
         observables=[
             Observable(
-                type='hostname',
-                value='macbook6321',
-            )
+                type='device',
+                value='centos',
+            ),
+        ],
+        type='network.gateway',
+        os='linux',
+    )
+
+    target = IdentitySpecification(
+        observables=[
+           Observable(
+                type='device',
+                value='macos',
+            ),
         ],
         observed_time=observed_time,
         type='endpoint.workstation',
@@ -173,11 +179,7 @@ def test_sighting_validation_succeeds():
         'resolution': 'detected',
         'revision': 0,
         'sensor': 'network.firewall',
-        'sensor_coordinates': [{
-            'observables': [{'type': 'email', 'value': 'username@gmail.com'}],
-            'type': 'endpoint.laptop',
-            'os': 'Linux',
-        }],
+        'sensor_coordinates': [sensor_coordinates],
         'targets': [target],
         'timestamp': utc_now_iso(),
         'tlp': 'amber',
@@ -189,6 +191,7 @@ def test_sighting_validation_succeeds():
     sighting_data['data'] = data.json
     sighting_data['observables'] = [observable.json]
     sighting_data['relations'] = [relation.json]
+    sighting_data['sensor_coordinates'] = [sensor_coordinates.json]
     sighting_data['targets'] = [target.json]
 
     type_ = 'sighting'

@@ -14,6 +14,7 @@ from .secondary import (
     Observable,
     ObservedRelation,
     ObservedTime,
+    SensorCoordinates,
     SightingDataTable,
     ValidTime,
 )
