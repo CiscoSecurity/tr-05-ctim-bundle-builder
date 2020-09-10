@@ -9,52 +9,13 @@ from marshmallow.utils import (
     RAISE,
 )
 
-from .validators import (
-    validate_string,
-    validate_integer,
-)
+from .validators import validate_string
 from ..constants import (
-    DESCRIPTION_MAX_LENGTH,
-    COLUMN_TYPE_CHOICES,
-    SHORT_DESCRIPTION_LENGTH,
-    COUNT_MIN_VALUE,
     OBSERVABLE_TYPE_CHOICES,
     BOOLEAN_OPERATOR_CHOICES,
     CONFIDENCE_CHOICES,
     SPECIFICATION_TYPE_CHOICES,
 )
-
-
-class ColumnDefinitionSchema(Schema):
-    name = fields.String(
-        validate=validate_string,
-        required=True,
-    )
-    type = fields.String(
-        validate=partial(validate_string, choices=COLUMN_TYPE_CHOICES),
-        required=True,
-    )
-    description = fields.String(
-        validate=partial(validate_string, max_length=DESCRIPTION_MAX_LENGTH)
-    )
-    required = fields.Boolean()
-    short_description = fields.String(
-        validate=partial(validate_string, max_length=SHORT_DESCRIPTION_LENGTH),
-    )
-
-
-class SightingDataTableSchema(Schema):
-    columns = fields.List(
-        fields.Nested(ColumnDefinitionSchema),
-        required=True,
-    )
-    rows = fields.List(
-        fields.List(fields.Raw),
-        required=True,
-    )
-    row_count = fields.Integer(
-        validate=partial(validate_integer, min_value=COUNT_MIN_VALUE)
-    )
 
 
 class ObservableSchema(Schema):

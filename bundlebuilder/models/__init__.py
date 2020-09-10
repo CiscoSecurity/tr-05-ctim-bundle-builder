@@ -8,9 +8,11 @@ from .primary import (
     Verdict,
 )
 from .secondary import (
+    ColumnDefinition,
     ExternalReference,
     Observable,
     ObservedRelation,
     ObservedTime,
+    SightingDataTable,
     ValidTime,
 )

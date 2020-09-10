@@ -18,8 +18,8 @@ from ..secondary.external_reference import ExternalReference
 from ..secondary.observable import Observable
 from ..secondary.observed_relation import ObservedRelation
 from ..secondary.observed_time import ObservedTime
+from ..secondary.sighting_data_table import SightingDataTable
 from ..schemas import (
-    SightingDataTableSchema,
     SensorCoordinatesSchema,
     IdentitySpecificationSchema,
 )
@@ -58,7 +58,7 @@ class SightingSchema(EntitySchema):
         type=ObservedTime,
         required=True,
     )
-    data = fields.Nested(SightingDataTableSchema)
+    data = EntityField(type=SightingDataTable)
     description = fields.String(
         validate=partial(validate_string, max_length=DESCRIPTION_MAX_LENGTH),
     )

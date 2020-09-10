@@ -3,8 +3,6 @@ from pytest import raises as assert_raises
 from bundlebuilder.constants import (
     DESCRIPTION_MAX_LENGTH,
     CONFIDENCE_CHOICES,
-    COLUMN_TYPE_CHOICES,
-    COUNT_MIN_VALUE,
     REVISION_MIN_VALUE,
     SEVERITY_CHOICES,
     SHORT_DESCRIPTION_LENGTH,
@@ -18,6 +16,8 @@ from bundlebuilder.exceptions import ValidationError
 from bundlebuilder.models import (
     Sighting,
     ObservedTime,
+    SightingDataTable,
+    ColumnDefinition,
     Observable,
     ObservedRelation,
 )
@@ -33,12 +33,7 @@ def test_sighting_validation_fails():
         'greeting': '¡Hola!',
         'confidence': 'Unbelievable',
         'observed_time': object(),
-        'data': {
-            'column_count': +1,
-            'columns': [{'type': 'anything'}],
-            'rows': [object()],
-            'row_count': -1,
-        },
+        'data': object(),
         'description': '\U0001f4a9' * DESCRIPTION_MAX_LENGTH,
         'external_references': [object()],
         'internal': 69,
@@ -56,7 +51,7 @@ def test_sighting_validation_fails():
         'short_description': '\U0001f4a9' * DESCRIPTION_MAX_LENGTH,
         'targets': [{
             'local': True,
-            'observed_time': {'start_time': '1970-01-01T00:00:00Z'},
+            # 'observed_time': {'start_time': '1970-01-01T00:00:00Z'},
             'type': 'thread.daemon',
         }],
         'timestamp': '4:20',
@@ -76,24 +71,7 @@ def test_sighting_validation_fails():
         ],
         'count': ['Missing data for required field.'],
         'observed_time': ['Not a valid CTIM ObservedTime.'],
-        'data': {
-            'column_count': ['Unknown field.'],
-            'columns': {
-                0: {
-                    'name': ['Missing data for required field.'],
-                    'type': [
-                        'Must be one of: '
-                        f'{", ".join(map(repr, COLUMN_TYPE_CHOICES))}.'
-                    ],
-                }
-            },
-            'rows': {
-                0: ['Not a valid list.'],
-            },
-            'row_count': [
-                f'Must be greater than or equal to {COUNT_MIN_VALUE}.'
-            ],
-        },
+        'data': ['Not a valid CTIM SightingDataTable.'],
         'external_references': {
             0: ['Not a valid CTIM ExternalReference.'],
         },
@@ -137,6 +115,29 @@ def test_sighting_validation_succeeds():
         start_time=utc_now_iso(),
     )
 
+    data = SightingDataTable(
+        columns=[
+            ColumnDefinition(
+                name='full_name',
+                type='string',
+                required=True,
+            ),
+            ColumnDefinition(
+                name='country',
+                type='string',
+                required=False,
+            ),
+            ColumnDefinition(
+                name='year_of_birth',
+                type='integer',
+                required=False,
+            ),
+        ],
+        rows=[
+            ['Gevorg Davoian', 'Ukraine', 1993],
+        ],
+    )
+
     observable = Observable(
         type='domain',
         value='cisco.com',
@@ -159,16 +160,7 @@ def test_sighting_validation_succeeds():
         'confidence': 'Medium',
         'count': 2,
         'observed_time': observed_time,
-        'data': {
-            'columns': [
-                {'name': 'full_name', 'type': 'string', 'required': True},
-                {'name': 'country', 'type': 'string', 'required': False},
-                {'name': 'year_of_birth', 'type': 'integer'},
-            ],
-            'rows': [
-                ['Gevorg Davoian', 'Ukraine', 1993],
-            ],
-        },
+        'data': data,
         'internal': True,
         'observables': [observable],
         'relations': [relation],
@@ -182,7 +174,7 @@ def test_sighting_validation_succeeds():
         }],
         'targets': [{
             'observables': [{'type': 'sha256', 'value': '01' * 32}],
-            'observed_time': {'start_time': utc_now_iso()},
+            # 'observed_time': {'start_time': utc_now_iso()},
             'type': 'process.anti-virus-scanner',
             'os': 'Windows',
         }],
@@ -193,6 +185,7 @@ def test_sighting_validation_succeeds():
     sighting = Sighting(**sighting_data)
 
     sighting_data['observed_time'] = observed_time.json
+    sighting_data['data'] = data.json
     sighting_data['observables'] = [observable.json]
     sighting_data['relations'] = [relation.json]
 

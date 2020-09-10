@@ -1,5 +1,8 @@
 from functools import partial
-from typing import Iterator, Tuple
+from typing import (
+    Iterator,
+    Tuple,
+)
 
 from marshmallow import fields
 from marshmallow.decorators import validates_schema
