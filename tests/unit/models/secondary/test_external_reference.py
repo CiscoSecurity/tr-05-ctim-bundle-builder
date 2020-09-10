@@ -25,7 +25,7 @@ def test_external_reference_validation_fails():
 
 def test_external_reference_validation_succeeds():
     external_reference_data = {
-        'source_name': 'Hello, world!',
+        'source_name': 'CTIM Bundle Builder',
         'description': 'No comment...',
         'external_id': '123-456-789',
     }

@@ -4,15 +4,17 @@ from typing import (
     Tuple,
 )
 
-from marshmallow import fields
-
-from ..fields import (
-    EntityField,
-    DateTimeField,
-)
 from ..entity import (
     EntitySchema,
     PrimaryEntity,
+)
+from ..fields import (
+    StringField,
+    IntegerField,
+    EntityField,
+    ListField,
+    BooleanField,
+    DateTimeField,
 )
 from ..secondary.external_reference import ExternalReference
 from ..secondary.identity_specification import IdentitySpecification
@@ -44,11 +46,11 @@ class SightingSchema(EntitySchema):
     https://github.com/threatgrid/ctim/blob/master/doc/structures/sighting.md
     """
 
-    confidence = fields.String(
+    confidence = StringField(
         validate=partial(validate_string, choices=CONFIDENCE_CHOICES),
         required=True,
     )
-    count = fields.Integer(
+    count = IntegerField(
         validate=partial(validate_integer, min_value=COUNT_MIN_VALUE),
         required=True,
     )
@@ -57,65 +59,65 @@ class SightingSchema(EntitySchema):
         required=True,
     )
     data = EntityField(type=SightingDataTable)
-    description = fields.String(
+    description = StringField(
         validate=partial(validate_string, max_length=DESCRIPTION_MAX_LENGTH),
     )
-    external_references = fields.List(
+    external_references = ListField(
         EntityField(type=ExternalReference)
     )
-    internal = fields.Boolean()
-    language = fields.String(
+    internal = BooleanField()
+    language = StringField(
         validate=partial(validate_string, max_length=LANGUAGE_MAX_LENGTH),
     )
-    observables = fields.List(
+    observables = ListField(
         EntityField(type=Observable)
     )
-    relations = fields.List(
+    relations = ListField(
         EntityField(type=ObservedRelation)
     )
-    resolution = fields.String(
+    resolution = StringField(
         validate=validate_string,
     )
-    revision = fields.Integer(
+    revision = IntegerField(
         validate=partial(validate_integer, min_value=REVISION_MIN_VALUE),
     )
-    sensor = fields.String(
+    sensor = StringField(
         validate=validate_string,
     )
-    sensor_coordinates = fields.List(
+    sensor_coordinates = ListField(
         EntityField(type=SensorCoordinates)
     )
-    severity = fields.String(
+    severity = StringField(
         validate=partial(validate_string, choices=SEVERITY_CHOICES),
     )
-    short_description = fields.String(
+    short_description = StringField(
         validate=partial(validate_string, max_length=SHORT_DESCRIPTION_LENGTH),
     )
-    targets = fields.List(
+    targets = ListField(
         EntityField(type=IdentitySpecification)
     )
     timestamp = DateTimeField()
-    title = fields.String(
+    title = StringField(
         validate=partial(validate_string, max_length=TITLE_MAX_LENGTH),
     )
-    tlp = fields.String(
+    tlp = StringField(
         validate=partial(validate_string, choices=TLP_CHOICES),
     )
 
-    source = fields.String(
+    source = StringField(
         validate=partial(validate_string, max_length=SOURCE_MAX_LENGTH),
     )
-    source_uri = fields.String(
+    source_uri = StringField(
         validate=validate_string,
     )
 
-    external_id_salt_values = fields.List(
-        fields.String(
+    external_id_salt_values = ListField(
+        StringField(
             validate=validate_string,
         )
     )
-    external_ids = fields.List(
-        fields.String(
+    external_ids = ListField(
+        StringField(
             validate=validate_string,
         )
     )

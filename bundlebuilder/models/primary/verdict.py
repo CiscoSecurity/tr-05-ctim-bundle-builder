@@ -4,16 +4,19 @@ from typing import (
     Tuple,
 )
 
-from marshmallow import fields
 from marshmallow.decorators import validates_schema
 from marshmallow.exceptions import (
     ValidationError as MarshmallowValidationError
 )
 
-from ..fields import EntityField
 from ..entity import (
     EntitySchema,
     PrimaryEntity,
+)
+from ..fields import (
+    IntegerField,
+    EntityField,
+    StringField,
 )
 from ..primary.judgement import Judgement
 from ..secondary.observable import Observable
@@ -33,7 +36,7 @@ class VerdictSchema(EntitySchema):
     https://github.com/threatgrid/ctim/blob/master/doc/structures/verdict.md
     """
 
-    disposition = fields.Integer(
+    disposition = IntegerField(
         validate=partial(validate_integer, choices=DISPOSITION_MAP.keys()),
         required=True,
     )
@@ -45,7 +48,7 @@ class VerdictSchema(EntitySchema):
         type=ValidTime,
         required=True,
     )
-    disposition_name = fields.String(
+    disposition_name = StringField(
         validate=partial(validate_string, choices=DISPOSITION_MAP.values()),
     )
 

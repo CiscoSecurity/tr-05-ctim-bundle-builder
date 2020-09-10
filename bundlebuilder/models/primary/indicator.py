@@ -6,13 +6,17 @@ from typing import (
 
 from marshmallow import fields
 
-from ..fields import (
-    EntityField,
-    DateTimeField,
-)
 from ..entity import (
     EntitySchema,
     PrimaryEntity,
+)
+from ..fields import (
+    StringField,
+    EntityField,
+    ListField,
+    BooleanField,
+    IntegerField,
+    DateTimeField,
 )
 from ..secondary.composite_indicator_expression import (
     CompositeIndicatorExpression
@@ -48,7 +52,7 @@ class IndicatorSchema(EntitySchema):
     https://github.com/threatgrid/ctim/blob/master/doc/structures/indicator.md
     """
 
-    producer = fields.String(
+    producer = StringField(
         validate=partial(validate_string, max_length=PRODUCER_MAX_LENGTH),
         required=True,
     )
@@ -59,47 +63,47 @@ class IndicatorSchema(EntitySchema):
     composite_indicator_expression = EntityField(
         type=CompositeIndicatorExpression,
     )
-    confidence = fields.String(
+    confidence = StringField(
         validate=partial(validate_string, choices=CONFIDENCE_CHOICES),
     )
-    description = fields.String(
+    description = StringField(
         validate=partial(validate_string, max_length=DESCRIPTION_MAX_LENGTH),
     )
-    external_references = fields.List(
+    external_references = ListField(
         EntityField(type=ExternalReference)
     )
-    indicator_type = fields.List(
-        fields.String(
+    indicator_type = ListField(
+        StringField(
             validate=partial(validate_string, choices=INDICATOR_TYPE_CHOICES),
         )
     )
-    kill_chain_phases = fields.List(
+    kill_chain_phases = ListField(
         EntityField(type=KillChainPhase)
     )
-    language = fields.String(
+    language = StringField(
         validate=partial(validate_string, max_length=LANGUAGE_MAX_LENGTH),
     )
-    likely_impact = fields.String(
+    likely_impact = StringField(
         validate=partial(validate_string, max_length=LIKELY_IMPACT_MAX_LENGTH),
     )
-    negate = fields.Boolean()
-    revision = fields.Integer(
+    negate = BooleanField()
+    revision = IntegerField(
         validate=partial(validate_integer, min_value=REVISION_MIN_VALUE),
     )
-    severity = fields.String(
+    severity = StringField(
         validate=partial(validate_string, choices=SEVERITY_CHOICES),
     )
-    short_description = fields.String(
+    short_description = StringField(
         validate=partial(validate_string, max_length=SHORT_DESCRIPTION_LENGTH),
     )
     specification = fields.Nested(SpecificationSchema)
-    tags = fields.List(
-        fields.String(
+    tags = ListField(
+        StringField(
             validate=partial(validate_string, max_length=TAG_MAX_LENGTH),
         )
     )
-    test_mechanisms = fields.List(
-        fields.String(
+    test_mechanisms = ListField(
+        StringField(
             validate=partial(
                 validate_string,
                 max_length=TEST_MECHANISM_MAX_LENGTH,
@@ -107,27 +111,27 @@ class IndicatorSchema(EntitySchema):
         )
     )
     timestamp = DateTimeField()
-    title = fields.String(
+    title = StringField(
         validate=partial(validate_string, max_length=TITLE_MAX_LENGTH),
     )
-    tlp = fields.String(
+    tlp = StringField(
         validate=partial(validate_string, choices=TLP_CHOICES),
     )
 
-    source = fields.String(
+    source = StringField(
         validate=partial(validate_string, max_length=SOURCE_MAX_LENGTH),
     )
-    source_uri = fields.String(
+    source_uri = StringField(
         validate=validate_string,
     )
 
-    external_id_salt_values = fields.List(
-        fields.String(
+    external_id_salt_values = ListField(
+        StringField(
             validate=validate_string,
         )
     )
-    external_ids = fields.List(
-        fields.String(
+    external_ids = ListField(
+        StringField(
             validate=validate_string,
         )
     )

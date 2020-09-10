@@ -1,19 +1,19 @@
-from marshmallow import fields
 from marshmallow.decorators import post_load
 
 from ..entity import (
     EntitySchema,
     SecondaryEntity,
 )
+from ..fields import StringField
 from ..validators import validate_string
 
 
 class KillChainPhaseSchema(EntitySchema):
-    kill_chain_name = fields.String(
+    kill_chain_name = StringField(
         validate=validate_string,
         required=True,
     )
-    phase_name = fields.String(
+    phase_name = StringField(
         validate=validate_string,
         required=True,
     )

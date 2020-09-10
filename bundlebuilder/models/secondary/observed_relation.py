@@ -1,16 +1,19 @@
-from marshmallow import fields
-
-from ..fields import EntityField
 from ..entity import (
     EntitySchema,
     SecondaryEntity,
+)
+from ..fields import (
+    StringField,
+    EntityField,
+    MappingField,
+    RawField,
 )
 from ..secondary.observable import Observable
 from ..validators import validate_string
 
 
 class ObservedRelationSchema(EntitySchema):
-    origin = fields.String(
+    origin = StringField(
         validate=validate_string,
         required=True,
     )
@@ -18,7 +21,7 @@ class ObservedRelationSchema(EntitySchema):
         type=Observable,
         required=True,
     )
-    relation = fields.String(
+    relation = StringField(
         validate=validate_string,
         required=True,
     )
@@ -26,12 +29,12 @@ class ObservedRelationSchema(EntitySchema):
         type=Observable,
         required=True,
     )
-    origin_uri = fields.String(
+    origin_uri = StringField(
         validate=validate_string,
     )
-    relation_info = fields.Mapping(
-        keys=fields.String,
-        values=fields.Raw,
+    relation_info = MappingField(
+        keys=StringField,
+        values=RawField,
     )
 
 

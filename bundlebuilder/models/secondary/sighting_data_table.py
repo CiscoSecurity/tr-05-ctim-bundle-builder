@@ -1,27 +1,30 @@
 from functools import partial
 
-from marshmallow import fields
-
 from ..entity import (
     EntitySchema,
     SecondaryEntity,
 )
-from ..fields import EntityField
+from ..fields import (
+    ListField,
+    EntityField,
+    RawField,
+    IntegerField,
+)
 from ..secondary.column_definition import ColumnDefinition
 from ..validators import validate_integer
 from ...constants import COUNT_MIN_VALUE
 
 
 class SightingDataTableSchema(EntitySchema):
-    columns = fields.List(
+    columns = ListField(
         EntityField(type=ColumnDefinition),
         required=True,
     )
-    rows = fields.List(
-        fields.List(fields.Raw),
+    rows = ListField(
+        ListField(RawField),
         required=True,
     )
-    row_count = fields.Integer(
+    row_count = IntegerField(
         validate=partial(validate_integer, min_value=COUNT_MIN_VALUE),
     )
 

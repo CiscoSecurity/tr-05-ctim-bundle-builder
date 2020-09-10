@@ -4,17 +4,19 @@ from typing import (
     Tuple,
 )
 
-from marshmallow import fields
 from marshmallow.decorators import validates_schema
 from marshmallow.exceptions import ValidationError
 
-from ..fields import (
-    EntityField,
-    DateTimeField,
-)
 from ..entity import (
     EntitySchema,
     PrimaryEntity,
+)
+from ..fields import (
+    StringField,
+    IntegerField,
+    EntityField,
+    ListField,
+    DateTimeField,
 )
 from ..secondary.external_reference import ExternalReference
 from ..secondary.observable import Observable
@@ -42,15 +44,15 @@ class JudgementSchema(EntitySchema):
     https://github.com/threatgrid/ctim/blob/master/doc/structures/judgement.md
     """
 
-    confidence = fields.String(
+    confidence = StringField(
         validate=partial(validate_string, choices=CONFIDENCE_CHOICES),
         required=True,
     )
-    disposition = fields.Integer(
+    disposition = IntegerField(
         validate=partial(validate_integer, choices=DISPOSITION_MAP.keys()),
         required=True,
     )
-    disposition_name = fields.String(
+    disposition_name = StringField(
         validate=partial(validate_string, choices=DISPOSITION_MAP.values()),
         required=True,
     )
@@ -58,7 +60,7 @@ class JudgementSchema(EntitySchema):
         type=Observable,
         required=True,
     )
-    priority = fields.Integer(
+    priority = IntegerField(
         validate=partial(
             validate_integer,
             min_value=PRIORITY_MIN_VALUE,
@@ -66,7 +68,7 @@ class JudgementSchema(EntitySchema):
         ),
         required=True,
     )
-    severity = fields.String(
+    severity = StringField(
         validate=partial(validate_string, choices=SEVERITY_CHOICES),
         required=True,
     )
@@ -74,40 +76,40 @@ class JudgementSchema(EntitySchema):
         type=ValidTime,
         required=True,
     )
-    external_references = fields.List(
+    external_references = ListField(
         EntityField(type=ExternalReference)
     )
-    language = fields.String(
+    language = StringField(
         validate=partial(validate_string, max_length=LANGUAGE_MAX_LENGTH),
     )
-    reason = fields.String(
+    reason = StringField(
         validate=partial(validate_string, max_length=REASON_MAX_LENGTH),
     )
-    reason_uri = fields.String(
+    reason_uri = StringField(
         validate=validate_string,
     )
-    revision = fields.Integer(
+    revision = IntegerField(
         validate=partial(validate_integer, min_value=REVISION_MIN_VALUE),
     )
     timestamp = DateTimeField()
-    tlp = fields.String(
+    tlp = StringField(
         validate=partial(validate_string, choices=TLP_CHOICES),
     )
 
-    source = fields.String(
+    source = StringField(
         validate=partial(validate_string, max_length=SOURCE_MAX_LENGTH),
     )
-    source_uri = fields.String(
+    source_uri = StringField(
         validate=validate_string,
     )
 
-    external_id_salt_values = fields.List(
-        fields.String(
+    external_id_salt_values = ListField(
+        StringField(
             validate=validate_string,
         )
     )
-    external_ids = fields.List(
-        fields.String(
+    external_ids = ListField(
+        StringField(
             validate=validate_string,
         )
     )

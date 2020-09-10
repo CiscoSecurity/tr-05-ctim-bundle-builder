@@ -143,7 +143,7 @@ def test_indicator_validation_succeeds():
             'judgements': [judgement_uri],
             'required_judgements': [{'judgement_id': judgement_id}],
         },
-        'tags': ['cisco', 'security', 'python', 'ctim', 'bundle', 'builder'],
+        'tags': ['ctim', 'bundle', 'builder'],
         'timestamp': utc_now_iso(),
         'tlp': 'red',
     }

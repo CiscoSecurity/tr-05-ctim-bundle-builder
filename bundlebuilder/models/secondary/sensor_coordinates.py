@@ -1,24 +1,26 @@
-from marshmallow import fields
-
 from ..entity import (
     EntitySchema,
     SecondaryEntity,
 )
-from ..fields import EntityField
+from ..fields import (
+    ListField,
+    EntityField,
+    StringField,
+)
 from ..secondary.observable import Observable
 from ..validators import validate_string
 
 
 class SensorCoordinatesSchema(EntitySchema):
-    observables = fields.List(
+    observables = ListField(
         EntityField(type=Observable),
         required=True,
     )
-    type = fields.String(
+    type = StringField(
         validate=validate_string,
         required=True,
     )
-    os = fields.String(
+    os = StringField(
         validate=validate_string,
     )
 

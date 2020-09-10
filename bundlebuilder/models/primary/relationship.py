@@ -4,15 +4,16 @@ from typing import (
     Tuple,
 )
 
-from marshmallow import fields
-
-from ..fields import (
-    EntityField,
-    DateTimeField,
-)
 from ..entity import (
     EntitySchema,
     PrimaryEntity,
+)
+from ..fields import (
+    StringField,
+    EntityField,
+    ListField,
+    IntegerField,
+    DateTimeField,
 )
 from ..secondary.external_reference import ExternalReference
 from ..validators import (
@@ -35,7 +36,7 @@ class RelationshipSchema(EntitySchema):
     https://github.com/threatgrid/ctim/blob/master/doc/structures/relationship.md
     """
 
-    relationship_type = fields.String(
+    relationship_type = StringField(
         validate=validate_string,
         required=True,
     )
@@ -53,43 +54,43 @@ class RelationshipSchema(EntitySchema):
         validate=validate_string,
         required=True,
     )
-    description = fields.String(
+    description = StringField(
         validate=partial(validate_string, max_length=DESCRIPTION_MAX_LENGTH),
     )
-    external_references = fields.List(
+    external_references = ListField(
         EntityField(type=ExternalReference)
     )
-    language = fields.String(
+    language = StringField(
         validate=partial(validate_string, max_length=LANGUAGE_MAX_LENGTH),
     )
-    revision = fields.Integer(
+    revision = IntegerField(
         validate=partial(validate_integer, min_value=REVISION_MIN_VALUE),
     )
-    short_description = fields.String(
+    short_description = StringField(
         validate=partial(validate_string, max_length=SHORT_DESCRIPTION_LENGTH),
     )
     timestamp = DateTimeField()
-    title = fields.String(
+    title = StringField(
         validate=partial(validate_string, max_length=TITLE_MAX_LENGTH),
     )
-    tlp = fields.String(
+    tlp = StringField(
         validate=partial(validate_string, choices=TLP_CHOICES),
     )
 
-    source = fields.String(
+    source = StringField(
         validate=partial(validate_string, max_length=SOURCE_MAX_LENGTH),
     )
-    source_uri = fields.String(
+    source_uri = StringField(
         validate=validate_string,
     )
 
-    external_id_salt_values = fields.List(
-        fields.String(
+    external_id_salt_values = ListField(
+        StringField(
             validate=validate_string,
         )
     )
-    external_ids = fields.List(
-        fields.String(
+    external_ids = ListField(
+        StringField(
             validate=validate_string,
         )
     )

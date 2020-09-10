@@ -1,17 +1,19 @@
-from marshmallow import fields
-
 from ..entity import (
     EntitySchema,
     SecondaryEntity,
 )
-from ..fields import EntityField
+from ..fields import (
+    ListField,
+    EntityField,
+    StringField,
+)
 from ..secondary.observable import Observable
 from ..secondary.observed_time import ObservedTime
 from ..validators import validate_string
 
 
 class IdentitySpecificationSchema(EntitySchema):
-    observables = fields.List(
+    observables = ListField(
         EntityField(type=Observable),
         required=True,
     )
@@ -19,11 +21,11 @@ class IdentitySpecificationSchema(EntitySchema):
         type=ObservedTime,
         required=True,
     )
-    type = fields.String(
+    type = StringField(
         validate=validate_string,
         required=True,
     )
-    os = fields.String(
+    os = StringField(
         validate=validate_string,
     )
 

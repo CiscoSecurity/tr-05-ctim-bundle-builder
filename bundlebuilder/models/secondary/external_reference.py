@@ -1,10 +1,12 @@
 from functools import partial
 
-from marshmallow import fields
-
 from ..entity import (
     EntitySchema,
     SecondaryEntity,
+)
+from ..fields import (
+    StringField,
+    ListField,
 )
 from ..validators import validate_string
 from ...constants import (
@@ -14,22 +16,22 @@ from ...constants import (
 
 
 class ExternalReferenceSchema(EntitySchema):
-    source_name = fields.String(
+    source_name = StringField(
         validate=partial(validate_string, max_length=SOURCE_NAME_MAX_LENGTH),
         required=True,
     )
-    description = fields.String(
+    description = StringField(
         validate=partial(validate_string, max_length=DESCRIPTION_MAX_LENGTH),
     )
-    external_id = fields.String(
+    external_id = StringField(
         validate=validate_string,
     )
-    hashes = fields.List(
-        fields.String(
+    hashes = ListField(
+        StringField(
             validate=validate_string,
         )
     )
-    url = fields.String(
+    url = StringField(
         validate=validate_string,
     )
 

@@ -4,18 +4,20 @@ from typing import (
     Tuple,
 )
 
-from marshmallow import fields
 from marshmallow.exceptions import (
     ValidationError as MarshmallowValidationError
 )
 
-from ..fields import (
-    EntityField,
-    DateTimeField,
-)
 from ..entity import (
     EntitySchema,
     PrimaryEntity,
+)
+from ..fields import (
+    EntityField,
+    StringField,
+    ListField,
+    IntegerField,
+    DateTimeField,
 )
 from ..primary.indicator import Indicator
 from ..primary.judgement import Judgement
@@ -48,73 +50,73 @@ class BundleSchema(EntitySchema):
     """
 
     valid_time = EntityField(type=ValidTime)
-    description = fields.String(
+    description = StringField(
         validate=partial(validate_string, max_length=DESCRIPTION_MAX_LENGTH),
     )
-    external_references = fields.List(
+    external_references = ListField(
         EntityField(type=ExternalReference)
     )
-    indicator_refs = fields.List(
+    indicator_refs = ListField(
         EntityField(type=Indicator, ref=True)
     )
-    indicators = fields.List(
+    indicators = ListField(
         EntityField(type=Indicator)
     )
-    judgement_refs = fields.List(
+    judgement_refs = ListField(
         EntityField(type=Judgement, ref=True)
     )
-    judgements = fields.List(
+    judgements = ListField(
         EntityField(type=Judgement)
     )
-    language = fields.String(
+    language = StringField(
         validate=partial(validate_string, max_length=LANGUAGE_MAX_LENGTH),
     )
-    relationship_refs = fields.List(
+    relationship_refs = ListField(
         EntityField(type=Relationship, ref=True)
     )
-    relationships = fields.List(
+    relationships = ListField(
         EntityField(type=Relationship)
     )
-    revision = fields.Integer(
+    revision = IntegerField(
         validate=partial(validate_integer, min_value=REVISION_MIN_VALUE),
     )
-    short_description = fields.String(
+    short_description = StringField(
         validate=partial(validate_string, max_length=SHORT_DESCRIPTION_LENGTH),
     )
-    sighting_refs = fields.List(
+    sighting_refs = ListField(
         EntityField(type=Sighting, ref=True)
     )
-    sightings = fields.List(
+    sightings = ListField(
         EntityField(type=Sighting)
     )
     timestamp = DateTimeField()
-    title = fields.String(
+    title = StringField(
         validate=partial(validate_string, max_length=TITLE_MAX_LENGTH),
     )
-    tlp = fields.String(
+    tlp = StringField(
         validate=partial(validate_string, choices=TLP_CHOICES),
     )
-    verdict_refs = fields.List(
+    verdict_refs = ListField(
         EntityField(type=Verdict, ref=True)
     )
-    verdicts = fields.List(
+    verdicts = ListField(
         EntityField(type=Verdict)
     )
 
-    source = fields.String(
+    source = StringField(
         validate=partial(validate_string, max_length=SOURCE_MAX_LENGTH),
     )
-    source_uri = fields.String(
+    source_uri = StringField(
         validate=validate_string,
     )
 
-    external_id_salt_values = fields.List(
-        fields.String(
+    external_id_salt_values = ListField(
+        StringField(
             validate=validate_string,
         )
     )
-    external_ids = fields.List(
-        fields.String(
+    external_ids = ListField(
+        StringField(
             validate=validate_string,
         )
     )

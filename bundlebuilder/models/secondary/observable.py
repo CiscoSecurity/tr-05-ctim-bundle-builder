@@ -1,21 +1,20 @@
 from functools import partial
 
-from marshmallow import fields
-
 from ..entity import (
     EntitySchema,
     SecondaryEntity,
 )
+from ..fields import StringField
 from ..validators import validate_string
 from ...constants import OBSERVABLE_TYPE_CHOICES
 
 
 class ObservableSchema(EntitySchema):
-    type = fields.String(
+    type = StringField(
         validate=partial(validate_string, choices=OBSERVABLE_TYPE_CHOICES),
         required=True,
     )
-    value = fields.String(
+    value = StringField(
         validate=validate_string,
         required=True,
     )

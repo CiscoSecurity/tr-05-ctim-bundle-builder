@@ -55,7 +55,6 @@ class EntityMeta(ABCMeta):
                 )
 
             cls.schema = type(f'{cls_name}Schema', (), {'__init__': __init__})
-            print(repr(cls.schema))
 
             super().__init__(cls_name, cls_bases, cls_dict)
             return
@@ -69,8 +68,8 @@ class EntityMeta(ABCMeta):
             )
 
         cls.__signature__ = Signature([
-            Parameter(name, Parameter.KEYWORD_ONLY)
-            for name in cls_schema().declared_fields.keys()
+            Parameter(field_name, Parameter.KEYWORD_ONLY, annotation=field)
+            for field_name, field in cls_schema().declared_fields.items()
         ])
 
         super().__init__(cls_name, cls_bases, cls_dict)
