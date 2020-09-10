@@ -108,32 +108,6 @@ class ObservableSchema(Schema):
     )
 
 
-class ObservedRelationSchema(Schema):
-    origin = fields.String(
-        validate=validate_string,
-        required=True,
-    )
-    related = fields.Nested(
-        ObservableSchema,
-        required=True,
-    )
-    relation = fields.String(
-        validate=validate_string,
-        required=True,
-    )
-    source = fields.Nested(
-        ObservableSchema,
-        required=True,
-    )
-    origin_uri = fields.String(
-        validate=validate_string,
-    )
-    relation_info = fields.Mapping(
-        keys=fields.String,
-        values=fields.Raw,
-    )
-
-
 class SensorCoordinatesSchema(Schema):
     observables = fields.List(
         fields.Nested(ObservableSchema),

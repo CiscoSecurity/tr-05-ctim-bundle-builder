@@ -4,3 +4,4 @@ from .indicator import Indicator
 from .judgement import Judgement
 from .relationship import Relationship
 from .sighting import Sighting
+from .verdict import Verdict

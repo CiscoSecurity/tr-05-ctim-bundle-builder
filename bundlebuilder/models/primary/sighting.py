@@ -6,17 +6,20 @@ from typing import (
 
 from marshmallow import fields
 
-from ..fields import DateTimeField
+from ..fields import (
+    EntityField,
+    DateTimeField,
+)
 from ..entity import (
     EntitySchema,
     PrimaryEntity,
 )
+from ..secondary.observable import Observable
+from ..secondary.observed_relation import ObservedRelation
 from ..schemas import (
     ObservedTimeSchema,
     SightingDataTableSchema,
     ExternalReferenceSchema,
-    ObservableSchema,
-    ObservedRelationSchema,
     SensorCoordinatesSchema,
     IdentitySpecificationSchema,
 )
@@ -67,10 +70,10 @@ class SightingSchema(EntitySchema):
         validate=partial(validate_string, max_length=LANGUAGE_MAX_LENGTH),
     )
     observables = fields.List(
-        fields.Nested(ObservableSchema)
+        EntityField(type=Observable)
     )
     relations = fields.List(
-        fields.Nested(ObservedRelationSchema)
+        EntityField(type=ObservedRelation)
     )
     resolution = fields.String(
         validate=validate_string,

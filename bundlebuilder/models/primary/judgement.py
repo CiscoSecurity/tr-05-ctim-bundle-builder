@@ -8,13 +8,16 @@ from marshmallow import fields
 from marshmallow.decorators import validates_schema
 from marshmallow.exceptions import ValidationError
 
-from ..fields import DateTimeField
+from ..fields import (
+    EntityField,
+    DateTimeField,
+)
 from ..entity import (
     EntitySchema,
     PrimaryEntity,
 )
+from ..secondary.observable import Observable
 from ..schemas import (
-    ObservableSchema,
     ValidTimeSchema,
     ExternalReferenceSchema,
 )
@@ -53,8 +56,8 @@ class JudgementSchema(EntitySchema):
         validate=partial(validate_string, choices=DISPOSITION_MAP.values()),
         required=True,
     )
-    observable = fields.Nested(
-        ObservableSchema,
+    observable = EntityField(
+        type=Observable,
         required=True,
     )
     priority = fields.Integer(

@@ -13,10 +13,11 @@ from bundlebuilder.constants import (
 from bundlebuilder.exceptions import ValidationError
 from bundlebuilder.models import (
     Relationship,
+    Observable,
     Judgement,
     Indicator,
 )
-from .utils import (
+from tests.unit.utils import (
     mock_transient_id,
     mock_external_id,
     utc_now_iso,
@@ -72,11 +73,16 @@ def test_relationship_validation_fails():
 
 
 def test_relationship_validation_succeeds():
+    observable = Observable(
+        type='domain',
+        value='cisco.com',
+    )
+
     judgement = Judgement(
         confidence='Low',
         disposition=4,
         disposition_name='Common',
-        observable={'type': 'domain', 'value': 'cisco.com'},
+        observable=observable,
         priority=25,
         severity='Low',
         valid_time={

@@ -10,6 +10,7 @@ from bundlebuilder.constants import (
 from bundlebuilder.exceptions import ValidationError
 from bundlebuilder.models import (
     Bundle,
+    Observable,
     Sighting,
     Judgement,
     Indicator,
@@ -17,7 +18,7 @@ from bundlebuilder.models import (
     Verdict,
 )
 from bundlebuilder.session import Session
-from .utils import (
+from tests.unit.utils import (
     mock_transient_id,
     mock_external_id,
 )
@@ -113,7 +114,12 @@ def test_bundle_validation_succeeds():
             confidence='High',
             count=1,
             observed_time={'start_time': '2019-03-01T22:26:29.229Z'},
-            observables=[{'type': 'ip', 'value': '187.75.16.75'}],
+            observables=[
+                Observable(
+                    type='ip',
+                    value='187.75.16.75',
+                ),
+            ],
             severity='High',
             timestamp='2019-03-01T22:26:29.229Z',
             tlp='green',
@@ -125,7 +131,10 @@ def test_bundle_validation_succeeds():
             confidence='High',
             disposition=2,
             disposition_name='Malicious',
-            observable={'type': 'ip', 'value': '187.75.16.75'},
+            observable=Observable(
+                type='ip',
+                value='187.75.16.75',
+            ),
             priority=95,
             severity='High',
             valid_time={

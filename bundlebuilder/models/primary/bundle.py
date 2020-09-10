@@ -21,7 +21,7 @@ from ..primary.indicator import Indicator
 from ..primary.judgement import Judgement
 from ..primary.relationship import Relationship
 from ..primary.sighting import Sighting
-from ..secondary.verdict import Verdict
+from ..primary.verdict import Verdict
 from ..schemas import (
     ValidTimeSchema,
     ExternalReferenceSchema,

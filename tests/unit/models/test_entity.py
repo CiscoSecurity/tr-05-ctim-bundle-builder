@@ -18,7 +18,7 @@ from bundlebuilder.session import (
     get_default_session,
     Session,
 )
-from .utils import (
+from tests.unit.utils import (
     mock_transient_id,
     mock_external_id,
 )

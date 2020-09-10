@@ -5,7 +5,9 @@ from .primary import (
     Judgement,
     Relationship,
     Sighting,
+    Verdict,
 )
 from .secondary import (
-    Verdict,
+    Observable,
+    ObservedRelation,
 )

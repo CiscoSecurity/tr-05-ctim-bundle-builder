@@ -18,7 +18,7 @@ from bundlebuilder.constants import (
 )
 from bundlebuilder.exceptions import ValidationError
 from bundlebuilder.models import Indicator
-from .utils import (
+from tests.unit.utils import (
     mock_transient_id,
     mock_external_id,
     utc_now_iso,

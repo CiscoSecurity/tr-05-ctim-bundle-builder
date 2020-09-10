@@ -43,12 +43,14 @@ class RelationshipSchema(EntitySchema):
     )
     source_ref = EntityField(
         type=PrimaryEntity,
+        type_name='Entity',
         ref=True,
         validate=validate_string,
         required=True,
     )
     target_ref = EntityField(
         type=PrimaryEntity,
+        type_name='Entity',
         ref=True,
         validate=validate_string,
         required=True,

@@ -5,7 +5,6 @@ from bundlebuilder.constants import (
     REASON_MAX_LENGTH,
     CONFIDENCE_CHOICES,
     DISPOSITION_MAP,
-    OBSERVABLE_TYPE_CHOICES,
     SEVERITY_CHOICES,
     REVISION_MIN_VALUE,
     TLP_CHOICES,
@@ -15,8 +14,11 @@ from bundlebuilder.constants import (
     DEFAULT_SESSION_EXTERNAL_ID_PREFIX,
 )
 from bundlebuilder.exceptions import ValidationError
-from bundlebuilder.models import Judgement
-from .utils import (
+from bundlebuilder.models import (
+    Judgement,
+    Observable,
+)
+from tests.unit.utils import (
     mock_transient_id,
     mock_external_id,
     utc_now_iso,
@@ -29,10 +31,7 @@ def test_judgement_validation_fails():
         'confidence': 'Unbelievable',
         'disposition': 0,
         'disposition_name': 'Pristine',
-        'observable': {
-            'dangerous': False,
-            'type': 'dummy',
-        },
+        'observable': object(),
         'priority': PRIORITY_MAX_VALUE + 1,
         'severity': 'Insignificant',
         'valid_time': {
@@ -68,14 +67,7 @@ def test_judgement_validation_fails():
             'Must be one of: '
             f'{", ".join(map(repr, DISPOSITION_MAP.values()))}.'
         ],
-        'observable': {
-            'dangerous': ['Unknown field.'],
-            'type': [
-                'Must be one of: '
-                f'{", ".join(map(repr, OBSERVABLE_TYPE_CHOICES))}.'
-            ],
-            'value': ['Missing data for required field.'],
-        },
+        'observable': ['Not a valid CTIM Observable.'],
         'priority': [
             f'Must be less than or equal to {PRIORITY_MAX_VALUE}.'
         ],
@@ -106,11 +98,16 @@ def test_judgement_validation_fails():
 
 
 def test_judgement_validation_succeeds():
-    judgment_data = {
+    observable = Observable(
+        type='domain',
+        value='cisco.com',
+    )
+
+    judgement_data = {
         'confidence': 'Medium',
         'disposition': 3,
         'disposition_name': 'Suspicious',
-        'observable': {'type': 'sha256', 'value': '01' * 32},
+        'observable': observable,
         'priority': 50,
         'severity': 'Medium',
         'valid_time': {'end_time': utc_now_iso()},
@@ -119,7 +116,9 @@ def test_judgement_validation_succeeds():
         'tlp': 'amber',
     }
 
-    judgement = Judgement(**judgment_data)
+    judgement = Judgement(**judgement_data)
+
+    judgement_data['observable'] = observable.json
 
     type_ = 'judgement'
 
@@ -132,5 +131,5 @@ def test_judgement_validation_succeeds():
         'external_ids': [
             mock_external_id(DEFAULT_SESSION_EXTERNAL_ID_PREFIX, type_)
         ],
-        **judgment_data
+        **judgement_data
     }

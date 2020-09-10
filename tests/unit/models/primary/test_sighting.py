@@ -5,7 +5,6 @@ from bundlebuilder.constants import (
     CONFIDENCE_CHOICES,
     COLUMN_TYPE_CHOICES,
     COUNT_MIN_VALUE,
-    OBSERVABLE_TYPE_CHOICES,
     REVISION_MIN_VALUE,
     SEVERITY_CHOICES,
     SHORT_DESCRIPTION_LENGTH,
@@ -16,8 +15,12 @@ from bundlebuilder.constants import (
     DEFAULT_SESSION_EXTERNAL_ID_PREFIX,
 )
 from bundlebuilder.exceptions import ValidationError
-from bundlebuilder.models import Sighting
-from .utils import (
+from bundlebuilder.models import (
+    Sighting,
+    Observable,
+    ObservedRelation,
+)
+from tests.unit.utils import (
     mock_transient_id,
     mock_external_id,
     utc_now_iso,
@@ -46,16 +49,8 @@ def test_sighting_validation_fails():
         }],
         'internal': 69,
         'language': 'Python',
-        'observables': [{
-            'dangerous': False,
-            'type': 'dummy',
-        }],
-        'relations': [{
-            'score': 4.61,
-            'related': {'type': 'device', 'value': 'iphone'},
-            'relation': 'Is_Fond_Of',
-            'source': {'type': 'user', 'value': 'admin'},
-        }],
+        'observables': [object()],
+        'relations': [object()],
         'resolution': 'skipped',
         'revision': -273,
         'sensor': 'actuator',
@@ -117,20 +112,10 @@ def test_sighting_validation_fails():
         },
         'internal': ['Not a valid boolean.'],
         'observables': {
-            0: {
-                'dangerous': ['Unknown field.'],
-                'type': [
-                    'Must be one of: '
-                    f'{", ".join(map(repr, OBSERVABLE_TYPE_CHOICES))}.'
-                ],
-                'value': ['Missing data for required field.'],
-            },
+            0: ['Not a valid CTIM Observable.'],
         },
         'relations': {
-            0: {
-                'score': ['Unknown field.'],
-                'origin': ['Missing data for required field.'],
-            }
+            0: ['Not a valid CTIM ObservedRelation.'],
         },
         'revision': [
             f'Must be greater than or equal to {REVISION_MIN_VALUE}.'
@@ -161,6 +146,23 @@ def test_sighting_validation_fails():
 
 
 def test_sighting_validation_succeeds():
+    observable = Observable(
+        type='domain',
+        value='cisco.com',
+    )
+    relation = ObservedRelation(
+        origin='A bad URL redirecting to a good one.',
+        related=Observable(
+            type='url',
+            value='https://fake.org/good.html',
+        ),
+        relation='Redirects_To',
+        source=Observable(
+            type='url',
+            value='https://fake.org/bad.html',
+        ),
+    )
+
     sighting_data = {
         'confidence': 'Medium',
         'count': 2,
@@ -176,13 +178,8 @@ def test_sighting_validation_succeeds():
             ],
         },
         'internal': True,
-        'observables': [{'type': 'domain', 'value': 'cisco.com'}],
-        'relations': [{
-            'origin': 'A bad URL redirecting to a good one.',
-            'related': {'type': 'url', 'value': 'https://fake.org/good.html'},
-            'relation': 'Redirects_To',
-            'source': {'type': 'url', 'value': 'https://fake.org/bad.html'},
-        }],
+        'observables': [observable],
+        'relations': [relation],
         'resolution': 'detected',
         'revision': 0,
         'sensor': 'network.firewall',
@@ -202,6 +199,9 @@ def test_sighting_validation_succeeds():
     }
 
     sighting = Sighting(**sighting_data)
+
+    sighting_data['observables'] = [observable.json]
+    sighting_data['relations'] = [relation.json]
 
     type_ = 'sighting'
 

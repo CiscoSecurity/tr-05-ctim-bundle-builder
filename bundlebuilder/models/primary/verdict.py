@@ -1,4 +1,5 @@
 from functools import partial
+from typing import Iterator, Tuple
 
 from marshmallow import fields
 from marshmallow.decorators import validates_schema
@@ -9,13 +10,11 @@ from marshmallow.exceptions import (
 from ..fields import EntityField
 from ..entity import (
     EntitySchema,
-    SecondaryEntity,
+    PrimaryEntity,
 )
 from ..primary.judgement import Judgement
-from ..schemas import (
-    ObservableSchema,
-    ValidTimeSchema,
-)
+from ..secondary.observable import Observable
+from ..schemas import ValidTimeSchema
 from ..validators import (
     validate_integer,
     validate_string,
@@ -35,8 +34,8 @@ class VerdictSchema(EntitySchema):
         validate=partial(validate_integer, choices=DISPOSITION_MAP.keys()),
         required=True,
     )
-    observable = fields.Nested(
-        ObservableSchema,
+    observable = EntityField(
+        type=Observable,
         required=True,
     )
     valid_time = fields.Nested(
@@ -61,14 +60,8 @@ class VerdictSchema(EntitySchema):
             raise MarshmallowValidationError(message)
 
 
-class Verdict(SecondaryEntity):
+class Verdict(PrimaryEntity):
     schema = VerdictSchema
-
-    def _initialize_missing_fields(self) -> None:
-        self.json = {
-            'type': self.type,
-            **self.json
-        }
 
     @classmethod
     def from_judgement(cls, judgement: Judgement) -> 'Verdict':
@@ -82,9 +75,21 @@ class Verdict(SecondaryEntity):
         else:
             verdict = Verdict(
                 disposition=judgement.disposition,
-                observable=judgement.observable,
+                observable=Observable(**judgement.observable),
                 valid_time=judgement.valid_time,
                 disposition_name=judgement.disposition_name,
             )
             verdict.json['judgement_id'] = judgement_id
             return verdict
+
+    # Unlike the other primary CTIM entities, the Verdict entity has neither an
+    # ID nor any XIDs, so its implementation can be pretty much simplified.
+
+    def _initialize_missing_fields(self) -> None:
+        self.json = {
+            'type': self.type,
+            **self.json
+        }
+
+    def _generate_external_id_seed_values(self) -> Iterator[Tuple[str]]:
+        yield ()

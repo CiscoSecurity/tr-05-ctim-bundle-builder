@@ -41,7 +41,7 @@ class EntityMeta(ABCMeta):
     def __init__(cls, cls_name, cls_bases, cls_dict):
         cls_type = cls_dict.get('type')
         if cls_type is None:
-            cls.type = underscore(cls.__name__)  # CamelCase -> snake_case
+            cls.type = underscore(cls_name)  # CamelCase -> snake_case
 
         cls_schema = cls_dict.get('schema')
 
@@ -49,12 +49,13 @@ class EntityMeta(ABCMeta):
             # If there is no schema then make the class kind of abstract by not
             # allowing to instantiate it although allowing inheritance from it.
 
-            def schema(self):
+            def __init__(self, **kwargs):
                 raise SchemaError(
                     f'{cls}.schema must be a subclass of {EntitySchema}.'
                 )
 
-            cls.schema = schema
+            cls.schema = type(f'{cls_name}Schema', (), {'__init__': __init__})
+            print(repr(cls.schema))
 
             super().__init__(cls_name, cls_bases, cls_dict)
             return
@@ -76,6 +77,7 @@ class EntityMeta(ABCMeta):
 
 
 class BaseEntity(metaclass=EntityMeta):
+    """Abstract base class for arbitrary CTIM entities."""
 
     def __init__(self, **data):
         try:
@@ -85,8 +87,11 @@ class BaseEntity(metaclass=EntityMeta):
 
         self._initialize_missing_fields()
 
-    def __getattr__(self, field) -> Optional[Any]:
+    def __getattr__(self, field: str) -> Optional[Any]:
         return self.json.get(field)
+
+    def __getitem__(self, field: str) -> Any:
+        return self.json[field]
 
     @abstractmethod
     def _initialize_missing_fields(self) -> None:
@@ -94,6 +99,7 @@ class BaseEntity(metaclass=EntityMeta):
 
 
 class PrimaryEntity(BaseEntity):
+    """Abstract base class for top-level CTIM entities."""
 
     def _initialize_missing_fields(self) -> None:
         self.json['type'] = self.type
@@ -191,6 +197,7 @@ class PrimaryEntity(BaseEntity):
 
 
 class SecondaryEntity(BaseEntity):
+    """Abstract base class for in-line CTIM entities."""
 
     def _initialize_missing_fields(self) -> None:
         pass
