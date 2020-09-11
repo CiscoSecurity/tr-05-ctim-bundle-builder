@@ -9,7 +9,9 @@ from ..fields import DateTimeField
 
 
 class ObservedTimeSchema(EntitySchema):
-    start_time = DateTimeField(required=True)
+    start_time = DateTimeField(
+        required=True,
+    )
     end_time = DateTimeField()
 
     @validates_schema

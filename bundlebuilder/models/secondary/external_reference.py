@@ -27,9 +27,7 @@ class ExternalReferenceSchema(EntitySchema):
         validate=validate_string,
     )
     hashes = ListField(
-        StringField(
-            validate=validate_string,
-        )
+        StringField(validate=validate_string)
     )
     url = StringField(
         validate=validate_string,

@@ -4,8 +4,6 @@ from typing import (
     Tuple,
 )
 
-from marshmallow import fields
-
 from ..entity import (
     EntitySchema,
     PrimaryEntity,
@@ -16,15 +14,20 @@ from ..fields import (
     ListField,
     BooleanField,
     IntegerField,
+    UnionField,
     DateTimeField,
 )
 from ..secondary.composite_indicator_expression import (
     CompositeIndicatorExpression
 )
 from ..secondary.external_reference import ExternalReference
+from ..secondary.judgement_specification import JudgementSpecification
 from ..secondary.kill_chain_phase import KillChainPhase
+from ..secondary.open_ioc_specification import OpenIOCSpecification
+from ..secondary.sioc_specification import SIOCSpecification
+from ..secondary.snort_specification import SnortSpecification
+from ..secondary.threat_brain_specification import ThreatBrainSpecification
 from ..secondary.valid_time import ValidTime
-from ..schemas import SpecificationSchema
 from ..validators import (
     validate_string,
     validate_integer,
@@ -96,7 +99,15 @@ class IndicatorSchema(EntitySchema):
     short_description = StringField(
         validate=partial(validate_string, max_length=SHORT_DESCRIPTION_LENGTH),
     )
-    specification = fields.Nested(SpecificationSchema)
+    specification = UnionField(
+        candidates=[
+            EntityField(type=JudgementSpecification),
+            EntityField(type=ThreatBrainSpecification),
+            EntityField(type=SnortSpecification),
+            EntityField(type=SIOCSpecification),
+            EntityField(type=OpenIOCSpecification),
+        ],
+    )
     tags = ListField(
         StringField(
             validate=partial(validate_string, max_length=TAG_MAX_LENGTH),
@@ -126,14 +137,10 @@ class IndicatorSchema(EntitySchema):
     )
 
     external_id_salt_values = ListField(
-        StringField(
-            validate=validate_string,
-        )
+        StringField(validate=validate_string)
     )
     external_ids = ListField(
-        StringField(
-            validate=validate_string,
-        )
+        StringField(validate=validate_string)
     )
 
 

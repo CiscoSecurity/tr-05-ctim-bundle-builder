@@ -1,6 +1,8 @@
 import datetime as dt
+import typing as t
 
-from marshmallow import fields
+from marshmallow import fields as f
+from marshmallow.exceptions import ValidationError
 
 from .entity import BaseEntity
 
@@ -10,43 +12,43 @@ from .entity import BaseEntity
 # for different subclasses to make them look like valid type annotations.
 
 
-class RawField(fields.Raw):
+class RawField(f.Raw):
 
     def __repr__(self):
         return 'Any'
 
 
-class BooleanField(fields.Boolean):
+class BooleanField(f.Boolean):
 
     def __repr__(self):
         return 'bool'
 
 
-class IntegerField(fields.Integer):
+class IntegerField(f.Integer):
 
     def __repr__(self):
         return 'int'
 
 
-class StringField(fields.String):
+class StringField(f.String):
 
     def __repr__(self):
         return 'str'
 
 
-class ListField(fields.List):
+class ListField(f.List):
 
     def __repr__(self):
-        return f'List[{self.inner!r}]'
+        return f'List[{repr(self.inner)}]'
 
 
-class MappingField(fields.Mapping):
+class MappingField(f.Mapping):
 
     def __repr__(self):
-        return f'Dict[{self.key_field!r}, {self.value_field!r}]'
+        return f'Dict[{repr(self.key_field)}, {repr(self.value_field)}]'
 
 
-class EntityField(fields.Field):
+class EntityField(f.Field):
     default_error_messages = {
         'type': 'Not a valid CTIM {type_name}.',
         'attr': "Missing required attribute: '{attr_name}'.",
@@ -72,18 +74,24 @@ class EntityField(fields.Field):
     def __repr__(self):
         return self.type_name
 
-    def _deserialize(self, value, attr, data, **kwargs):
+    def _deserialize(
+        self,
+        value: t.Any,
+        attr: t.Optional[str],
+        data: t.Optional[t.Mapping[str, t.Any]],
+        **kwargs
+    ):
         if not isinstance(value, self.type):
             raise self.make_error('type', type_name=self.type_name)
 
-        data = getattr(value, self.attr_name)
-        if data is None:
+        entity = getattr(value, self.attr_name)
+        if entity is None:
             raise self.make_error('attr', attr_name=self.attr_name)
 
-        return data
+        return entity
 
 
-class DateTimeField(fields.NaiveDateTime):
+class DateTimeField(f.NaiveDateTime):
     """A UTC datetime string with the Z suffix."""
 
     def __init__(self, **kwargs):
@@ -94,7 +102,13 @@ class DateTimeField(fields.NaiveDateTime):
     def __repr__(self):
         return 'str'
 
-    def _deserialize(self, value, attr, data, **kwargs):
+    def _deserialize(
+        self,
+        value: t.Any,
+        attr: t.Optional[str],
+        data: t.Optional[t.Mapping[str, t.Any]],
+        **kwargs
+    ):
         if isinstance(value, dt.datetime):
             value = value.isoformat()
 
@@ -103,3 +117,30 @@ class DateTimeField(fields.NaiveDateTime):
         datetime = super()._deserialize(value, attr, data, **kwargs)
 
         return datetime.isoformat(timespec='milliseconds') + 'Z'
+
+
+class UnionField(f.Field):
+
+    def __init__(self, candidates: t.List[f.Field], **kwargs):
+        self.candidates = candidates
+        super().__init__(**kwargs)
+
+    def __repr__(self):
+        return f'Union[{", ".join(map(repr, self.candidates))}]'
+
+    def _deserialize(
+        self,
+        value: t.Any,
+        attr: t.Optional[str],
+        data: t.Optional[t.Mapping[str, t.Any]],
+        **kwargs
+    ):
+        messages = []
+
+        for candidate in self.candidates:
+            try:
+                return candidate.deserialize(value, attr, data, **kwargs)
+            except ValidationError as error:
+                messages.extend(error.messages)
+
+        raise ValidationError(messages)

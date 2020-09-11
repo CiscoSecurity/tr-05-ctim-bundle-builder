@@ -45,7 +45,7 @@ def test_indicator_validation_fails():
         'revision': -273,
         'severity': 'Insignificant',
         'short_description': '\U0001f4a9' * DESCRIPTION_MAX_LENGTH,
-        'specification': {'type': 'ThreatBrain'},
+        'specification': object(),
         'test_mechanisms': ['\U0001f4a9' * (TEST_MECHANISM_MAX_LENGTH + 1)],
         'timestamp': '4:20',
         'title': 'OMG! The Best CTIM Bundle Builder Ever!',
@@ -92,9 +92,13 @@ def test_indicator_validation_fails():
         'short_description': [
             f'Must be at most {SHORT_DESCRIPTION_LENGTH} characters long.'
         ],
-        'specification': {
-            'variables': ['Missing data for required field.'],
-        },
+        'specification': [
+            'Not a valid CTIM JudgementSpecification.',
+            'Not a valid CTIM ThreatBrainSpecification.',
+            'Not a valid CTIM SnortSpecification.',
+            'Not a valid CTIM SIOCSpecification.',
+            'Not a valid CTIM OpenIOCSpecification.',
+        ],
         'test_mechanisms': {
             0: [
                 f'Must be at most {TEST_MECHANISM_MAX_LENGTH} characters long.'

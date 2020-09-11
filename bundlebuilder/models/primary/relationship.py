@@ -85,14 +85,10 @@ class RelationshipSchema(EntitySchema):
     )
 
     external_id_salt_values = ListField(
-        StringField(
-            validate=validate_string,
-        )
+        StringField(validate=validate_string)
     )
     external_ids = ListField(
-        StringField(
-            validate=validate_string,
-        )
+        StringField(validate=validate_string)
     )
 
 

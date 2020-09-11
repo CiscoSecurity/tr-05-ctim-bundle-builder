@@ -14,9 +14,7 @@ from ...constants import BOOLEAN_OPERATOR_CHOICES
 
 class CompositeIndicatorExpressionSchema(EntitySchema):
     indicator_ids = ListField(
-        StringField(
-            validate=validate_string,
-        ),
+        StringField(validate=validate_string),
         required=True,
     )
     operator = StringField(

@@ -54,7 +54,14 @@ class EntityMeta(ABCMeta):
                     f'{cls}.schema must be a subclass of {EntitySchema}.'
                 )
 
-            cls.schema = type(f'{cls_name}Schema', (), {'__init__': __init__})
+            cls.schema = type(
+                f'{cls_name}Schema',
+                (Schema,),
+                {
+                    '__init__': __init__,
+                    '__module__': cls.__module__,
+                },
+            )
 
             super().__init__(cls_name, cls_bases, cls_dict)
             return
