@@ -92,6 +92,9 @@ class BaseEntity(metaclass=EntityMeta):
     def __getitem__(self, field: str) -> Any:
         return self.json[field]
 
+    def __str__(self):
+        return self.__class__.__name__
+
     @abstractmethod
     def _initialize_missing_fields(self) -> None:
         pass
