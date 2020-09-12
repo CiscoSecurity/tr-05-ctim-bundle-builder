@@ -58,7 +58,9 @@ class SightingSchema(EntitySchema):
         type=ObservedTime,
         required=True,
     )
-    data = EntityField(type=SightingDataTable)
+    data = EntityField(
+        type=SightingDataTable,
+    )
     description = StringField(
         validate=partial(validate_string, max_length=DESCRIPTION_MAX_LENGTH),
     )

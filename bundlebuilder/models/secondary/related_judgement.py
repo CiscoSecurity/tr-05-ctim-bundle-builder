@@ -10,6 +10,10 @@ from ...constants import CONFIDENCE_CHOICES
 
 
 class RelatedJudgementSchema(EntitySchema):
+    """
+    https://github.com/threatgrid/ctim/blob/master/doc/structures/indicator.md#relatedjudgement-object
+    """
+
     judgement_id = StringField(
         validate=validate_string,
         required=True,

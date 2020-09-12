@@ -9,6 +9,11 @@ from ..fields import DateTimeField
 
 
 class ValidTimeSchema(EntitySchema):
+    """
+    https://github.com/threatgrid/ctim/blob/master/doc/structures/indicator.md#validtime-object
+    https://github.com/threatgrid/ctim/blob/master/doc/structures/judgement.md#validtime-object
+    """
+
     start_time = DateTimeField()
     end_time = DateTimeField()
 

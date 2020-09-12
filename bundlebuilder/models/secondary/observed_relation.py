@@ -13,6 +13,10 @@ from ..validators import validate_string
 
 
 class ObservedRelationSchema(EntitySchema):
+    """
+    https://github.com/threatgrid/ctim/blob/master/doc/structures/sighting.md#observedrelation-object
+    """
+
     origin = StringField(
         validate=validate_string,
         required=True,

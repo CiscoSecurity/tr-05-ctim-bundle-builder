@@ -9,6 +9,10 @@ from ..fields import DateTimeField
 
 
 class ObservedTimeSchema(EntitySchema):
+    """
+    https://github.com/threatgrid/ctim/blob/master/doc/structures/sighting.md#observedtime-object
+    """
+
     start_time = DateTimeField(
         required=True,
     )

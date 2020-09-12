@@ -12,6 +12,10 @@ from ..validators import validate_string
 
 
 class JudgementSpecificationSchema(EntitySchema):
+    """
+    https://github.com/threatgrid/ctim/blob/master/doc/structures/indicator.md#judgementspecification-object
+    """
+
     judgements = ListField(
         StringField(validate=validate_string),
         required=True,

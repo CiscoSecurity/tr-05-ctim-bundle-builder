@@ -13,6 +13,10 @@ from ..validators import validate_string
 
 
 class IdentitySpecificationSchema(EntitySchema):
+    """
+    https://github.com/threatgrid/ctim/blob/master/doc/structures/sighting.md#identityspecification-object
+    """
+
     observables = ListField(
         EntityField(type=Observable),
         required=True,

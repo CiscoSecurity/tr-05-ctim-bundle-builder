@@ -16,6 +16,15 @@ from ...constants import (
 
 
 class ExternalReferenceSchema(EntitySchema):
+    """
+    https://github.com/threatgrid/ctim/blob/master/doc/structures/bundle.md#externalreference-object
+    https://github.com/threatgrid/ctim/blob/master/doc/structures/indicator.md#externalreference-object
+    https://github.com/threatgrid/ctim/blob/master/doc/structures/judgement.md#externalreference-object
+    https://github.com/threatgrid/ctim/blob/master/doc/structures/relationship.md#externalreference-object
+    https://github.com/threatgrid/ctim/blob/master/doc/structures/sighting.md#externalreference-object
+    https://github.com/threatgrid/ctim/blob/master/doc/structures/verdict.md#externalreference-object
+    """
+
     source_name = StringField(
         validate=partial(validate_string, max_length=SOURCE_NAME_MAX_LENGTH),
         required=True,

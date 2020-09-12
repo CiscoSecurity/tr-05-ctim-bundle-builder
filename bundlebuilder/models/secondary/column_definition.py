@@ -17,6 +17,10 @@ from ...constants import (
 
 
 class ColumnDefinitionSchema(EntitySchema):
+    """
+    https://github.com/threatgrid/ctim/blob/master/doc/structures/sighting.md#columndefinition-object
+    """
+
     name = StringField(
         validate=validate_string,
         required=True,

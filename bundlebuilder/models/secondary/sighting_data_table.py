@@ -16,6 +16,10 @@ from ...constants import COUNT_MIN_VALUE
 
 
 class SightingDataTableSchema(EntitySchema):
+    """
+    https://github.com/threatgrid/ctim/blob/master/doc/structures/sighting.md#sightingdatatable-object
+    """
+
     columns = ListField(
         EntityField(type=ColumnDefinition),
         required=True,

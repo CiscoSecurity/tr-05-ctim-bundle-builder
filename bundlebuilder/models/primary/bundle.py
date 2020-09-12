@@ -49,7 +49,9 @@ class BundleSchema(EntitySchema):
     https://github.com/threatgrid/ctim/blob/master/doc/structures/bundle.md
     """
 
-    valid_time = EntityField(type=ValidTime)
+    valid_time = EntityField(
+        type=ValidTime,
+    )
     description = StringField(
         validate=partial(validate_string, max_length=DESCRIPTION_MAX_LENGTH),
     )

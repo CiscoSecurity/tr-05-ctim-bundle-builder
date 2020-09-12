@@ -9,6 +9,10 @@ from ..validators import validate_string
 
 
 class KillChainPhaseSchema(EntitySchema):
+    """
+    https://github.com/threatgrid/ctim/blob/master/doc/structures/indicator.md#killchainphase-object
+    """
+
     kill_chain_name = StringField(
         validate=validate_string,
         required=True,

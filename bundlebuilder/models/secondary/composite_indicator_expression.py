@@ -13,6 +13,10 @@ from ...constants import BOOLEAN_OPERATOR_CHOICES
 
 
 class CompositeIndicatorExpressionSchema(EntitySchema):
+    """
+    https://github.com/threatgrid/ctim/blob/master/doc/structures/indicator.md#compositeindicatorexpression-object
+    """
+
     indicator_ids = ListField(
         StringField(validate=validate_string),
         required=True,
