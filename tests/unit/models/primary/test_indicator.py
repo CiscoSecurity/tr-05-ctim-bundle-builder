@@ -21,6 +21,8 @@ from bundlebuilder.models import (
     ValidTime,
     CompositeIndicatorExpression,
     KillChainPhase,
+    JudgementSpecification,
+    RelatedJudgement,
 )
 from tests.unit.utils import (
     mock_transient_id,
@@ -127,9 +129,13 @@ def test_indicator_validation_succeeds():
         phase_name=' _ Phase _ Name _ ',
     )
 
-    judgement_id = 'transient:prefix-judgement-sha256'
-    judgement_uri = (
-        f'https://private.intel.amp.cisco.com/ctia/judgement/{judgement_id}'
+    specification = JudgementSpecification(
+        judgements=['judgement'],
+        required_judgements=[
+            RelatedJudgement(
+                judgement_id='judgement_id',
+            ),
+        ],
     )
 
     indicator_data = {
@@ -142,11 +148,7 @@ def test_indicator_validation_succeeds():
         'negate': True,
         'revision': 0,
         'severity': 'High',
-        'specification': {
-            'type': 'Judgement',
-            'judgements': [judgement_uri],
-            'required_judgements': [{'judgement_id': judgement_id}],
-        },
+        'specification': specification,
         'tags': ['ctim', 'bundle', 'builder'],
         'timestamp': utc_now_iso(),
         'tlp': 'red',
@@ -162,6 +164,7 @@ def test_indicator_validation_succeeds():
         'kill_chain_name': 'kill-chain-name',
         'phase_name': 'phase-name',
     }]
+    indicator_data['specification'] = specification.json
 
     type_ = 'indicator'
 
