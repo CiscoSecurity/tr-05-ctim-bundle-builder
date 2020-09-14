@@ -19,8 +19,8 @@ def test_threat_brain_specification_validation_fails():
 
 def test_threat_brain_specification_validation_succeeds():
     threat_brain_specification_data = {
-        'variables': ['x', 'y', 'z'],
-        'query': 'sum(x, y, z)',
+        'variables': ['variable'],
+        'query': 'query',
     }
 
     threat_brain_specification = ThreatBrainSpecification(

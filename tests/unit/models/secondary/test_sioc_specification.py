@@ -19,7 +19,7 @@ def test_sioc_specification_validation_fails():
 
 def test_sioc_specification_validation_succeeds():
     sioc_specification_data = {
-        'SIOC': 'abracadabra',
+        'SIOC': 'SIOC',
     }
 
     sioc_specification = SIOCSpecification(**sioc_specification_data)

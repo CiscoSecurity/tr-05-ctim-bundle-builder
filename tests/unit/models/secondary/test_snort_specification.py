@@ -19,7 +19,7 @@ def test_snort_specification_validation_fails():
 
 def test_snort_specification_validation_succeeds():
     snort_specification_data = {
-        'snort_sig': 'abracadabra',
+        'snort_sig': 'snort_sig',
     }
 
     snort_specification = SnortSpecification(**snort_specification_data)

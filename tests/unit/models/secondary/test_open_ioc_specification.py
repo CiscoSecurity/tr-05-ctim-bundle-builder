@@ -19,7 +19,7 @@ def test_open_ioc_specification_validation_fails():
 
 def test_open_ioc_specification_validation_succeeds():
     open_ioc_specification_data = {
-        'open_IOC': 'abracadabra',
+        'open_IOC': 'open_IOC',
     }
 
     open_ioc_specification = OpenIOCSpecification(

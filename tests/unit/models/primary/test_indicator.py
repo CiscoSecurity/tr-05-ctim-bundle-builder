@@ -22,6 +22,10 @@ from bundlebuilder.models import (
     CompositeIndicatorExpression,
     KillChainPhase,
     JudgementSpecification,
+    ThreatBrainSpecification,
+    SnortSpecification,
+    SIOCSpecification,
+    OpenIOCSpecification,
     RelatedJudgement,
 )
 from tests.unit.utils import (
@@ -129,53 +133,69 @@ def test_indicator_validation_succeeds():
         phase_name=' _ Phase _ Name _ ',
     )
 
-    specification = JudgementSpecification(
-        judgements=['judgement'],
-        required_judgements=[
-            RelatedJudgement(
-                judgement_id='judgement_id',
-            ),
-        ],
-    )
+    specifications = [
+        JudgementSpecification(
+            judgements=['judgement'],
+            required_judgements=[
+                RelatedJudgement(
+                    judgement_id='judgement_id',
+                ),
+            ],
+        ),
+        ThreatBrainSpecification(
+            variables=['variable'],
+            query='query',
+        ),
+        SnortSpecification(
+            snort_sig='snort_sig',
+        ),
+        SIOCSpecification(
+            SIOC='SIOC',
+        ),
+        OpenIOCSpecification(
+            open_IOC='open_IOC',
+        ),
+    ]
 
-    indicator_data = {
-        'producer': 'SoftServe',
-        'confidence': 'High',
-        'valid_time': valid_time,
-        'composite_indicator_expression': composite_indicator_expression,
-        'indicator_type': ['File Hash Watchlist'],
-        'kill_chain_phases': [kill_chain_phase],
-        'negate': True,
-        'revision': 0,
-        'severity': 'High',
-        'specification': specification,
-        'tags': ['ctim', 'bundle', 'builder'],
-        'timestamp': utc_now_iso(),
-        'tlp': 'red',
-    }
+    for specification in specifications:
+        indicator_data = {
+            'producer': 'SoftServe',
+            'confidence': 'High',
+            'valid_time': valid_time,
+            'composite_indicator_expression': composite_indicator_expression,
+            'indicator_type': ['File Hash Watchlist'],
+            'kill_chain_phases': [kill_chain_phase],
+            'negate': True,
+            'revision': 0,
+            'severity': 'High',
+            'specification': specification,
+            'tags': ['ctim', 'bundle', 'builder'],
+            'timestamp': utc_now_iso(),
+            'tlp': 'red',
+        }
 
-    indicator = Indicator(**indicator_data)
+        indicator = Indicator(**indicator_data)
 
-    indicator_data['valid_time'] = valid_time.json
-    indicator_data['composite_indicator_expression'] = (
-        composite_indicator_expression.json
-    )
-    indicator_data['kill_chain_phases'] = [{
-        'kill_chain_name': 'kill-chain-name',
-        'phase_name': 'phase-name',
-    }]
-    indicator_data['specification'] = specification.json
+        indicator_data['valid_time'] = valid_time.json
+        indicator_data['composite_indicator_expression'] = (
+            composite_indicator_expression.json
+        )
+        indicator_data['kill_chain_phases'] = [{
+            'kill_chain_name': 'kill-chain-name',
+            'phase_name': 'phase-name',
+        }]
+        indicator_data['specification'] = specification.json
 
-    type_ = 'indicator'
+        type_ = 'indicator'
 
-    assert indicator.json == {
-        'type': type_,
-        'schema_version': SCHEMA_VERSION,
-        'source': DEFAULT_SESSION_SOURCE,
-        'source_uri': DEFAULT_SESSION_SOURCE_URI,
-        'id': mock_transient_id(DEFAULT_SESSION_EXTERNAL_ID_PREFIX, type_),
-        'external_ids': [
-            mock_external_id(DEFAULT_SESSION_EXTERNAL_ID_PREFIX, type_)
-        ],
-        **indicator_data
-    }
+        assert indicator.json == {
+            'type': type_,
+            'schema_version': SCHEMA_VERSION,
+            'source': DEFAULT_SESSION_SOURCE,
+            'source_uri': DEFAULT_SESSION_SOURCE_URI,
+            'id': mock_transient_id(DEFAULT_SESSION_EXTERNAL_ID_PREFIX, type_),
+            'external_ids': [
+                mock_external_id(DEFAULT_SESSION_EXTERNAL_ID_PREFIX, type_)
+            ],
+            **indicator_data
+        }
