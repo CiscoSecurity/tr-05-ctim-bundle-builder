@@ -2,7 +2,6 @@ from collections import namedtuple
 from contextlib import contextmanager
 from functools import partial
 
-from marshmallow import fields
 from marshmallow.exceptions import (
     ValidationError as MarshmallowValidationError
 )
@@ -17,19 +16,20 @@ from .constants import (
 from .exceptions import (
     ValidationError as BundleBuilderValidationError
 )
-from .models.utils.validators import validate_string
+from .models.fields import StringField
+from .models.validators import validate_string
 
 
 class SessionSchema(Schema):
-    external_id_prefix = fields.String(
+    external_id_prefix = StringField(
         validate=validate_string,
         required=True,
     )
-    source = fields.String(
+    source = StringField(
         validate=partial(validate_string, max_length=SOURCE_MAX_LENGTH),
         required=True,
     )
-    source_uri = fields.String(
+    source_uri = StringField(
         validate=validate_string,
         required=True,
     )

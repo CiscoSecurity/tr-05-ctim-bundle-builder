@@ -4,22 +4,23 @@ from typing import (
     Tuple,
 )
 
-from marshmallow import fields
-from marshmallow.schema import Schema
-
-from .entity import Entity
-from .utils.fields import (
+from ..entity import (
+    EntitySchema,
+    PrimaryEntity,
+)
+from ..fields import (
+    StringField,
     EntityField,
+    ListField,
+    IntegerField,
     DateTimeField,
 )
-from .utils.schemas import (
-    ExternalReferenceSchema,
-)
-from .utils.validators import (
+from ..secondary.external_reference import ExternalReference
+from ..validators import (
     validate_string,
     validate_integer,
 )
-from ..constants import (
+from ...constants import (
     DESCRIPTION_MAX_LENGTH,
     LANGUAGE_MAX_LENGTH,
     REVISION_MIN_VALUE,
@@ -30,67 +31,71 @@ from ..constants import (
 )
 
 
-class RelationshipSchema(Schema):
+class RelationshipSchema(EntitySchema):
     """
     https://github.com/threatgrid/ctim/blob/master/doc/structures/relationship.md
     """
 
-    relationship_type = fields.String(
+    relationship_type = StringField(
         validate=validate_string,
         required=True,
     )
     source_ref = EntityField(
+        type=PrimaryEntity,
+        type_name='Entity',
         ref=True,
         validate=validate_string,
         required=True,
     )
     target_ref = EntityField(
+        type=PrimaryEntity,
+        type_name='Entity',
         ref=True,
         validate=validate_string,
         required=True,
     )
-    description = fields.String(
+    description = StringField(
         validate=partial(validate_string, max_length=DESCRIPTION_MAX_LENGTH),
     )
-    external_references = fields.List(
-        fields.Nested(ExternalReferenceSchema)
+    external_references = ListField(
+        EntityField(type=ExternalReference)
     )
-    language = fields.String(
+    language = StringField(
         validate=partial(validate_string, max_length=LANGUAGE_MAX_LENGTH),
     )
-    revision = fields.Integer(
+    revision = IntegerField(
         validate=partial(validate_integer, min_value=REVISION_MIN_VALUE),
     )
-    short_description = fields.String(
+    short_description = StringField(
         validate=partial(validate_string, max_length=SHORT_DESCRIPTION_LENGTH),
     )
     timestamp = DateTimeField()
-    title = fields.String(
+    title = StringField(
         validate=partial(validate_string, max_length=TITLE_MAX_LENGTH),
     )
-    tlp = fields.String(
+    tlp = StringField(
         validate=partial(validate_string, choices=TLP_CHOICES),
     )
 
-    source = fields.String(
+    source = StringField(
         validate=partial(validate_string, max_length=SOURCE_MAX_LENGTH),
     )
-    source_uri = fields.String(
+    source_uri = StringField(
         validate=validate_string,
     )
 
-    external_id_salt_values = fields.List(
-        fields.String(
-            validate=validate_string,
-        )
+    external_id_salt_values = ListField(
+        StringField(validate=validate_string)
+    )
+    external_ids = ListField(
+        StringField(validate=validate_string)
     )
 
 
-class Relationship(Entity):
+class Relationship(PrimaryEntity):
     schema = RelationshipSchema
 
-    def generate_external_id_seed_values(self) -> Iterator[Tuple[str]]:
+    def _generate_external_id_seed_values(self) -> Iterator[Tuple[str]]:
         yield (
-            self.external_id_prefix,
             self.type,
         )

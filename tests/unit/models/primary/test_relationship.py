@@ -13,10 +13,12 @@ from bundlebuilder.constants import (
 from bundlebuilder.exceptions import ValidationError
 from bundlebuilder.models import (
     Relationship,
+    Observable,
+    ValidTime,
     Judgement,
     Indicator,
 )
-from .utils import (
+from tests.unit.utils import (
     mock_transient_id,
     mock_external_id,
     utc_now_iso,
@@ -29,11 +31,7 @@ def test_relationship_validation_fails():
         'relationship_type': 'loved-by',
         'target_ref': 3.141592653589793,
         'description': '\U0001f4a9' * DESCRIPTION_MAX_LENGTH,
-        'external_references': [{
-            'description': '',
-            'external_id': None,
-            'hashes': ['alpha', 'beta', 'gamma'],
-        }],
+        'external_references': [object()],
         'language': 'Python',
         'revision': -273,
         'short_description': '\U0001f4a9' * DESCRIPTION_MAX_LENGTH,
@@ -52,11 +50,7 @@ def test_relationship_validation_fails():
         'source_ref': ['Missing data for required field.'],
         'target_ref': ['Not a valid CTIM Entity.'],
         'external_references': {
-            0: {
-                'source_name': ['Missing data for required field.'],
-                'description': ['Field may not be blank.'],
-                'external_id': ['Field may not be null.'],
-            },
+            0: ['Not a valid CTIM ExternalReference.'],
         },
         'revision': [
             f'Must be greater than or equal to {REVISION_MIN_VALUE}.'
@@ -76,13 +70,16 @@ def test_relationship_validation_succeeds():
         confidence='Low',
         disposition=4,
         disposition_name='Common',
-        observable={'type': 'domain', 'value': 'cisco.com'},
+        observable=Observable(
+            type='domain',
+            value='cisco.com',
+        ),
         priority=25,
         severity='Low',
-        valid_time={
-            'start_time': utc_now_iso(),
-            'end_time': utc_now_iso(),
-        },
+        valid_time=ValidTime(
+            start_time=utc_now_iso(),
+            end_time=utc_now_iso(),
+        ),
         revision=1,
         timestamp=utc_now_iso(),
         tlp='white',
@@ -90,10 +87,10 @@ def test_relationship_validation_succeeds():
 
     indicator = Indicator(
         producer='SoftServe',
-        valid_time={
-            'start_time': utc_now_iso(),
-            'end_time': utc_now_iso(),
-        },
+        valid_time=ValidTime(
+            start_time=utc_now_iso(),
+            end_time=utc_now_iso(),
+        ),
         revision=2,
         timestamp=utc_now_iso(),
         tlp='green',

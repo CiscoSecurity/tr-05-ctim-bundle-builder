@@ -4,25 +4,30 @@ from typing import (
     Tuple,
 )
 
-from marshmallow import fields
-from marshmallow.schema import Schema
-
-from .entity import Entity
-from .utils.fields import DateTimeField
-from .utils.schemas import (
-    ObservedTimeSchema,
-    SightingDataTableSchema,
-    ExternalReferenceSchema,
-    ObservableSchema,
-    ObservedRelationSchema,
-    SensorCoordinatesSchema,
-    IdentitySpecificationSchema,
+from ..entity import (
+    EntitySchema,
+    PrimaryEntity,
 )
-from .utils.validators import (
+from ..fields import (
+    StringField,
+    IntegerField,
+    EntityField,
+    ListField,
+    BooleanField,
+    DateTimeField,
+)
+from ..secondary.external_reference import ExternalReference
+from ..secondary.identity_specification import IdentitySpecification
+from ..secondary.observable import Observable
+from ..secondary.observed_relation import ObservedRelation
+from ..secondary.observed_time import ObservedTime
+from ..secondary.sensor_coordinates import SensorCoordinates
+from ..secondary.sighting_data_table import SightingDataTable
+from ..validators import (
     validate_string,
     validate_integer,
 )
-from ..constants import (
+from ...constants import (
     CONFIDENCE_CHOICES,
     COUNT_MIN_VALUE,
     DESCRIPTION_MAX_LENGTH,
@@ -36,93 +41,95 @@ from ..constants import (
 )
 
 
-class SightingSchema(Schema):
+class SightingSchema(EntitySchema):
     """
     https://github.com/threatgrid/ctim/blob/master/doc/structures/sighting.md
     """
 
-    confidence = fields.String(
+    confidence = StringField(
         validate=partial(validate_string, choices=CONFIDENCE_CHOICES),
         required=True,
     )
-    count = fields.Integer(
+    count = IntegerField(
         validate=partial(validate_integer, min_value=COUNT_MIN_VALUE),
         required=True,
     )
-    observed_time = fields.Nested(
-        ObservedTimeSchema,
+    observed_time = EntityField(
+        type=ObservedTime,
         required=True,
     )
-    data = fields.Nested(SightingDataTableSchema)
-    description = fields.String(
+    data = EntityField(
+        type=SightingDataTable,
+    )
+    description = StringField(
         validate=partial(validate_string, max_length=DESCRIPTION_MAX_LENGTH),
     )
-    external_references = fields.List(
-        fields.Nested(ExternalReferenceSchema)
+    external_references = ListField(
+        EntityField(type=ExternalReference)
     )
-    internal = fields.Boolean()
-    language = fields.String(
+    internal = BooleanField()
+    language = StringField(
         validate=partial(validate_string, max_length=LANGUAGE_MAX_LENGTH),
     )
-    observables = fields.List(
-        fields.Nested(ObservableSchema)
+    observables = ListField(
+        EntityField(type=Observable)
     )
-    relations = fields.List(
-        fields.Nested(ObservedRelationSchema)
+    relations = ListField(
+        EntityField(type=ObservedRelation)
     )
-    resolution = fields.String(
+    resolution = StringField(
         validate=validate_string,
     )
-    revision = fields.Integer(
+    revision = IntegerField(
         validate=partial(validate_integer, min_value=REVISION_MIN_VALUE),
     )
-    sensor = fields.String(
+    sensor = StringField(
         validate=validate_string,
     )
-    sensor_coordinates = fields.List(
-        fields.Nested(SensorCoordinatesSchema)
+    sensor_coordinates = ListField(
+        EntityField(type=SensorCoordinates)
     )
-    severity = fields.String(
+    severity = StringField(
         validate=partial(validate_string, choices=SEVERITY_CHOICES),
     )
-    short_description = fields.String(
+    short_description = StringField(
         validate=partial(validate_string, max_length=SHORT_DESCRIPTION_LENGTH),
     )
-    targets = fields.List(
-        fields.Nested(IdentitySpecificationSchema)
+    targets = ListField(
+        EntityField(type=IdentitySpecification)
     )
     timestamp = DateTimeField()
-    title = fields.String(
+    title = StringField(
         validate=partial(validate_string, max_length=TITLE_MAX_LENGTH),
     )
-    tlp = fields.String(
+    tlp = StringField(
         validate=partial(validate_string, choices=TLP_CHOICES),
     )
 
-    source = fields.String(
+    source = StringField(
         validate=partial(validate_string, max_length=SOURCE_MAX_LENGTH),
     )
-    source_uri = fields.String(
+    source_uri = StringField(
         validate=validate_string,
     )
 
-    external_id_salt_values = fields.List(
-        fields.String(
-            validate=validate_string,
-        )
+    external_id_salt_values = ListField(
+        StringField(validate=validate_string)
+    )
+    external_ids = ListField(
+        StringField(validate=validate_string)
     )
 
 
-class Sighting(Entity):
+class Sighting(PrimaryEntity):
     schema = SightingSchema
 
-    def generate_external_id_seed_values(self) -> Iterator[Tuple[str]]:
+    def _generate_external_id_seed_values(self) -> Iterator[Tuple[str]]:
         observables = self.observables or []
 
         if observables:
             for observable in observables:
                 yield (
-                    self.external_id_prefix,
                     self.type,
                     self.title or '',
                     (self.timestamp or '').split('T', 1)[0],
@@ -131,7 +138,6 @@ class Sighting(Entity):
 
         else:
             yield (
-                self.external_id_prefix,
                 self.type,
                 self.title or '',
                 (self.timestamp or '').split('T', 1)[0],

@@ -1,8 +1,28 @@
 # Make the classes below importable from the `.models` sub-package directly.
-from .entity import Entity
-from .bundle import Bundle
-from .indicator import Indicator
-from .judgement import Judgement
-from .relationship import Relationship
-from .sighting import Sighting
-from .verdict import Verdict
+from .primary import (
+    Bundle,
+    Indicator,
+    Judgement,
+    Relationship,
+    Sighting,
+    Verdict,
+)
+from .secondary import (
+    ColumnDefinition,
+    CompositeIndicatorExpression,
+    ExternalReference,
+    IdentitySpecification,
+    JudgementSpecification,
+    KillChainPhase,
+    Observable,
+    ObservedRelation,
+    ObservedTime,
+    OpenIOCSpecification,
+    RelatedJudgement,
+    SensorCoordinates,
+    SightingDataTable,
+    SIOCSpecification,
+    SnortSpecification,
+    ThreatBrainSpecification,
+    ValidTime,
+)

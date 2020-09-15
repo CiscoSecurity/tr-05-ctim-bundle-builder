@@ -1,1 +1,2 @@
-marshmallow~=3.5
+inflection~=0.5
+marshmallow~=3.7

@@ -4,48 +4,51 @@ from typing import (
     Tuple,
 )
 
-from marshmallow import fields
 from marshmallow.decorators import validates_schema
 from marshmallow.exceptions import (
     ValidationError as MarshmallowValidationError
 )
-from marshmallow.schema import Schema
 
-from .entity import Entity
-from .judgement import Judgement
-from .utils.fields import EntityField
-from .utils.schemas import (
-    ObservableSchema,
-    ValidTimeSchema,
+from ..entity import (
+    EntitySchema,
+    PrimaryEntity,
 )
-from .utils.validators import (
+from ..fields import (
+    IntegerField,
+    EntityField,
+    StringField,
+)
+from ..primary.judgement import Judgement
+from ..secondary.observable import Observable
+from ..secondary.valid_time import ValidTime
+from ..validators import (
     validate_integer,
     validate_string,
 )
-from ..constants import DISPOSITION_MAP
-from ..exceptions import (
+from ...constants import DISPOSITION_MAP
+from ...exceptions import (
     ValidationError as BundleBuilderValidationError
 )
 
 
-class VerdictSchema(Schema):
+class VerdictSchema(EntitySchema):
     """
     https://github.com/threatgrid/ctim/blob/master/doc/structures/verdict.md
     """
 
-    disposition = fields.Integer(
+    disposition = IntegerField(
         validate=partial(validate_integer, choices=DISPOSITION_MAP.keys()),
         required=True,
     )
-    observable = fields.Nested(
-        ObservableSchema,
+    observable = EntityField(
+        type=Observable,
         required=True,
     )
-    valid_time = fields.Nested(
-        ValidTimeSchema,
+    valid_time = EntityField(
+        type=ValidTime,
         required=True,
     )
-    disposition_name = fields.String(
+    disposition_name = StringField(
         validate=partial(validate_string, choices=DISPOSITION_MAP.values()),
     )
 
@@ -63,30 +66,8 @@ class VerdictSchema(Schema):
             raise MarshmallowValidationError(message)
 
 
-class Verdict(Entity):
+class Verdict(PrimaryEntity):
     schema = VerdictSchema
-
-    def __init__(self, **data):
-        super().__init__(**data)
-
-        # Some of the default fields for CTIM don't make sense here (since
-        # verdicts can't be pushed to CTIA), so just get rid of them.
-        for field in (
-            'schema_version',
-            'source',
-            'source_uri',
-            'id',
-            'external_ids',
-        ):
-            del self.json[field]
-
-    def __str__(self):
-        return f'<{self.__class__.__name__}>'
-
-    def generate_external_id_seed_values(self) -> Iterator[Tuple[str]]:
-        # Implement the abstract method somehow in order to simply make the
-        # class concrete and thus instantiable.
-        yield ()
 
     @classmethod
     def from_judgement(cls, judgement: Judgement) -> 'Verdict':
@@ -100,9 +81,21 @@ class Verdict(Entity):
         else:
             verdict = Verdict(
                 disposition=judgement.disposition,
-                observable=judgement.observable,
-                valid_time=judgement.valid_time,
+                observable=Observable(**judgement.observable),
+                valid_time=ValidTime(**judgement.valid_time),
                 disposition_name=judgement.disposition_name,
             )
             verdict.json['judgement_id'] = judgement_id
             return verdict
+
+    # Unlike the other primary CTIM entities, the Verdict entity has neither an
+    # ID nor any XIDs, so its implementation can be pretty much simplified.
+
+    def _initialize_missing_fields(self) -> None:
+        self.json = {
+            'type': self.type,
+            **self.json
+        }
+
+    def _generate_external_id_seed_values(self) -> Iterator[Tuple[str]]:
+        yield ()

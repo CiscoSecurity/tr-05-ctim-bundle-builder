@@ -5,7 +5,6 @@ from bundlebuilder.constants import (
     REASON_MAX_LENGTH,
     CONFIDENCE_CHOICES,
     DISPOSITION_MAP,
-    OBSERVABLE_TYPE_CHOICES,
     SEVERITY_CHOICES,
     REVISION_MIN_VALUE,
     TLP_CHOICES,
@@ -15,8 +14,12 @@ from bundlebuilder.constants import (
     DEFAULT_SESSION_EXTERNAL_ID_PREFIX,
 )
 from bundlebuilder.exceptions import ValidationError
-from bundlebuilder.models import Judgement
-from .utils import (
+from bundlebuilder.models import (
+    Judgement,
+    Observable,
+    ValidTime,
+)
+from tests.unit.utils import (
     mock_transient_id,
     mock_external_id,
     utc_now_iso,
@@ -29,21 +32,11 @@ def test_judgement_validation_fails():
         'confidence': 'Unbelievable',
         'disposition': 0,
         'disposition_name': 'Pristine',
-        'observable': {
-            'dangerous': False,
-            'type': 'dummy',
-        },
+        'observable': object(),
         'priority': PRIORITY_MAX_VALUE + 1,
         'severity': 'Insignificant',
-        'valid_time': {
-            'start_time': '1970-01-01T00:00:00Z',
-            'middle_time': 'This value will be ignored anyway, right?',
-        },
-        'external_references': [{
-            'description': '',
-            'external_id': None,
-            'hashes': ['alpha', 'beta', 'gamma'],
-        }],
+        'valid_time': object(),
+        'external_references': [object()],
         'language': 'Python',
         'reason': '\U0001f4a9' * (REASON_MAX_LENGTH + 1),
         'revision': -273,
@@ -68,29 +61,16 @@ def test_judgement_validation_fails():
             'Must be one of: '
             f'{", ".join(map(repr, DISPOSITION_MAP.values()))}.'
         ],
-        'observable': {
-            'dangerous': ['Unknown field.'],
-            'type': [
-                'Must be one of: '
-                f'{", ".join(map(repr, OBSERVABLE_TYPE_CHOICES))}.'
-            ],
-            'value': ['Missing data for required field.'],
-        },
+        'observable': ['Not a valid CTIM Observable.'],
         'priority': [
             f'Must be less than or equal to {PRIORITY_MAX_VALUE}.'
         ],
         'severity': [
             f'Must be one of: {", ".join(map(repr, SEVERITY_CHOICES))}.'
         ],
-        'valid_time': {
-            'middle_time': ['Unknown field.'],
-        },
+        'valid_time': ['Not a valid CTIM ValidTime.'],
         'external_references': {
-            0: {
-                'source_name': ['Missing data for required field.'],
-                'description': ['Field may not be blank.'],
-                'external_id': ['Field may not be null.'],
-            },
+            0: ['Not a valid CTIM ExternalReference.'],
         },
         'reason': [
             f'Must be at most {REASON_MAX_LENGTH} characters long.'
@@ -106,20 +86,33 @@ def test_judgement_validation_fails():
 
 
 def test_judgement_validation_succeeds():
-    judgment_data = {
+    observable = Observable(
+        type='domain',
+        value='cisco.com',
+    )
+
+    valid_time = ValidTime(
+        start_time=utc_now_iso(),
+        end_time=utc_now_iso(),
+    )
+
+    judgement_data = {
         'confidence': 'Medium',
         'disposition': 3,
         'disposition_name': 'Suspicious',
-        'observable': {'type': 'sha256', 'value': '01' * 32},
+        'observable': observable,
         'priority': 50,
         'severity': 'Medium',
-        'valid_time': {'end_time': utc_now_iso()},
+        'valid_time': valid_time,
         'revision': 0,
         'timestamp': utc_now_iso(),
         'tlp': 'amber',
     }
 
-    judgement = Judgement(**judgment_data)
+    judgement = Judgement(**judgement_data)
+
+    judgement_data['observable'] = observable.json
+    judgement_data['valid_time'] = valid_time.json
 
     type_ = 'judgement'
 
@@ -132,5 +125,5 @@ def test_judgement_validation_succeeds():
         'external_ids': [
             mock_external_id(DEFAULT_SESSION_EXTERNAL_ID_PREFIX, type_)
         ],
-        **judgment_data
+        **judgement_data
     }

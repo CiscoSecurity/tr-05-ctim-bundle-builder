@@ -47,8 +47,8 @@ showing how to properly use BB along with its available models and their APIs:
 ```python
 import json
 
-from bundlebuilder.models import (
-    Entity,
+from bundlebuilder.models.entity import BaseEntity
+from bundlebuilder.models.primary import (
     Bundle,
     Sighting,
     Judgement,
@@ -56,10 +56,15 @@ from bundlebuilder.models import (
     Relationship,
     Verdict,
 )
+from bundlebuilder.models.secondary import (
+    ObservedTime,
+    Observable,
+    ValidTime,
+)
 from bundlebuilder.session import Session
 
 
-def print_json(entity: Entity):
+def print_json(entity: BaseEntity):
     print(json.dumps(entity.json, indent=2))
 
 
@@ -79,8 +84,15 @@ def main():
         sighting = Sighting(
             confidence='High',
             count=1,
-            observed_time={'start_time': '2019-03-01T22:26:29.229Z'},
-            observables=[{'type': 'ip', 'value': '187.75.16.75'}],
+            observed_time=ObservedTime(
+                start_time='2019-03-01T22:26:29.229Z',
+            ),
+            observables=[
+                Observable(
+                    type='ip',
+                    value='187.75.16.75',
+                ),
+            ],
             severity='High',
             timestamp='2019-03-01T22:26:29.229Z',
             tlp='green',
@@ -92,13 +104,16 @@ def main():
             confidence='High',
             disposition=2,
             disposition_name='Malicious',
-            observable={'type': 'ip', 'value': '187.75.16.75'},
+            observable=Observable(
+                type='ip',
+                value='187.75.16.75',
+            ),
             priority=95,
             severity='High',
-            valid_time={
-                'start_time': '2019-03-01T22:26:29.229Z',
-                'end_time': '2019-03-31T22:26:29.229Z',
-            },
+            valid_time=ValidTime(
+                start_time='2019-03-01T22:26:29.229Z',
+                end_time='2019-03-31T22:26:29.229Z',
+            ),
             timestamp='2019-03-01T22:26:29.229Z',
             tlp='green',
         )
@@ -107,10 +122,10 @@ def main():
 
         indicator = Indicator(
             producer='Cisco TALOS',
-            valid_time={
-                'start_time': '2019-03-01T22:26:29.229Z',
-                'end_time': '2525-01-01T00:00:00.000Z',
-            },
+            valid_time=ValidTime(
+                start_time='2019-03-01T22:26:29.229Z',
+                end_time='2525-01-01T00:00:00.000Z',
+            ),
             description=(
                 'The IP Blacklist is automatically updated every 15 minutes '
                 'and contains a list of known malicious network threats that '

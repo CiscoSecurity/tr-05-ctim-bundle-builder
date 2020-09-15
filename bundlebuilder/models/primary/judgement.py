@@ -4,23 +4,28 @@ from typing import (
     Tuple,
 )
 
-from marshmallow import fields
 from marshmallow.decorators import validates_schema
 from marshmallow.exceptions import ValidationError
-from marshmallow.schema import Schema
 
-from .entity import Entity
-from .utils.fields import DateTimeField
-from .utils.schemas import (
-    ObservableSchema,
-    ValidTimeSchema,
-    ExternalReferenceSchema,
+from ..entity import (
+    EntitySchema,
+    PrimaryEntity,
 )
-from .utils.validators import (
+from ..fields import (
+    StringField,
+    IntegerField,
+    EntityField,
+    ListField,
+    DateTimeField,
+)
+from ..secondary.external_reference import ExternalReference
+from ..secondary.observable import Observable
+from ..secondary.valid_time import ValidTime
+from ..validators import (
     validate_string,
     validate_integer,
 )
-from ..constants import (
+from ...constants import (
     CONFIDENCE_CHOICES,
     DISPOSITION_MAP,
     PRIORITY_MIN_VALUE,
@@ -34,28 +39,28 @@ from ..constants import (
 )
 
 
-class JudgementSchema(Schema):
+class JudgementSchema(EntitySchema):
     """
     https://github.com/threatgrid/ctim/blob/master/doc/structures/judgement.md
     """
 
-    confidence = fields.String(
+    confidence = StringField(
         validate=partial(validate_string, choices=CONFIDENCE_CHOICES),
         required=True,
     )
-    disposition = fields.Integer(
+    disposition = IntegerField(
         validate=partial(validate_integer, choices=DISPOSITION_MAP.keys()),
         required=True,
     )
-    disposition_name = fields.String(
+    disposition_name = StringField(
         validate=partial(validate_string, choices=DISPOSITION_MAP.values()),
         required=True,
     )
-    observable = fields.Nested(
-        ObservableSchema,
+    observable = EntityField(
+        type=Observable,
         required=True,
     )
-    priority = fields.Integer(
+    priority = IntegerField(
         validate=partial(
             validate_integer,
             min_value=PRIORITY_MIN_VALUE,
@@ -63,45 +68,46 @@ class JudgementSchema(Schema):
         ),
         required=True,
     )
-    severity = fields.String(
+    severity = StringField(
         validate=partial(validate_string, choices=SEVERITY_CHOICES),
         required=True,
     )
-    valid_time = fields.Nested(
-        ValidTimeSchema,
+    valid_time = EntityField(
+        type=ValidTime,
         required=True,
     )
-    external_references = fields.List(
-        fields.Nested(ExternalReferenceSchema)
+    external_references = ListField(
+        EntityField(type=ExternalReference)
     )
-    language = fields.String(
+    language = StringField(
         validate=partial(validate_string, max_length=LANGUAGE_MAX_LENGTH),
     )
-    reason = fields.String(
+    reason = StringField(
         validate=partial(validate_string, max_length=REASON_MAX_LENGTH),
     )
-    reason_uri = fields.String(
+    reason_uri = StringField(
         validate=validate_string,
     )
-    revision = fields.Integer(
+    revision = IntegerField(
         validate=partial(validate_integer, min_value=REVISION_MIN_VALUE),
     )
     timestamp = DateTimeField()
-    tlp = fields.String(
+    tlp = StringField(
         validate=partial(validate_string, choices=TLP_CHOICES),
     )
 
-    source = fields.String(
+    source = StringField(
         validate=partial(validate_string, max_length=SOURCE_MAX_LENGTH),
     )
-    source_uri = fields.String(
+    source_uri = StringField(
         validate=validate_string,
     )
 
-    external_id_salt_values = fields.List(
-        fields.String(
-            validate=validate_string,
-        )
+    external_id_salt_values = ListField(
+        StringField(validate=validate_string)
+    )
+    external_ids = ListField(
+        StringField(validate=validate_string)
     )
 
     @validates_schema
@@ -118,12 +124,11 @@ class JudgementSchema(Schema):
             raise ValidationError(message)
 
 
-class Judgement(Entity):
+class Judgement(PrimaryEntity):
     schema = JudgementSchema
 
-    def generate_external_id_seed_values(self) -> Iterator[Tuple[str]]:
+    def _generate_external_id_seed_values(self) -> Iterator[Tuple[str]]:
         yield (
-            self.external_id_prefix,
             self.type,
             self.source,
             self.observable['value'],

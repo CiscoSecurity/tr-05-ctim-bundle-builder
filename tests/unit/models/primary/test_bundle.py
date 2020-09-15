@@ -11,13 +11,16 @@ from bundlebuilder.exceptions import ValidationError
 from bundlebuilder.models import (
     Bundle,
     Sighting,
+    ObservedTime,
+    Observable,
     Judgement,
+    ValidTime,
     Indicator,
     Relationship,
     Verdict,
 )
 from bundlebuilder.session import Session
-from .utils import (
+from tests.unit.utils import (
     mock_transient_id,
     mock_external_id,
 )
@@ -26,16 +29,9 @@ from .utils import (
 def test_bundle_validation_fails():
     bundle_data = {
         'greeting': '¡Hola!',
-        'valid_time': {
-            'middle_time': 'This value will be ignored anyway, right?',
-            'end_time': '1970-01-01T00:00:00Z',
-        },
+        'valid_time': object(),
         'description': '\U0001f4a9' * DESCRIPTION_MAX_LENGTH,
-        'external_references': [{
-            'description': '',
-            'external_id': None,
-            'hashes': ['alpha', 'beta', 'gamma'],
-        }],
+        'external_references': [object()],
         'indicators': [object()],
         'judgements': [object()],
         'language': 'Python',
@@ -56,15 +52,9 @@ def test_bundle_validation_fails():
 
     assert error.args == ({
         'greeting': ['Unknown field.'],
-        'valid_time': {
-            'middle_time': ['Unknown field.'],
-        },
+        'valid_time': ['Not a valid CTIM ValidTime.'],
         'external_references': {
-            0: {
-                'source_name': ['Missing data for required field.'],
-                'description': ['Field may not be blank.'],
-                'external_id': ['Field may not be null.'],
-            },
+            0: ['Not a valid CTIM ExternalReference.'],
         },
         'indicators': {
             0: ['Not a valid CTIM Indicator.'],
@@ -112,8 +102,15 @@ def test_bundle_validation_succeeds():
         sighting = Sighting(
             confidence='High',
             count=1,
-            observed_time={'start_time': '2019-03-01T22:26:29.229Z'},
-            observables=[{'type': 'ip', 'value': '187.75.16.75'}],
+            observed_time=ObservedTime(
+                start_time='2019-03-01T22:26:29.229Z',
+            ),
+            observables=[
+                Observable(
+                    type='ip',
+                    value='187.75.16.75',
+                ),
+            ],
             severity='High',
             timestamp='2019-03-01T22:26:29.229Z',
             tlp='green',
@@ -125,13 +122,16 @@ def test_bundle_validation_succeeds():
             confidence='High',
             disposition=2,
             disposition_name='Malicious',
-            observable={'type': 'ip', 'value': '187.75.16.75'},
+            observable=Observable(
+                type='ip',
+                value='187.75.16.75',
+            ),
             priority=95,
             severity='High',
-            valid_time={
-                'start_time': '2019-03-01T22:26:29.229Z',
-                'end_time': '2019-03-31T22:26:29.229Z',
-            },
+            valid_time=ValidTime(
+                start_time='2019-03-01T22:26:29.229Z',
+                end_time='2019-03-31T22:26:29.229Z',
+            ),
             timestamp='2019-03-01T22:26:29.229Z',
             tlp='green',
         )
@@ -140,10 +140,10 @@ def test_bundle_validation_succeeds():
 
         indicator = Indicator(
             producer='Cisco TALOS',
-            valid_time={
-                'start_time': '2019-03-01T22:26:29.229Z',
-                'end_time': '2525-01-01T00:00:00.000Z',
-            },
+            valid_time=ValidTime(
+                start_time='2019-03-01T22:26:29.229Z',
+                end_time='2525-01-01T00:00:00.000Z',
+            ),
             description=(
                 'The IP Blacklist is automatically updated every 15 minutes '
                 'and contains a list of known malicious network threats that '
