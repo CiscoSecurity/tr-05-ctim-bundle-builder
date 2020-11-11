@@ -9,3 +9,6 @@ __pycache__/
 venv/
 *.egg-info/
 dist/
+
+# for local types testing
+/test_script.py
