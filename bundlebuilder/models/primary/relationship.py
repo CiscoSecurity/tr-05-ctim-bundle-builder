@@ -98,4 +98,6 @@ class Relationship(PrimaryEntity):
     def _generate_external_id_seed_values(self) -> Iterator[Tuple[str]]:
         yield (
             self.type,
+            self.source_ref,
+            self.target_ref
         )
