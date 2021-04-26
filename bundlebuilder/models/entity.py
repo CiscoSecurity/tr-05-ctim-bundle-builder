@@ -102,6 +102,9 @@ class BaseEntity(metaclass=EntityMeta):
     def __str__(self):
         return self.__class__.__name__
 
+    def get(self, field: str, default: Any = None) -> Any:
+        return self.json.get(field, default)
+
     @abstractmethod
     def _initialize_missing_fields(self) -> None:
         pass
