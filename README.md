@@ -3,7 +3,7 @@
 [![PyPi Version](https://img.shields.io/pypi/v/bundlebuilder.svg)](https://pypi.python.org/pypi/bundlebuilder)
 [![Python Versions](https://img.shields.io/pypi/pyversions/bundlebuilder.svg)](https://pypi.python.org/pypi/bundlebuilder)
 
-# Threat Response CTIM Bundle Builder
+# SecureX Threat Response CTIM Bundle Builder
 
 Python library for building CTIM entities, relationships between them, and
 finally packaging everything up into so-called bundles.
