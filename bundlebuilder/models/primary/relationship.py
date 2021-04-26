@@ -95,9 +95,15 @@ class RelationshipSchema(EntitySchema):
 class Relationship(PrimaryEntity):
     schema = RelationshipSchema
 
+    def __init__(self, **data):
+        super().__init__(**data)
+        self.source_ref_external_ids = data['source_ref']['external_ids']
+        self.target_ref_external_ids = data['target_ref']['external_ids']
+
     def _generate_external_id_seed_values(self) -> Iterator[Tuple[str]]:
         yield (
             self.type,
-            self.source_ref,
-            self.target_ref
+            self.relationship_type,
+            str(self.source_ref_external_ids),
+            str(self.target_ref_external_ids),
         )
