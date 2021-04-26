@@ -30,7 +30,7 @@ NAME = 'bundlebuilder'
 
 VERSION = read_version()
 
-DESCRIPTION = 'Threat Response CTIM Bundle Builder'
+DESCRIPTION = 'SecureX Threat Response CTIM Bundle Builder'
 
 LONG_DESCRIPTION = read_readme()
 
