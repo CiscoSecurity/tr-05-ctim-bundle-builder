@@ -1,3 +1,3 @@
-@Library('softserve-jenkins-library@CCTRI-2791') _
+@Library('softserve-jenkins-library@CCTRI-2903') _
 
 startPipeline('bundlebuilder', [3.6, 3.7, 3.8])
