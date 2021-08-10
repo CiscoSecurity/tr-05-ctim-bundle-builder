@@ -96,11 +96,11 @@ class Relationship(PrimaryEntity):
     schema = RelationshipSchema
 
     def __init__(self, **data):
+        super().__init__(**data)
         self.source_ref_external_ids = data.get('source_ref',
                                                 {}).get('external_ids')
         self.target_ref_external_ids = data.get('target_ref',
                                                 {}).get('external_ids')
-        super().__init__(**data)
 
     def _generate_external_id_seed_values(self) -> Iterator[Tuple[str]]:
         yield (

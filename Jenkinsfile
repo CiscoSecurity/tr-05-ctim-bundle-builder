@@ -1,3 +1,3 @@
 @Library('softserve-jenkins-library@main') _
 
-startPipeline()
+startPipeline('bundlebuilder', [3.6, 3.7, 3.8, 3.9])
